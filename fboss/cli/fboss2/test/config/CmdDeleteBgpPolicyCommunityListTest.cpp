@@ -108,9 +108,24 @@ class CmdDeleteBgpPolicyCommunityListTestFixture : public CmdConfigTestBase {
       it = std::prev(policies.end());
     }
     auto& terms = *it->policy_entries();
+<<<<<<< HEAD
     terms.emplace_back();
     terms.back().sequence_number() = seq;
     return terms.back();
+||||||| 615d477c11
+=======
+    auto term =
+        std::find_if(terms.begin(), terms.end(), [&](const auto& entry) {
+          return entry.sequence_number().has_value() &&
+              *entry.sequence_number() == seq;
+        });
+    if (term == terms.end()) {
+      terms.emplace_back();
+      terms.back().sequence_number() = seq;
+      term = std::prev(terms.end());
+    }
+    return *term;
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
   }
 
   bool sessionFileExists() {
@@ -335,6 +350,40 @@ TEST_F(
 
 TEST_F(
     CmdDeleteBgpPolicyCommunityListTestFixture,
+<<<<<<< HEAD
+||||||| 615d477c11
+=======
+    duplicateReferencesFromOneTermAreNamedOnce) {
+  configure({"CL100", "community", "65000:100"});
+  addPolicyTermMatching("RM100", 10, "CL100");
+  addPolicyTermMatching("RM100", 10, "CL100");
+  addPolicyTermAction("RM100", 10, "CL100");
+  addPolicyTermAction("RM100", 10, "CL100");
+
+  const auto result = del({"CL100"});
+  const std::string label = "policy RM100 term 10";
+  const auto first = result.find(label);
+  ASSERT_NE(first, std::string::npos);
+  EXPECT_EQ(result.find(label, first + label.size()), std::string::npos);
+}
+
+TEST_F(
+    CmdDeleteBgpPolicyCommunityListTestFixture,
+    duplicateActionReferencesFromOneTermAreNamedOnce) {
+  configure({"CL100", "community", "65000:100"});
+  addPolicyTermAction("RM100", 10, "CL100");
+  addPolicyTermAction("RM100", 10, "CL100");
+
+  const auto result = del({"CL100", "community", "65000:100"});
+  const std::string label = "policy RM100 term 10";
+  const auto first = result.find(label);
+  ASSERT_NE(first, std::string::npos);
+  EXPECT_EQ(result.find(label, first + label.size()), std::string::npos);
+}
+
+TEST_F(
+    CmdDeleteBgpPolicyCommunityListTestFixture,
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
     deleteLastCommunityOnActionReferencedListRejected) {
   // bgpd: "Missing communities in CommunityList" for an action reference
   // to a valueless list.

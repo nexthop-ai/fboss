@@ -20,7 +20,13 @@ namespace facebook::fboss {
 
 // Grouping node for `config protocol bgp policy <object-type> ...`. Holds no
 // state of its own; the per-object-type dispatchers (as-path-list,
+<<<<<<< HEAD
 // community-list, prefix-list, routing-policy) are its subcommands.
+||||||| 615d477c11
+// community-list, and later prefix-list/routing-policy) are its subcommands.
+=======
+// community-list, prefix-list, and later routing-policy) are its subcommands.
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
 // Mirrors CmdConfigProtocolBgp.
 struct CmdConfigProtocolBgpPolicyTraits : public WriteCommandTraits {
   using ParentCmd = CmdConfigProtocolBgp;

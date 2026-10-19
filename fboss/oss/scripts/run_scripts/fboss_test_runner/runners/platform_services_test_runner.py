@@ -77,12 +77,24 @@ class PlatformServicesTestRunner(TestRunner):
         return []
 
     def _run_tests(
+<<<<<<< HEAD
         self, tests_to_run: list[str], conf_file: str, args: Namespace
     ) -> tuple[list, list]:
+||||||| 615d477c11
+        self, tests_to_run: list[str], conf_file: str, args: Namespace
+    ) -> list[GtestResult]:
+=======
+        self,
+        tests_to_run: list[str],
+        conf_file: str,
+        args: Namespace,  # noqa: ARG002
+    ) -> list[GtestResult]:
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
         test_binary_name = self._get_test_binary_name()
         all_results: list[GtestResult] = []
         test_results = []
         num_tests = len(tests_to_run)
+<<<<<<< HEAD
         disable_services(args.type)
         try:
             for idx, test_to_run in enumerate(tests_to_run):
@@ -108,6 +120,37 @@ class PlatformServicesTestRunner(TestRunner):
                 )
         finally:
             enable_services(args.type)
+||||||| 615d477c11
+        for idx, test_to_run in enumerate(tests_to_run):
+            test_prefix = test_binary_name + "."
+            print("########## Running test: " + test_to_run, flush=True)
+            run_outcome = self._run_test(
+                conf_file,
+                test_prefix,
+                test_to_run,
+                False,  # setup_warmboot
+            )
+            print(
+                f"test results ({idx + 1}/{num_tests}): {run_outcome.console_output}",
+                flush=True,
+            )
+            all_results.extend(run_outcome.results)
+=======
+        for idx, test_to_run in enumerate(tests_to_run):
+            test_prefix = test_binary_name + "."
+            print("########## Running test: " + test_to_run, flush=True)
+            run_outcome = self._run_test_guarded(
+                conf_file,
+                test_prefix,
+                test_to_run,
+                False,  # setup_warmboot
+            )
+            print(
+                f"test results ({idx + 1}/{num_tests}): {run_outcome.console_output}",
+                flush=True,
+            )
+            all_results.extend(run_outcome.results)
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
 
         self._end_run()
         return all_results, test_results

@@ -634,6 +634,7 @@ class HwAsic {
     // Extra router MACs via the SAI MY_MAC object: packets destined to a
     // programmed MAC + VLAN are routed like packets to the switch's own MAC.
     MY_MAC,
+<<<<<<< HEAD
     // The adapter attaches a default serdes object to every port it creates
     // and rejects a second create_port_serdes; the agent adopts that object
     PORT_SERDES_CREATED_WITH_PORT,
@@ -641,6 +642,19 @@ class HwAsic {
     // port names the core and core port index read back from the port, not
     // the platform mapping's prediction
     SYSTEM_PORT_CORE_INDEX_FROM_PORT,
+||||||| 615d477c11
+=======
+    // XPHY only: the xphy SerDes has a TX FIR post3 tap, so program it and read
+    // it back. Only consulted by phy/ code; NPU ASICs report false (n/a).
+    // Agera3 (Condor SerDes) has no post3: the SDK drops it on set and returns
+    // -1 on get.
+    XPHY_SERDES_TX_FIR_POST3,
+    // Per-port HW protection switchover counters
+    // (SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_EVENTS and
+    // SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_DROP_PKTS). Broadcom
+    // Tomahawk 5/6 with XGS SDK 13.3+.
+    HW_PROTECTION_SWITCHOVER_COUNTERS,
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
   };
 
   enum class AsicMode {
@@ -866,6 +880,11 @@ class HwAsic {
 
   // SRv6 next hops used by single-nhop routes (NextHopSet size == 1)
   virtual std::optional<uint32_t> getMaxSrv6SingleNextHops() const {
+    return std::nullopt;
+  }
+
+  // Distinct member weights in one SRv6 UCMP next hop group
+  virtual std::optional<uint32_t> getMaxSrv6UcmpDistinctWeights() const {
     return std::nullopt;
   }
 

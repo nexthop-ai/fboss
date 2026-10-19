@@ -36,6 +36,12 @@ namespace facebook::fboss {
 
 namespace {
 constexpr std::string_view kCommunityKeyword = "community";
+
+void appendUnique(std::vector<std::string>& labels, const std::string& label) {
+  if (std::find(labels.begin(), labels.end(), label) == labels.end()) {
+    labels.push_back(label);
+  }
+}
 } // namespace
 
 // Parse + validate at construction so queryClient stays a thin dispatch.
@@ -107,10 +113,21 @@ CmdDeleteProtocolBgpPolicyCommunityList::queryClient(
           // A community action resolves the list's values at daemon load and
           // fails on an empty one ("Missing communities in CommunityList");
           // a match reference tolerates it.
+<<<<<<< HEAD
           std::vector<std::string> actions;
           for (const auto& ref : refs) {
             if (ref.isAction) {
               actions.push_back(ref.label);
+||||||| 615d477c11
+=======
+          const auto refs =
+              bgpcli::findTermsReferencingCommunityList(cfg, args.listName());
+          std::vector<std::string> actions;
+          actions.reserve(refs.size());
+          for (const auto& ref : refs) {
+            if (ref.isAction) {
+              appendUnique(actions, ref.label);
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
             }
           }
           if (!actions.empty()) {
@@ -148,10 +165,21 @@ CmdDeleteProtocolBgpPolicyCommunityList::queryClient(
   // against this list by name at daemon load; erasing the list while a term
   // still names it would commit a dangling reference and fail the load.
   // Refuse and name the terms instead.
+<<<<<<< HEAD
   if (!refs.empty()) {
     std::vector<std::string> referrers;
     for (const auto& ref : refs) {
       referrers.push_back(ref.label);
+||||||| 615d477c11
+=======
+  const auto refs =
+      bgpcli::findTermsReferencingCommunityList(cfg, args.listName());
+  if (!refs.empty()) {
+    std::vector<std::string> referrers;
+    referrers.reserve(refs.size());
+    for (const auto& ref : refs) {
+      appendUnique(referrers, ref.label);
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
     }
     return fmt::format(
         "Error: BGP community-list {} is still referenced by {}; remove those "

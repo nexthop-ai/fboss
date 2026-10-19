@@ -185,6 +185,7 @@ _CORE_SKIP_FRAME_RE = re.compile(
 _MANGLED_BACKREF_RE = re.compile(r"S[0-9A-Z]*_")
 _CORE_STACK_FRAMES = 3
 _CORE_INFO_TIMEOUT_SEC = 30
+<<<<<<< HEAD
 _UNSET: object = object()
 
 
@@ -397,4 +398,152 @@ def describe_core_dump(core_path: str, info: str | None = _UNSET) -> str:
         info = get_core_dump_info(core_path)
     if info:
         return _summarize_core_stack(info)
+||||||| 615d477c11
+=======
+
+
+def _core_pid_from_name(core_path: str) -> str | None:
+    """systemd-coredump names cores core.<comm>.<uid>.<boot-id>.<pid>.<ts>[.zst]."""
+    parts = os.path.basename(core_path).split(".")
+    if parts and parts[-1] in ("zst", "lz4", "xz", "gz"):
+        parts.pop()
+    if len(parts) >= 6 and parts[0] == "core" and parts[-2].isdigit():
+        return parts[-2]
+    return None
+
+
+def _skip_mangled_group(symbol: str, i: int) -> int:
+    """Return the index just past the E that closes the group opened at i."""
+    depth = 0
+    while i < len(symbol):
+        c = symbol[i]
+        if c.isdigit():  # <length><identifier>: skip it whole, letters and all
+            j = i
+            while j < len(symbol) and symbol[j].isdigit():
+                j += 1
+            i = j + int(symbol[i:j])
+            continue
+        if c == "S":
+            # A back-reference to an earlier name (S_, S0_ ... S9_, SA_ ...,
+            # base-36 seq-id ending in _) or a two-letter std:: shorthand
+            # (St, Sa, Ss, ...). Neither may be read as a length prefix.
+            m = _MANGLED_BACKREF_RE.match(symbol, i)
+            i = m.end() if m else i + 2
+            continue
+        if c in "INJL":
+            depth += 1
+        elif c == "E":
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    return i
+
+
+def _demangle_short(symbol: str) -> str:
+    """Reduce a stack-frame symbol to its qualified function name.
+
+    coredumpctl prints Itanium-mangled names when no demangler is at hand
+    (the DUT image ships none), so walk the nested-name prefix of the
+    mangling by hand: enough to name the function, dropping template and
+    parameter encodings. Already-demangled input just loses its argument
+    list and template arguments. Anything else is returned as is.
+    """
+    if not symbol.startswith("_Z"):
+        return re.sub(r"<.*|\(.*", "", symbol)
+    i = 2
+    nested = symbol.startswith("_ZN")
+    if nested:
+        i = 3
+        while i < len(symbol) and symbol[i] in "KVr":
+            i += 1
+    parts: list[str] = []
+    while i < len(symbol):
+        c = symbol[i]
+        if c.isdigit():
+            j = i
+            while j < len(symbol) and symbol[j].isdigit():
+                j += 1
+            n = int(symbol[i:j])
+            parts.append(symbol[j : j + n])
+            i = j + n
+            if not nested:
+                break
+        elif symbol.startswith("St", i):
+            parts.append("std")
+            i += 2
+        elif c in "CD" and i + 1 < len(symbol) and symbol[i + 1] in "0123":
+            if parts:
+                parts.append(("~" if c == "D" else "") + parts[-1])
+            i += 2
+        elif c == "I" and nested:
+            i = _skip_mangled_group(symbol, i)  # template args of a prefix
+        else:
+            break  # parameters or the closing E
+    return "::".join(parts) if parts else symbol
+
+
+def _summarize_core_stack(info: str) -> str:
+    """Turn `coredumpctl info` output into "<unit> <SIGNAL> in f1 < f2 < f3".
+
+    Takes the first thread listed (the one that crashed) and names the
+    first `_CORE_STACK_FRAMES` frames below the signal / terminate / throw
+    / FATAL-log machinery, so the string identifies the crash rather than
+    the way the process died. Stable across hits: no addresses, pids or
+    template arguments.
+    """
+    unit = signal_name = None
+    frames: list[str] = []
+    in_stack = False
+    for line in info.splitlines():
+        if not in_stack:
+            m = _CORE_HEADER_RE.match(line)
+            if m and m["key"] == "Unit":
+                unit = m["val"].strip()
+            elif m and m["key"] == "Signal":
+                sm = _CORE_SIGNAL_RE.match(m["val"].strip())
+                signal_name = f"SIG{sm['name']}" if sm else m["val"].strip()
+            elif m and m["key"] in ("Executable", "Command Line") and not unit:
+                unit = os.path.basename(m["val"].strip().split()[0])
+            elif line.strip().startswith("Stack trace of thread"):
+                in_stack = True
+            continue
+        m = _CORE_FRAME_RE.match(line)
+        if not m:
+            break  # end of the first thread's stack
+        name = _demangle_short(m["sym"])
+        if _CORE_SKIP_FRAME_RE.match(name):
+            continue
+        frames.append(name.removeprefix("facebook::fboss::"))
+        if len(frames) >= _CORE_STACK_FRAMES:
+            break
+    where = " < ".join(frames) if frames else "unknown stack"
+    return f"{unit or 'unknown unit'} {signal_name or 'crashed'} in {where}"
+
+
+def describe_core_dump(core_path: str) -> str:
+    """One-line description of the crash behind a core, stable across hits.
+
+    Falls back to naming the core file when coredumpctl is unavailable or
+    has no record for it (workstations, the fboss-sim container).
+    """
+    fallback = f"core {os.path.basename(core_path)}"
+    matches = [f"COREDUMP_FILENAME={core_path}"]
+    pid = _core_pid_from_name(core_path)
+    if pid:
+        matches.append(pid)
+    for match in matches:
+        try:
+            result = subprocess.run(
+                ["coredumpctl", "-q", "--no-pager", "info", match],
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=_CORE_INFO_TIMEOUT_SEC,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return fallback
+        if result.returncode == 0 and "Stack trace of thread" in result.stdout:
+            return _summarize_core_stack(result.stdout)
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
     return fallback

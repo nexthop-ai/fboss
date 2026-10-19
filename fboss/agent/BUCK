@@ -39,10 +39,6 @@ thrift_library(
         "//fboss/agent/if:common",
         "//fboss/agent/if:mpls",
         "//fboss/lib/if:fboss_common",
-        "//thrift/annotation:cpp",
-        "//thrift/annotation:hack",
-        "//thrift/annotation:python",
-        "//thrift/annotation:thrift",
     ],
 )
 
@@ -244,8 +240,6 @@ thrift_library(
         "//fboss/agent/hw:hardware_stats",
         "//fboss/agent/if:asic_temp",
         "//fboss/lib/phy:phy",
-        "//thrift/annotation:cpp",
-        "//thrift/annotation:thrift",
     ],
 )
 
@@ -907,6 +901,25 @@ cpp_library(
 )
 
 cpp_library(
+    name = "override_set_id_manager",
+    srcs = [
+        "OverrideSetIdManager.cpp",
+    ],
+    headers = [
+        "OverrideSetIdManager.h",
+    ],
+    deps = [
+        "fbsource//third-party/glog:glog",
+        ":fboss-error",
+    ],
+    exported_deps = [
+        ":fboss-types",
+        "//fboss/agent/rib:nexthop_id_manager",
+        "//fboss/agent/state:state",
+    ],
+)
+
+cpp_library(
     name = "fib_helpers",
     srcs = [
         "FibHelpers.cpp",
@@ -945,6 +958,7 @@ cpp_library(
     ],
     exported_deps = [
         ":fboss-types",
+        ":override_set_id_manager",
         ":switch_config-cpp2-types",
         "//fboss/agent/state:state",
         "//fboss/lib:ref_map",
@@ -1067,7 +1081,7 @@ cpp_library(
         "CpuLatencyManager.h",
     ],
     exported_deps = [
-        "fbsource//third-party/googletest:gtest_headers",
+        "fbsource//third-party/googletest:gtest_prod_headers",
         ":fboss-types",
         "//fboss/agent/if:ctrl-cpp2-types",
         "//folly:network_address",
@@ -2658,6 +2672,7 @@ cpp_library(
         ":hw_switch_handler",
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/state:nodebase",
+        "//folly:scope_guard",
     ],
     exported_deps = [
         "fbsource//third-party/googletest:gtest",

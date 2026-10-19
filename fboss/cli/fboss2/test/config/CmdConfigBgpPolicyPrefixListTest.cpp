@@ -1,5 +1,6 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 
+<<<<<<< HEAD
 #include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #include <fmt/core.h>
 #include <gmock/gmock.h>
@@ -15,6 +16,29 @@
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
+||||||| 615d477c11
+=======
+#include <fmt/core.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <filesystem>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+#include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/CmdConfigProtocolBgpPolicyPrefixList.h"
+#include "fboss/cli/fboss2/session/ConfigSession.h"
+#include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
+#include "fboss/cli/fboss2/utils/HostInfo.h"
+
+#ifndef IS_OSS
+#include <configerator/structs/neteng/bgp_policy/thrift/gen-cpp2/routing_policy_types.h>
+#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#else
+#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#endif
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
 
 using namespace ::testing;
 using facebook::bgp::routing_policy::BooleanOperator;

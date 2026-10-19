@@ -131,6 +131,7 @@ cpp_unittest(
         "//fboss/agent:fboss-error",
         "//fboss/agent:fboss-types",
         "//fboss/agent:fib_helpers",
+        "//fboss/agent:handler",
         "//fboss/agent:hwswitch_matcher",
         "//fboss/agent:switch_config-cpp2-types",
         "//fboss/agent:switchid_scope_resolver",
@@ -191,6 +192,7 @@ cpp_library(
 cpp_library(
     name = "fib_updater",
     srcs = [
+        "ClassBasedPolicyUpdater.cpp",
         "FibUpdateHelpers.cpp",
         "ForwardingInformationBaseUpdater.cpp",
         "MySidMapUpdater.cpp",
@@ -198,6 +200,7 @@ cpp_library(
         "SwitchStateNextHopIdUpdater.cpp",
     ],
     headers = [
+        "ClassBasedPolicyUpdater.h",
         "FibUpdateHelpers.h",
         "ForwardingInformationBaseUpdater.h",
         "MySidMapUpdater.h",
@@ -208,6 +211,7 @@ cpp_library(
         "fbsource//third-party/fmt:fmt",
         "//fboss/agent:fboss-error",
         "//fboss/agent:fib_helpers",
+        "//fboss/agent:hwswitch_matcher",
         "//fboss/agent:switchid_scope_resolver",
         "//fboss/agent/state:nodebase",
         "//folly/logging:logging",

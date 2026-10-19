@@ -30,8 +30,12 @@ from fboss.cli.fboss2.tools.bgp_json_to_cli import (
     generate_peer_group_commands,
     generate_policy_commands,
     generate_prefix_list_commands,
+<<<<<<< HEAD
     generate_prefix_list_entry_commands,
     generate_routing_policy_commands,
+||||||| 615d477c11
+=======
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
     json_to_cli,
 )
 
@@ -1240,6 +1244,7 @@ class GeneratePrefixListCommandsTest(unittest.TestCase):
                 commands,
                 [
                     f"# WARNING: prefix-list PL: boolean_operator {rendered} is "
+<<<<<<< HEAD
                     "not accepted by bgpd (only OR); not emitted"
                 ],
                 raw,
@@ -1454,6 +1459,109 @@ class GenerateRoutingPolicyCommandsTest(unittest.TestCase):
                 "config protocol bgp policy as-path-list A",
                 "config protocol bgp policy prefix-list PL",
                 self.PREFIX,
+||||||| 615d477c11
+=======
+                    "not accepted by bgpd (only OR); not emitted",
+                    self.PREFIX,
+                ],
+                raw,
+            )
+
+    def test_prefixes_warn_until_entry_subcommand(self) -> None:
+        commands = generate_prefix_list_commands(
+            {
+                "name": "PL",
+                "prefixes": [{"base_prefix": "10.0.0.0/8"}, {"base_prefix": "::/0"}],
+            }
+        )
+        self.assertEqual(
+            commands,
+            [
+                "# WARNING: prefix-list PL: 2 prefixes are not emitted until "
+                "the entry subcommand lands",
+                self.PREFIX,
+            ],
+        )
+
+    def test_or_default_omitted(self) -> None:
+        self.assertEqual(
+            generate_prefix_list_commands({"name": "PL", "boolean_operator": 2}),
+            [self.PREFIX],
+        )
+
+    def test_unhashable_version_warns_and_recreates_list(self) -> None:
+        commands = generate_prefix_list_commands({"name": "PL", "version": [4]})
+        self.assertEqual(
+            commands,
+            [
+                "# WARNING: prefix-list PL: version [4] is neither 4 nor 6; "
+                "not emitted",
+                self.PREFIX,
+            ],
+        )
+
+    def test_unexpressible_values_warn(self) -> None:
+        commands = generate_prefix_list_commands(
+            {
+                "name": "PL",
+                "compare_operator": 7,
+                "version": 5,
+                "prefix_list_names": ["X"],
+                "ip_version": 1,
+            }
+        )
+        warnings = [command for command in commands if command.startswith("# WARNING:")]
+        self.assertEqual(len(warnings), 4)
+        self.assertEqual(commands[-1], self.PREFIX)
+
+    def test_any_compare_operator_warns(self) -> None:
+        """bgpd rejects a list-level compare_operator whatever its value."""
+        for raw, rendered in ((2, "GE"), (7, "RG"), (None, "None"), ([2], "[2]")):
+            commands = generate_prefix_list_commands(
+                {"name": "PL", "compare_operator": raw}
+            )
+            self.assertEqual(
+                commands,
+                [
+                    f"# WARNING: prefix-list PL: list-level compare_operator "
+                    f"{rendered} is not accepted by bgpd; not emitted",
+                    self.PREFIX,
+                ],
+                raw,
+            )
+
+    def test_warning_text_is_single_comment_line(self) -> None:
+        """A control character in a JSON name must not end the # comment."""
+        name = "PL\nrm -rf /"
+        commands = generate_prefix_list_commands(
+            {"name": name, "prefix_list_names": ["X"]}
+        )
+        self.assertEqual(len(commands), 2)
+        warning = commands[0]
+        self.assertTrue(warning.startswith("# WARNING:"), warning)
+        self.assertNotIn("\n", warning)
+        self.assertIn("PL?rm -rf /", warning)
+        self.assertEqual(
+            commands[1],
+            f"config protocol bgp policy prefix-list {escape_shell_arg(name)}",
+        )
+
+    def test_policy_block_order(self) -> None:
+        config = {
+            "policies": {
+                "aspath_lists": [{"name": "A"}],
+                "community_lists": [{"name": "CL"}],
+                "prefix_lists": [{"name": "PL"}],
+            }
+        }
+        commands = generate_policy_commands(config)
+        self.assertEqual(
+            commands,
+            [
+                "config protocol bgp policy as-path-list A",
+                "config protocol bgp policy community-list CL",
+                "config protocol bgp policy prefix-list PL",
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
             ],
         )
 

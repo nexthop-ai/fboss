@@ -617,6 +617,7 @@ struct RouteNextHopEntry {
   9: optional i64 resolvedNextHopSetID;
   10: optional string namedNextHopGroup;
   11: optional i64 clientNextHopSetID;
+  12: optional i64 overrideNextHopSetID;
 }
 
 struct RouteNextHopsMulti {
@@ -664,6 +665,8 @@ struct FibInfoFields {
   3: map<NextHopSetIdType, set<NextHopIdType>> idToNextHopIdSet;
   // Map from named next-hop group name to NextHopSetID
   4: map<string, NextHopSetIdType> nameToNextHopSetId;
+  // ERM override set ids
+  5: map<NextHopSetIdType, set<NextHopIdType>> overrideIdToNextHopIdSet;
 }
 
 struct TrafficClassToQosAttributeEntry {

@@ -481,6 +481,7 @@ const CommandTree& kConfigCommandTree() {
                                    CmdConfigProtocolBgpPolicyPrefixList>,
                                argRegistrar<
                                    CmdConfigProtocolBgpPolicyPrefixListTraits>,
+<<<<<<< HEAD
                                {{
                                    "prefix",
                                    "Configure a prefix-list entry: "
@@ -503,6 +504,9 @@ const CommandTree& kConfigCommandTree() {
                                    CmdConfigProtocolBgpPolicyRoutingPolicy>,
                                argRegistrar<
                                    CmdConfigProtocolBgpPolicyRoutingPolicyTraits>,
+||||||| 615d477c11
+=======
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
                            }},
                       },
                   },
@@ -908,6 +912,7 @@ const CommandTree& kConfigCommandTree() {
                      },
                      {
                          "prefix-list",
+<<<<<<< HEAD
                          "Delete a BGP prefix-list, or one of its "
                          "entries: <name> [prefix <prefix/len>]",
                          commandHandler<CmdDeleteProtocolBgpPolicyPrefixList>,
@@ -921,6 +926,13 @@ const CommandTree& kConfigCommandTree() {
                              CmdDeleteProtocolBgpPolicyRoutingPolicy>,
                          argRegistrar<
                              CmdDeleteProtocolBgpPolicyRoutingPolicyTraits>,
+||||||| 615d477c11
+=======
+                         "Delete a BGP prefix-list: <name>",
+                         commandHandler<CmdDeleteProtocolBgpPolicyPrefixList>,
+                         argRegistrar<
+                             CmdDeleteProtocolBgpPolicyPrefixListTraits>,
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
                      }},
                 }},
            },

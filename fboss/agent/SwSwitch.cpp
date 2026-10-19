@@ -880,7 +880,8 @@ state::SwitchState SwSwitch::updateOverrideEcmpSwitchingMode(
           fwd.getOverrideNextHops(),
           fwd.getNormalizedResolvedNextHopSetID(),
           fwd.getResolvedNextHopSetID(),
-          fwd.getClientNextHopSetID());
+          fwd.getClientNextHopSetID(),
+          fwd.getOverrideNextHopSetID());
       fib.value().at(routeName).fwd() = newFwd.toThrift();
     }
   };
@@ -1792,12 +1793,34 @@ void SwSwitch::logRouteUpdates(
       RoutePrefix<folly::IPAddress>{folly::IPAddress{addr}, mask},
       identifier,
       false};
+<<<<<<< HEAD
   withRouteUpdateLogger([&](auto& logger) { logger.startLoggingForPrefix(r); });
+||||||| 615d477c11
+  routeUpdateLogger_->startLoggingForPrefix(r);
+=======
+  if (isExiting()) {
+    XLOG(DBG2) << "Skipping route update logging for " << identifier
+               << ": switch is exiting";
+    return;
+  }
+  routeUpdateLogger_->startLoggingForPrefix(r);
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
 }
 
 void SwSwitch::stopLoggingRouteUpdates(const std::string& identifier) {
+<<<<<<< HEAD
   withRouteUpdateLogger(
       [&](auto& logger) { logger.stopLoggingForIdentifier(identifier); });
+||||||| 615d477c11
+  routeUpdateLogger_->stopLoggingForIdentifier(identifier);
+=======
+  if (isExiting()) {
+    XLOG(DBG2) << "Skipping stop of route update logging for " << identifier
+               << ": switch is exiting";
+    return;
+  }
+  routeUpdateLogger_->stopLoggingForIdentifier(identifier);
+>>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
 }
 
 void SwSwitch::registerStateObserver(
@@ -3947,7 +3970,7 @@ void SwSwitch::applyConfigImpl(
             aclNexthopHandler_.get());
 
         if (newState &&
-            !isValidStateUpdate(StateDelta(state, newState), stats())) {
+            !isValidStateUpdateDryRun(StateDelta(state, newState), stats())) {
           throw FbossError("Invalid config passed in, skipping");
         }
 
@@ -4013,6 +4036,12 @@ void SwSwitch::updateConfigAppliedInfo() {
 bool SwSwitch::isValidStateUpdate(const StateDelta& delta, SwitchStats* stats)
     const {
   return stateUpdateValidator_->isValidUpdate(delta, stats);
+}
+
+bool SwSwitch::isValidStateUpdateDryRun(
+    const StateDelta& delta,
+    SwitchStats* stats) const {
+  return stateUpdateValidator_->isValidUpdateDryRun(delta, stats);
 }
 
 AdminDistance SwSwitch::clientIdToAdminDistance(int clientId) const {
