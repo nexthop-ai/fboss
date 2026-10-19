@@ -505,7 +505,9 @@ TEST(RouteUpdateLoggerStopTest, LoggingCallsAfterStopAreNoops) {
 
   sw->stop();
 
-  EXPECT_EQ(nullptr, sw->getRouteUpdateLogger());
+  bool loggerAlive = false;
+  sw->withRouteUpdateLogger([&](auto& /* logger */) { loggerAlive = true; });
+  EXPECT_FALSE(loggerAlive);
   sw->stopLoggingRouteUpdates("fboss-agent-warmboot-BGPD");
   sw->logRouteUpdates("0.0.0.0", 0, "fboss-agent-warmboot-BGPD");
 }

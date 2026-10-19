@@ -1246,7 +1246,6 @@ cpp_unittest(
     ],
 )
 
-# bazelify: exclude
 cpp_unittest(
     name = "override_set_id_manager_test",
     srcs = [
@@ -1261,6 +1260,7 @@ cpp_unittest(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "ecmp_resource_manager_test",
     srcs = [
