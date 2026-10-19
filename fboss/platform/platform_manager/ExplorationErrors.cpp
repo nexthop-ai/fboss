@@ -54,14 +54,6 @@ bool isExpectedError(
     return true;
   }
 
-  // TODO (NOS-10979): This IDPROM is in ONIE TlvInfo format, which lacks the
-  // variant/version field read during exploration, so parsing it fails.
-  if (*platformConfig.platformName() == "M4062NHP" &&
-      errorType == ExplorationErrorType::IDPROM_READ &&
-      devicePath == "/[IDPROM]") {
-    return true;
-  }
-
   // The mezzanine EEPROMs were left unprogrammed on early production units,
   // so a read failure there is tolerated; programmed ones still parse.
   if (*platformConfig.platformName() == "M4062NHP" &&

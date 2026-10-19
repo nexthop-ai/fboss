@@ -206,9 +206,7 @@ TEST(ExplorationErrorsTest, IsExpectedErrorM4062nhpIdprom) {
   PlatformConfig m4062nhpConfig;
   m4062nhpConfig.platformName() = "M4062NHP";
 
-  // SCM IDPROM and both mezzanine EEPROMs may fail to parse
-  EXPECT_TRUE(isExpectedError(
-      m4062nhpConfig, ExplorationErrorType::IDPROM_READ, "/[IDPROM]"));
+  // Both mezzanine EEPROMs may fail to parse
   EXPECT_TRUE(isExpectedError(
       m4062nhpConfig,
       ExplorationErrorType::IDPROM_READ,
@@ -231,6 +229,10 @@ TEST(ExplorationErrorsTest, IsExpectedErrorM4062nhpIdprom) {
       m4062nhpConfig,
       ExplorationErrorType::I2C_DEVICE_CREATE,
       "/SMB_SLOT@0/[MEZZ_TOP_EEPROM]"));
+
+  // The SCM IDPROM is Meta v6 and must parse
+  EXPECT_FALSE(isExpectedError(
+      m4062nhpConfig, ExplorationErrorType::IDPROM_READ, "/[IDPROM]"));
 
   // Other devices on the same slot still count as real errors
   EXPECT_FALSE(isExpectedError(
