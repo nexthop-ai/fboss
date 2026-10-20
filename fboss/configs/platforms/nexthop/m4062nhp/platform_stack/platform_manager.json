@@ -10,8 +10,7 @@
         "busName": "Synopsys DesignWare I2C adapter",
         "address": "0x50",
         "kernelDeviceName": "24c64"
-      },
-      "pmUnitName": "SCM"
+      }
     },
     "SMB_SLOT": {
       "numOutgoingI2cBuses": 1,
