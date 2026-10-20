@@ -57,7 +57,10 @@ class SmokeTestRunner(BaseHwTestRunner):
     def _run_test_impl(self, test_context, skip_tr_xml=False):
         logger.info("Running agent smoke test")
 
-        cmd = f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
+        cmd = (
+            f"sudo rm -f {self.testlog_filepath} {self.testlog_filepath}.trimmed "
+            f"{self.testresult_filepath}"
+        )
         exit_status, output = self.ssh_client.run_cmd(cmd)
         if exit_status != 0:
             logger.error("Failed to clear remote files: %s %s", cmd, output)
@@ -69,11 +72,11 @@ class SmokeTestRunner(BaseHwTestRunner):
         smoke_status, output = self.ssh_client.run_cmd(cmd)
         logger.debug("smoke exit_status %s output %s", smoke_status, output)
 
-        for remote_path, local_path in (
-            (self.testlog_filepath, "/tmp/test.log"),
-            (self.testresult_filepath, "/tmp/tr.xml"),
+        for remote_path, local_path, fetch in (
+            (self.testlog_filepath, "/tmp/test.log", self.fetch_test_log),
+            (self.testresult_filepath, "/tmp/tr.xml", self.scp_client.get_file),
         ):
-            exit_status, output = self.scp_client.get_file(remote_path, local_path)
+            exit_status, output = fetch(remote_path, local_path)
             if exit_status != 0:
                 logger.error("Failed to fetch %s: %s", remote_path, output)
                 return False

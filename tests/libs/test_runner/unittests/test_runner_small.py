@@ -52,7 +52,10 @@ class TestSmokeTestRunner:
         assert runner._run_test_impl({}) is True
 
         cmds = [c.args[0] for c in runner.ssh_client.run_cmd.call_args_list]
-        assert cmds[0] == f"sudo rm -f {runner.testlog_filepath} {runner.testresult_filepath}"
+        assert cmds[0] == (
+            f"sudo rm -f {runner.testlog_filepath} {runner.testlog_filepath}.trimmed "
+            f"{runner.testresult_filepath}"
+        )
         assert cmds[1].startswith(f"sudo python3 {SmokeTestRunner.AGENT_SMOKE_PATH}")
         assert cmds[1].endswith(f"> {runner.testlog_filepath} 2>&1")
         fetched = [c.args for c in runner.scp_client.get_file.call_args_list]

@@ -33,6 +33,10 @@ MIN_FAILURE_DURATION_SECS = 120
 AGENT_SETTLE_TIMEOUT_SECS = 240
 AGENT_SETTLE_POLL_SECS = 5
 
+# Largest test log copied off the DUT whole. A healthy run logs tens of MB at
+# DBG4. Above this, only the head and tail are fetched.
+MAX_FETCHED_TEST_LOG_BYTES = 2 * 1024 * 1024 * 1024
+
 
 _AGENT_STOPPED_STATES = {"inactive", "failed", "deactivating"}
 _AGENT_STARTING_STATES = {"activating", "reloading"}
@@ -364,7 +368,10 @@ class BaseHwTestRunner(ABC):
         if not self.set_filters("/tmp/tests.conf", self.filter_filepath):
             return False
 
-        cmd = f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
+        cmd = (
+            f"sudo rm -f {self.testlog_filepath} {self.testlog_filepath}.trimmed "
+            f"{self.testresult_filepath}"
+        )
         exit_status, output = self.ssh_client.run_cmd(cmd)
         if exit_status != 0:
             logger.error("Failed to run command: %s %s", cmd, output)
@@ -374,7 +381,7 @@ class BaseHwTestRunner(ABC):
         logger.info("Running remote command: %s", cmd)
         test_exit_status, test_output = self.ssh_client.run_cmd(cmd)
 
-        exit_status, output = self.scp_client.get_file(self.testlog_filepath, log_local)
+        exit_status, output = self.fetch_test_log(self.testlog_filepath, log_local)
         if exit_status != 0:
             logger.error("Failed to fetch test logs: %s", output)
             return False
@@ -393,6 +400,59 @@ class BaseHwTestRunner(ABC):
             logger.error("Failed to run tests: %s", test_output)
             return False
         return True
+
+    def _remote_file_size(self, remote_path: str) -> int | None:
+        rc, output = self.ssh_client.run_cmd(f"sudo stat -c %s {remote_path}")
+        if rc != 0:
+            return None
+        try:
+            return int(_first_stdout_line(output))
+        except ValueError:
+            return None
+
+    def fetch_test_log(
+        self, remote_path: str, local_path: str, max_bytes: int = MAX_FETCHED_TEST_LOG_BYTES
+    ) -> tuple[int, str]:
+        """Copy the DUT's test log to local_path, keeping only its first and
+        last max_bytes / 2 when it is larger than max_bytes.
+
+        The trimmed copy is built next to the log on the DUT and removed after
+        the fetch. If it cannot be built (most likely a full disk), local_path
+        gets a one-line notice instead and the fetch counts as successful, so
+        the caller still collects the verdict. Returns the (exit_status,
+        output) of the copy.
+        """
+        size = self._remote_file_size(remote_path)
+        if size is None or size <= max_bytes:
+            return self.scp_client.get_file(remote_path, local_path)
+
+        keep = max_bytes // 2
+        logger.error(
+            "%s is %d bytes, over the %d-byte limit; fetching only its first and last %d bytes",
+            remote_path, size, max_bytes, keep,
+        )
+        trimmed = f"{remote_path}.trimmed"
+        notice = (
+            f"NHTESTS-RUN: {remote_path} was {size} bytes, over the {max_bytes}-byte limit; "
+            f"{size - 2 * keep} bytes omitted here"
+        )
+        cmd = (
+            f'sudo sh -c "{{ head -c {keep} {remote_path}; echo; echo \'{notice}\'; '
+            f'tail -c {keep} {remote_path}; }} > {trimmed} && chmod 644 {trimmed}"'
+        )
+        try:
+            rc, output = self.ssh_client.run_cmd(cmd)
+            if rc != 0:
+                logger.error("Failed to trim %s: %s", remote_path, output)
+                with open(local_path, "w", encoding="utf-8") as f:
+                    f.write(
+                        f"NHTESTS-RUN: {remote_path} was {size} bytes, over the "
+                        f"{max_bytes}-byte limit, and trimming it failed: {output}\n"
+                    )
+                return 0, f"failed to trim {remote_path}; wrote a notice instead"
+            return self.scp_client.get_file(trimmed, local_path)
+        finally:
+            self.ssh_client.run_cmd(f"sudo rm -f {trimmed}")
 
     def pre_test(self):
         """Wipe stale agent-ensemble state before each test.

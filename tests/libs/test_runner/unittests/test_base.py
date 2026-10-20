@@ -3,6 +3,7 @@ and its deploy-only gate, the failure-duration floor, and variant-flag
 injection. The agent-settle poll has its own module."""
 
 import os
+import shutil
 import subprocess
 from unittest.mock import MagicMock, patch
 
@@ -324,3 +325,103 @@ class TestVariantizedConfigArg:
         runner.scp_client.get_file.side_effect = fake_get
         with pytest.raises(RuntimeError, match="Unparseable JSON"):
             runner._variantized_config_arg("./share/x.json", "/home/netops/up.json")
+
+
+class TestFetchTestLog:
+    """fetch_test_log copies the log whole, or only its head and tail when it
+    is too large to land in the runner pod."""
+
+    @staticmethod
+    def _local_runner():
+        """A runner whose SSH runs the commands locally (minus sudo) and whose
+        SCP is a plain copy, so the trimming shell pipeline runs for real."""
+        runner = make_runner(SaiAgentTestRunner)
+
+        def run_cmd(cmd, *_args, **_kwargs):
+            proc = subprocess.run(
+                cmd.removeprefix("sudo "), shell=True, capture_output=True, text=True, check=False
+            )
+            return proc.returncode, proc.stdout + proc.stderr
+
+        def get_file(remote, local):
+            shutil.copyfile(remote, local)
+            return 0, "ok"
+
+        runner.ssh_client.run_cmd.side_effect = run_cmd
+        runner.scp_client.get_file.side_effect = get_file
+        return runner
+
+    def test_small_log_is_fetched_whole(self, tmp_path):
+        runner = self._local_runner()
+        remote, local = tmp_path / "test.log", tmp_path / "local.log"
+        remote.write_bytes(b"x" * 1000)
+        assert runner.fetch_test_log(str(remote), str(local), max_bytes=1000) == (0, "ok")
+        assert local.read_bytes() == b"x" * 1000
+
+    def test_large_log_keeps_head_and_tail(self, tmp_path):
+        runner = self._local_runner()
+        remote, local = tmp_path / "test.log", tmp_path / "local.log"
+        remote.write_bytes(b"h" * 600 + b"m" * 3800 + b"t" * 600)
+        assert runner.fetch_test_log(str(remote), str(local), max_bytes=1000) == (0, "ok")
+        head, notice, tail = local.read_bytes().split(b"\n")
+        assert head == b"h" * 500
+        assert notice == (
+            f"NHTESTS-RUN: {remote} was 5000 bytes, over the 1000-byte limit; "
+            "4000 bytes omitted here"
+        ).encode()
+        assert tail == b"t" * 500
+        assert not (tmp_path / "test.log.trimmed").exists()
+        assert remote.stat().st_size == 5000
+
+    def test_unknown_size_falls_back_to_plain_copy(self):
+        runner = make_runner(SaiAgentTestRunner)
+        runner.scp_client.get_file.return_value = (0, "ok")
+        assert runner.fetch_test_log("/home/netops/test.log", "/tmp/x") == (0, "ok")
+        runner.scp_client.get_file.assert_called_once_with("/home/netops/test.log", "/tmp/x")
+
+    def test_trim_failure_writes_notice_and_cleans_up(self, tmp_path):
+        """A failed trim (e.g. a full disk) still lets the caller go on to
+        fetch tr.xml, and removes any partial trimmed copy."""
+        runner = make_runner(SaiAgentTestRunner)
+        cmds = []
+
+        def ssh(cmd, *_args, **_kwargs):
+            cmds.append(cmd)
+            if cmd.startswith("sudo stat"):
+                return 0, f"{10 * 1024}\n"
+            if cmd.startswith("sudo rm"):
+                return 0, ""
+            return 1, "No space left on device"
+
+        runner.ssh_client.run_cmd.side_effect = ssh
+        local = tmp_path / "test.log"
+        rc, _ = runner.fetch_test_log("/home/netops/test.log", str(local), max_bytes=1024)
+        assert rc == 0
+        notice = local.read_text()
+        assert "was 10240 bytes, over the 1024-byte limit, and trimming it failed" in notice
+        assert "No space left on device" in notice
+        assert cmds[-1] == "sudo rm -f /home/netops/test.log.trimmed"
+        runner.scp_client.get_file.assert_not_called()
+
+    def test_verdict_is_fetched_after_trim_failure(self, tmp_path):
+        runner = make_runner(SaiAgentTestRunner)
+        runner.filter_filepath = "/home/netops/tests.conf"
+        runner.tc = {"filters": ["*"]}
+        runner.scp_client.get_file.return_value = (0, "ok")
+
+        def ssh(cmd, *_args, **_kwargs):
+            if cmd.startswith("sudo stat"):
+                return 0, f"{4 * 1024 ** 3}\n"
+            if cmd.startswith('sudo sh -c "{ head'):
+                return 1, "No space left on device"
+            return 0, "ok"
+
+        runner.ssh_client.run_cmd.side_effect = ssh
+        with patch.object(runner, "build_test_cmd", return_value="run_test.py"):
+            ok = runner._execute_test_binary(
+                "m4340nhp", str(tmp_path / "test.log"), str(tmp_path / "tr.xml"), False
+            )
+        assert ok is True
+        runner.scp_client.get_file.assert_called_once_with(
+            runner.testresult_filepath, str(tmp_path / "tr.xml")
+        )
