@@ -1560,9 +1560,6 @@
           "test_name_regex": "roundtrip.trunk_2_prod_2_trunk.cold_boot.AgentFlowletSprayTest.VerifyEcmpRandomSpray$"
         },
         {
-          "test_name_regex": "AgentHashPolarizationTest/1.verifyNoPolarization$"
-        },
-        {
           "test_name_regex": "AgentAclTableGroupTrafficTest.VerifyDscpMarkingAndTtlAclTable$"
         },
         {
@@ -2276,21 +2273,6 @@
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.AgentPortLedTest.TestLed$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -2355,6 +2337,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentRollbackTest.rollbackNeighborResolution$"
@@ -2806,21 +2803,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -2885,6 +2867,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentTrafficPfcGenTest.verifyBufferPoolWatermarks"
@@ -3332,21 +3329,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentBalancedInputModeTest.init$"
         },
         {
@@ -3417,6 +3399,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentFabricSwitchTest.verifySourceRoutedCellHandling$"
@@ -4144,21 +4141,6 @@
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.AgentPortLedTest.TestLed$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -4223,6 +4205,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentRollbackTest.rollbackNeighborResolution$"
@@ -4707,21 +4704,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -4786,6 +4768,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentMirrorOnDropDnxTest/AgentMirrorOnDropDnxTest.ConfigChangePostWarmboot/EVENTOR_PORT$"
@@ -5278,21 +5275,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentBalancedInputModeTest.init$"
         },
         {
@@ -5363,6 +5345,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentFabricSwitchTest.verifySourceRoutedCellHandling$"
@@ -6674,21 +6671,6 @@
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.AgentPortLedTest.TestLed$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -6753,6 +6735,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentRollbackTest.rollbackNeighborResolution$"
@@ -7465,21 +7462,6 @@
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.AgentPortLedTest.TestLed$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -7544,6 +7526,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentRollbackTest.rollbackNeighborResolution$"
@@ -7986,21 +7983,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -8065,6 +8047,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -8495,21 +8492,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -8574,6 +8556,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnThreshold$"
@@ -9073,21 +9070,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentBalancedInputModeTest.init$"
         },
         {
@@ -9158,6 +9140,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentFabricSwitchTest.verifySourceRoutedCellHandling$"
@@ -9594,21 +9591,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentBalancedInputModeTest.init$"
         },
         {
@@ -9679,6 +9661,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentFabricSwitchTest.verifySourceRoutedCellHandling$"
@@ -10115,21 +10112,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentBalancedInputModeTest.init$"
         },
         {
@@ -10200,6 +10182,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentFabricSwitchTest.verifySourceRoutedCellHandling$"
@@ -12667,21 +12664,6 @@
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.AgentPortLedTest.TestLed$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -12748,6 +12730,21 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
         },
         {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
+        },
+        {
           "test_name_regex": "AgentRollbackTest.rollbackNeighborResolution$"
         },
         {
@@ -12782,9 +12779,6 @@
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
-        },
-        {
-          "test_name_regex": "AgentMirrorOnDropDnxTest/AgentMirrorOnDropDnxTest.VsqReject/RECYCLE_PORT$"
         }
     ],
     "brcm/14.2.0.0_dnx_odp/14.2.0.0_dnx_odp/jericho3/mono/fap": [
@@ -13491,21 +13485,6 @@
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.AgentPortLedTest.TestLed$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -13570,6 +13549,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentRollbackTest.rollbackNeighborResolution$"
@@ -14321,21 +14315,6 @@
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.AgentPortLedTest.TestLed$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -14402,6 +14381,21 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
         },
         {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
+        },
+        {
           "test_name_regex": "AgentRollbackTest.rollbackNeighborResolution$"
         },
         {
@@ -14420,9 +14414,6 @@
           "test_name_regex": "AgentInPauseDiscardsCounterTest.*$"
         },
         {
-          "test_name_regex": "AgentVoqSwitchWithFabricPortsTest.verifyRxFifoStuckDetectedCallback$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].*$"
         },
         {
@@ -14436,6 +14427,9 @@
         },
         {
           "test_name_regex": "AgentMirrorOnDropReconfigTest.ReconfigUnderTraffic$"
+        },
+        {
+          "test_name_regex": "AgentMirrorOnDropMtuTest.MtuTrapStillWorks$"
         },
         {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
@@ -14875,21 +14869,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -14956,6 +14935,21 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
         },
         {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
+        },
+        {
           "test_name_regex": "AgentMirrorOnDropDnxTest/AgentMirrorOnDropDnxTest.MultipleEventIDs/EVENTOR_PORT$"
         },
         {
@@ -14984,9 +14978,6 @@
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
-        },
-        {
-          "test_name_regex": "AgentMirrorOnDropDnxTest/AgentMirrorOnDropDnxTest.VsqReject/RECYCLE_PORT$"
         }
     ],
     "brcm/14.2.0.0_dnx_odp/14.2.0.0_dnx_odp/jericho3/multi_switch/fap": [
@@ -15414,21 +15405,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentCoppTest/[01].L3MTUErrorToLowPriQ"
         },
         {
@@ -15495,6 +15471,21 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
         },
         {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
+        },
+        {
           "test_name_regex": "AgentMirrorOnDropDnxTest/AgentMirrorOnDropDnxTest.MultipleEventIDs/EVENTOR_PORT$"
         },
         {
@@ -15523,12 +15514,6 @@
         },
         {
           "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnThreshold$"
-        },
-        {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyPerQueueEcnMarkedStats$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -16016,21 +16001,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentBalancedInputModeTest.init$"
         },
         {
@@ -16101,6 +16071,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnThreshold$"
@@ -16549,21 +16534,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentBalancedInputModeTest.init$"
         },
         {
@@ -16634,6 +16604,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentFabricSwitchTest.verifySourceRoutedCellHandling$"
@@ -17070,21 +17055,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentBalancedInputModeTest.init$"
         },
         {
@@ -17155,6 +17125,21 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentFabricSwitchTest.verifySourceRoutedCellHandling$"
@@ -17589,21 +17574,6 @@
         },
         {
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentQueuePerHostTest.VerifyHostToQueueMappingClassIDsAfterResolve$"
@@ -19256,9 +19226,6 @@
           "test_name_regex": "roundtrip.trunk_2_prod_2_trunk.cold_boot.AgentFlowletSprayTest.VerifyEcmpRandomSpray$"
         },
         {
-          "test_name_regex": "AgentHashPolarizationTest/1.verifyNoPolarization$"
-        },
-        {
           "test_name_regex": "roundtrip.trunk_2_prod_2_trunk.warm_boot.*$"
         },
         {
@@ -20846,21 +20813,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentQueuePerHostTest.VerifyHostToQueueMappingClassIDsAfterResolve$"
         },
         {
@@ -21393,21 +21345,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-        },
-        {
           "test_name_regex": "AgentQueuePerHostTest.VerifyHostToQueueMappingClassIDsAfterResolve$"
         },
         {
@@ -21912,21 +21849,6 @@
         },
         {
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
           "test_name_regex": "AgentQueuePerHostTest.VerifyHostToQueueMappingClassIDsAfterResolve$"
@@ -22617,15 +22539,6 @@
     ],
     "chenab/2511.36/2511.36/chenab/mono": [
         {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmWredDropTest.verifyWredDrop$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySPPreemptionCPUTraffic$"
-        },
-        {
           "test_name_regex": "AgentPrbsTest.enablePortPrbs$"
         },
         {
@@ -22653,22 +22566,7 @@
           "test_name_regex": "warm_boot.AgentV6FlowLabelEcmpLoadBalancerTest.EcmpLoadBalanceFullWithFlowLabelHashFrontPanelTraffic$"
         },
         {
-          "test_name_regex": "AgentNetworkAIQosSchedulerTest.Verify.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndICP$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndNC$"
-        },
-        {
-          "test_name_regex": "AgentInNullRouteDiscardsCounterTest.nullRouteHit$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].HwMirrorLimitExceeded$"
-        },
-        {
-          "test_name_regex": "AgentEcmpTrunkTest.*$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -22694,15 +22592,6 @@
     ],
     "chenab/2511.36/2511.36/chenab/multi_switch": [
         {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmWredDropTest.verifyWredDrop$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySPPreemptionCPUTraffic$"
-        },
-        {
           "test_name_regex": "AgentPrbsTest.enablePortPrbs$"
         },
         {
@@ -22730,22 +22619,7 @@
           "test_name_regex": "warm_boot.AgentV6FlowLabelEcmpLoadBalancerTest.EcmpLoadBalanceFullWithFlowLabelHashFrontPanelTraffic$"
         },
         {
-          "test_name_regex": "AgentNetworkAIQosSchedulerTest.Verify.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndICP$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndNC$"
-        },
-        {
-          "test_name_regex": "AgentInNullRouteDiscardsCounterTest.nullRouteHit$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].HwMirrorLimitExceeded$"
-        },
-        {
-          "test_name_regex": "AgentEcmpTrunkTest.*$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -23017,15 +22891,6 @@
     ],
     "chenab/2605.37/2605.37/chenab/mono": [
         {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmWredDropTest.verifyWredDrop$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySPPreemptionCPUTraffic$"
-        },
-        {
           "test_name_regex": "AgentPrbsTest.enablePortPrbs$"
         },
         {
@@ -23053,22 +22918,7 @@
           "test_name_regex": "warm_boot.AgentV6FlowLabelEcmpLoadBalancerTest.EcmpLoadBalanceFullWithFlowLabelHashFrontPanelTraffic$"
         },
         {
-          "test_name_regex": "AgentNetworkAIQosSchedulerTest.Verify.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndICP$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndNC$"
-        },
-        {
-          "test_name_regex": "AgentInNullRouteDiscardsCounterTest.nullRouteHit$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].HwMirrorLimitExceeded$"
-        },
-        {
-          "test_name_regex": "AgentEcmpTrunkTest.*$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -23094,15 +22944,6 @@
     ],
     "chenab/2605.37/2605.37/chenab/multi_switch": [
         {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmWredDropTest.verifyWredDrop$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySPPreemptionCPUTraffic$"
-        },
-        {
           "test_name_regex": "AgentPrbsTest.enablePortPrbs$"
         },
         {
@@ -23130,22 +22971,7 @@
           "test_name_regex": "warm_boot.AgentV6FlowLabelEcmpLoadBalancerTest.EcmpLoadBalanceFullWithFlowLabelHashFrontPanelTraffic$"
         },
         {
-          "test_name_regex": "AgentNetworkAIQosSchedulerTest.Verify.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndICP$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndNC$"
-        },
-        {
-          "test_name_regex": "AgentInNullRouteDiscardsCounterTest.nullRouteHit$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].HwMirrorLimitExceeded$"
-        },
-        {
-          "test_name_regex": "AgentEcmpTrunkTest.*$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -23597,6 +23423,12 @@
           "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
         },
         {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
           "test_name_regex": "AgentCoppTest/[01].DstIpNetworkControlDscpToHighPriQ$"
         },
         {
@@ -24003,12 +23835,6 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.*$"
@@ -24181,6 +24007,12 @@
           "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
         },
         {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
           "test_name_regex": "AgentCoppTest/[01].DstIpNetworkControlDscpToHighPriQ$"
         },
         {
@@ -24589,12 +24421,6 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.*$"
         },
         {
@@ -24676,6 +24502,9 @@
         },
         {
           "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySingleWRRAndNC$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
         },
         {
           "test_name_regex": "AgentAclAndDscpQueueMappingTest.VerifyAclAndQosMap$"
@@ -24804,9 +24633,6 @@
           "test_name_regex": "AgentMirrorOnDropStatelessTest.MirrorOnDropWithSampling$"
         },
         {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
         },
         {
@@ -24814,6 +24640,12 @@
         },
         {
           "test_name_regex": "AgentQphRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "AgentMacLearningMacMoveTest.*$"
@@ -25137,12 +24969,6 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
           "test_name_regex": "warm_boot.AgentHwLinkDebounceTest.Link(Up|Down)DebounceRetriggerCount$"
         }
     ],
@@ -25170,6 +24996,12 @@
         },
         {
           "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "AgentCoppTest/[01].DstIpNetworkControlDscpToHighPriQ$"
@@ -25580,12 +25412,6 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.*$"
         },
         {
@@ -25688,6 +25514,12 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "AgentMacLearningMacMoveTest.*$"
@@ -26009,12 +25841,6 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         }
     ],
     "leaba/25.5.4210/25.5.4210/graphene200/multi_switch": [
@@ -26145,9 +25971,6 @@
           "test_name_regex": "AgentMirrorOnDropStatelessTest.MirrorOnDropWithSampling$"
         },
         {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
         },
         {
@@ -26155,6 +25978,12 @@
         },
         {
           "test_name_regex": "AgentQphRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "AgentMacLearningMacMoveTest.*$"
@@ -26478,13 +26307,10 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
           "test_name_regex": "warm_boot.AgentHwLinkDebounceTest.Link(Up|Down)DebounceRetriggerCount$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
         },
         {
           "test_name_regex": "roundtrip.(preprod_2_trunk_2_preprod|trunk_2_preprod_2_trunk).*AgentTrunkMixedSpeedTest.LongHaulPortSpeedsAndLags$"
@@ -26618,9 +26444,6 @@
           "test_name_regex": "AgentMirrorOnDropStatelessTest.MirrorOnDropWithSampling$"
         },
         {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
         },
         {
@@ -26628,6 +26451,12 @@
         },
         {
           "test_name_regex": "AgentQphRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "AgentMacLearningMacMoveTest.*$"
@@ -26951,16 +26780,13 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
           "test_name_regex": "warm_boot.AgentHwLinkDebounceTest.Link(Up|Down)DebounceRetriggerCount$"
         },
         {
           "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnThreshold$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
         }
     ],
     "leaba/26.2.4210/26.2.4210/graphene200/multi_switch/rbb": [
@@ -26968,6 +26794,9 @@
           "test_name_regex": "AgentSrv6MidpointTest/[01].dropPacketUASidIsLastSid$"
         },
         {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
           "test_name_regex": "AgentAclAndDscpQueueMappingTest.VerifyAclAndQosMap$"
         },
         {
@@ -27094,9 +26923,6 @@
           "test_name_regex": "AgentMirrorOnDropStatelessTest.MirrorOnDropWithSampling$"
         },
         {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
         },
         {
@@ -27104,6 +26930,12 @@
         },
         {
           "test_name_regex": "AgentQphRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "AgentMacLearningMacMoveTest.*$"
@@ -27427,16 +27259,13 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
           "test_name_regex": "warm_boot.AgentHwLinkDebounceTest.Link(Up|Down)DebounceRetriggerCount$"
         },
         {
           "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnThreshold$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
         }
     ],
     "leaba/26.5.5210/26.5.5210/graphene200/multi_switch/rbb": [
@@ -27444,6 +27273,9 @@
           "test_name_regex": "AgentSrv6MidpointTest/[01].dropPacketUASidIsLastSid$"
         },
         {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
           "test_name_regex": "AgentAclAndDscpQueueMappingTest.VerifyAclAndQosMap$"
         },
         {
@@ -27570,9 +27402,6 @@
           "test_name_regex": "AgentMirrorOnDropStatelessTest.MirrorOnDropWithSampling$"
         },
         {
-          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
-        },
-        {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
         },
         {
@@ -27580,6 +27409,12 @@
         },
         {
           "test_name_regex": "AgentQphRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "AgentMacLearningMacMoveTest.*$"
@@ -27901,12 +27736,6 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         },
         {
           "test_name_regex": "warm_boot.AgentHwLinkDebounceTest.Link(Up|Down)DebounceRetriggerCount$"
@@ -28238,12 +28067,6 @@
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentHashPolarizationTest.*$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
         },
         {
@@ -28260,6 +28083,12 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         }
     ],
     "leaba/26.7.5211/26.7.5211/palladium2/simulator/mono": [
@@ -28591,12 +28420,6 @@
           "test_name_regex": "AgentTrunkTest.TrunkPortStats$"
         },
         {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
-        },
-        {
-          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
-        },
-        {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
         },
         {
@@ -28610,18 +28433,15 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentTrunkTest.TrunkPortStats$"
+        },
+        {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
         }
     ],
     "nvda/2511.36/2511.36/spectrum4/mono": [
-        {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmWredDropTest.verifyWredDrop$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySPPreemptionCPUTraffic$"
-        },
         {
           "test_name_regex": "AgentPrbsTest.enablePortPrbs$"
         },
@@ -28650,22 +28470,7 @@
           "test_name_regex": "warm_boot.AgentV6FlowLabelEcmpLoadBalancerTest.EcmpLoadBalanceFullWithFlowLabelHashFrontPanelTraffic$"
         },
         {
-          "test_name_regex": "AgentNetworkAIQosSchedulerTest.Verify.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndICP$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndNC$"
-        },
-        {
-          "test_name_regex": "AgentInNullRouteDiscardsCounterTest.nullRouteHit$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].HwMirrorLimitExceeded$"
-        },
-        {
-          "test_name_regex": "AgentEcmpTrunkTest.*$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -28691,15 +28496,6 @@
     ],
     "nvda/2511.36/2511.36/spectrum4/multi_switch": [
         {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmWredDropTest.verifyWredDrop$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySPPreemptionCPUTraffic$"
-        },
-        {
           "test_name_regex": "AgentPrbsTest.enablePortPrbs$"
         },
         {
@@ -28727,22 +28523,7 @@
           "test_name_regex": "warm_boot.AgentV6FlowLabelEcmpLoadBalancerTest.EcmpLoadBalanceFullWithFlowLabelHashFrontPanelTraffic$"
         },
         {
-          "test_name_regex": "AgentNetworkAIQosSchedulerTest.Verify.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndICP$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndNC$"
-        },
-        {
-          "test_name_regex": "AgentInNullRouteDiscardsCounterTest.nullRouteHit$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].HwMirrorLimitExceeded$"
-        },
-        {
-          "test_name_regex": "AgentEcmpTrunkTest.*$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -29014,15 +28795,6 @@
     ],
     "nvda/2605.37/2605.37/spectrum4/mono": [
         {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmWredDropTest.verifyWredDrop$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySPPreemptionCPUTraffic$"
-        },
-        {
           "test_name_regex": "AgentPrbsTest.enablePortPrbs$"
         },
         {
@@ -29050,22 +28822,7 @@
           "test_name_regex": "warm_boot.AgentV6FlowLabelEcmpLoadBalancerTest.EcmpLoadBalanceFullWithFlowLabelHashFrontPanelTraffic$"
         },
         {
-          "test_name_regex": "AgentNetworkAIQosSchedulerTest.Verify.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndICP$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndNC$"
-        },
-        {
-          "test_name_regex": "AgentInNullRouteDiscardsCounterTest.nullRouteHit$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].HwMirrorLimitExceeded$"
-        },
-        {
-          "test_name_regex": "AgentEcmpTrunkTest.*$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"
@@ -29091,15 +28848,6 @@
     ],
     "nvda/2605.37/2605.37/spectrum4/multi_switch": [
         {
-          "test_name_regex": "AgentAqmEcnOnlyTest.verifyEcnTrafficNoDrop$"
-        },
-        {
-          "test_name_regex": "AgentAqmWredDropTest.verifyWredDrop$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifySPPreemptionCPUTraffic$"
-        },
-        {
           "test_name_regex": "AgentPrbsTest.enablePortPrbs$"
         },
         {
@@ -29127,22 +28875,7 @@
           "test_name_regex": "warm_boot.AgentV6FlowLabelEcmpLoadBalancerTest.EcmpLoadBalanceFullWithFlowLabelHashFrontPanelTraffic$"
         },
         {
-          "test_name_regex": "AgentNetworkAIQosSchedulerTest.Verify.*$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndICP$"
-        },
-        {
-          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRAndNC$"
-        },
-        {
-          "test_name_regex": "AgentInNullRouteDiscardsCounterTest.nullRouteHit$"
-        },
-        {
           "test_name_regex": "AgentHwMirrorTest/[01].HwMirrorLimitExceeded$"
-        },
-        {
-          "test_name_regex": "AgentEcmpTrunkTest.*$"
         },
         {
           "test_name_regex": "AgentAsicDefaultProgrammingTest.verifyDefaultProgramming$"

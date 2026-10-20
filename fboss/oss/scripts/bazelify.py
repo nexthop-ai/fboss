@@ -139,6 +139,8 @@ FBSOURCE_THIRD_PARTY_MAP = {
     "fbsource//third-party/exprtk": "@exprtk//:exprtk",
     "fbsource//third-party/curl": "@libcurl//:libcurl",
     "fbsource//third-party/libpcap": None,
+    # Upstream spells folly deps as fbsource//xplat/folly:* (was //folly:*)
+    "fbsource//xplat/folly": "@folly//:folly",
 }
 
 # Thrift sub-target suffixes that should map back to the base thrift target
