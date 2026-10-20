@@ -300,14 +300,10 @@ bool Jericho3Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
     case HwAsic::Feature::MY_MAC:
     case HwAsic::Feature::ISOLATION_GROUP:
-<<<<<<< HEAD
+    case HwAsic::Feature::CSIG:
     case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::SYSTEM_PORT_CORE_INDEX_FROM_PORT:
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
-||||||| db68cb3d89
-=======
-    case HwAsic::Feature::CSIG:
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
     case HwAsic::Feature::ACL_ENTRY_OUT_PORT_QUALIFIER:
     case HwAsic::Feature::XPHY_SERDES_TX_FIR_POST3:
       return false;

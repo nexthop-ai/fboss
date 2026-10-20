@@ -644,7 +644,10 @@ class HwAsic {
     // SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_DROP_PKTS). Broadcom
     // Tomahawk 5/6 with XGS SDK 13.3+.
     HW_PROTECTION_SWITCHOVER_COUNTERS,
-<<<<<<< HEAD
+    // PBR ACL table byte counters, for ASICs without ACL_BYTE_COUNTER.
+    PBR_ACL_BYTE_COUNTER,
+    // CSIG (Congestion Signaling) per-port egress tag action and link locator
+    CSIG,
     // The adapter attaches a default serdes object to every port it creates
     // and rejects a second create_port_serdes; the agent adopts that object
     PORT_SERDES_CREATED_WITH_PORT,
@@ -652,13 +655,6 @@ class HwAsic {
     // port names the core and core port index read back from the port, not
     // the platform mapping's prediction
     SYSTEM_PORT_CORE_INDEX_FROM_PORT,
-||||||| db68cb3d89
-=======
-    // PBR ACL table byte counters, for ASICs without ACL_BYTE_COUNTER.
-    PBR_ACL_BYTE_COUNTER,
-    // CSIG (Congestion Signaling) per-port egress tag action and link locator
-    CSIG,
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
   };
 
   enum class AsicMode {

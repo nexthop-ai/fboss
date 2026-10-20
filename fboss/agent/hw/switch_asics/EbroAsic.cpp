@@ -282,13 +282,9 @@ bool EbroAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::RX_PACKET_TYPE:
     case HwAsic::Feature::MY_MAC:
     case HwAsic::Feature::ISOLATION_GROUP:
-<<<<<<< HEAD
+    case HwAsic::Feature::CSIG:
     case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::SYSTEM_PORT_CORE_INDEX_FROM_PORT:
-||||||| db68cb3d89
-=======
-    case HwAsic::Feature::CSIG:
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
     case HwAsic::Feature::SAI_ACL_MPLS_LABEL0_TTL:
     case HwAsic::Feature::SAI_MPLS_NEXTHOP_OUTSEG_TYPE:
     case HwAsic::Feature::ACL_ENTRY_OUT_PORT_QUALIFIER:
