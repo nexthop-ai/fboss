@@ -1206,5 +1206,40 @@ class TestRunGetdepsPrintFunctions(unittest.TestCase):
         self.assertIn("\033[91m", captured_err.getvalue())
 
 
+class TestRunGetdepsBenchmarkWerror(unittest.TestCase):
+    """The clang setup turns off google benchmark's own -Werror, once."""
+
+    def setUp(self):
+        run_getdeps_path = str(Path(__file__).resolve().parent / "run-getdeps.py")
+        spec = importlib.util.spec_from_file_location(
+            "run_getdeps_test", run_getdeps_path
+        )
+        self.rg = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.rg)
+
+    def test_adds_define_once(self):
+        with tempfile.TemporaryDirectory() as root:
+            manifests = Path(root) / "build" / "fbcode_builder" / "manifests"
+            manifests.mkdir(parents=True)
+            manifest = manifests / "benchmark"
+            manifest.write_text(
+                "[build]\nbuilder = cmake\n\n"
+                "[cmake.defines]\nBENCHMARK_ENABLE_TESTING=OFF\n"
+            )
+            with (
+                patch.dict(os.environ, {"FBOSS_ROOT": root}),
+                patch("sys.stderr", io.StringIO()),
+            ):
+                self.rg._patch_manifest_benchmark_disable_werror()
+                self.rg._patch_manifest_benchmark_disable_werror()
+
+            self.assertEqual(
+                "[build]\nbuilder = cmake\n\n"
+                "[cmake.defines]\nBENCHMARK_ENABLE_WERROR=OFF\n"
+                "BENCHMARK_ENABLE_TESTING=OFF\n",
+                manifest.read_text(),
+            )
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

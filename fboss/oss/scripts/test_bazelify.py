@@ -628,6 +628,26 @@ class TestResolveAcceptsBuckTarget(unittest.TestCase):
         self.assertTrue(result is None or isinstance(result, str))
 
 
+class TestResolveFbsourceFolly(unittest.TestCase):
+    """fbsource//xplat/folly:* deps resolve to the folly prebuilt, same as
+    //folly:* deps."""
+
+    def test_xplat_folly_deps_resolve_to_folly(self):
+        target = BuckTarget(
+            name="mylib", rule_type="cpp_library", buck_path="//fboss/agent"
+        )
+        resolver = DepResolver(
+            prebuilt_deps={"folly": _make_static_dep("folly")}, all_targets={}
+        )
+        for dep in (
+            "fbsource//xplat/folly:conv",
+            "fbsource//xplat/folly/logging:logging",
+            "//folly:conv",
+        ):
+            with self.subTest(dep=dep):
+                self.assertEqual("@folly//:folly", resolver.resolve(dep, target))
+
+
 # ---------------------------------------------------------------------------
 # End-to-end test: cc_test gets a working main() via //fboss/util/oss:test_main
 # ---------------------------------------------------------------------------

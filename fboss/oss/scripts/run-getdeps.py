@@ -412,6 +412,29 @@ def _patch_manifests_disable_binutils():
             print_info(f"Patching manifest {manifest} to disable binutils")
 
 
+def _patch_manifest_benchmark_disable_werror():
+    """Build google benchmark without its own -Werror when using clang.
+
+    benchmark 1.9.x adds -Wsign-conversion/-Wold-style-cast with -Werror, which
+    clang reports inside glibc's CPU_ISSET macro in src/sysinfo.cc.
+    """
+    manifest = path_to("build", "fbcode_builder", "manifests", "benchmark")
+    if not os.path.isfile(manifest):
+        return
+    with open(manifest) as f:
+        content = f.read()
+    if "BENCHMARK_ENABLE_WERROR" in content or "\n[cmake.defines]\n" not in content:
+        return
+    with open(manifest, "w") as f:
+        f.write(
+            content.replace(
+                "\n[cmake.defines]\n",
+                "\n[cmake.defines]\nBENCHMARK_ENABLE_WERROR=OFF\n",
+            )
+        )
+    print_info(f"Patching manifest {manifest} to disable -Werror")
+
+
 def setup_clang_environment(toolchain_info, repo_root=None):
     """
     Set up the environment for building with clang.
@@ -478,6 +501,7 @@ def setup_clang_environment(toolchain_info, repo_root=None):
 
     # Make sure we don't install binutils when we use clang.
     _patch_manifests_disable_binutils()
+    _patch_manifest_benchmark_disable_werror()
 
 
 def _libsai_manifest_path():
