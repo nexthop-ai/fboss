@@ -30,19 +30,11 @@ cpp_library(
         "PlatformDescriptor.h",
     ],
     deps = [
+        "fbsource//xplat/folly:conv",
         "fbsource//xplat/folly:file_util",
         "fbsource//xplat/folly/logging:logging",
         ":platform_mapping_utils",
         "//fboss/agent:fboss-error",
-<<<<<<< HEAD
-        "//folly:conv",
-        "//folly:file_util",
-        "//folly/logging:logging",
-||||||| db68cb3d89
-        "//folly:file_util",
-        "//folly/logging:logging",
-=======
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
         "//thrift/lib/cpp2:field_ref",
         "//thrift/lib/cpp2/protocol:protocol",
     ],

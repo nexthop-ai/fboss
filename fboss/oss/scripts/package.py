@@ -411,18 +411,10 @@ def _build_target(target: str, build_dir: pathlib.Path):
         test_extras = PLATFORM_TEST_EXTRA
     elif target == "agent-benchmarks":
         bins = AGENT_BENCHMARK_BINARIES
-<<<<<<< HEAD
-        extras = {OSS_DIR / "hw_benchmark_tests": "share/hw_benchmark_tests"}
-||||||| db68cb3d89
-        extras = {
-            OSS_DIR / "hw_benchmark_tests": "share/hw_benchmark_tests",
-        }
-=======
         extras = {
             OSS_DIR / "hw_benchmark_tests": "share/hw_benchmark_tests",
             **get_forwarding_stack_config_paths(PLATFORM_CONFIGS_DIR),
         }
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
     elif target == "bgp":
         bins = BGP_BINARIES
         libs = BGP_LIBS + COMMON_LIBS

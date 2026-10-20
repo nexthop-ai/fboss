@@ -314,17 +314,11 @@ cpp_library(
     exported_deps = [
         "fbsource//third-party/exprtk:exprtk",
         "fbsource//third-party/re2:re2",
+        "fbsource//xplat/folly:file_util",
+        "fbsource//xplat/folly:string",
         "fbsource//xplat/folly/logging:logging",
         ":platform_manager_config-cpp2-types",
         "//fboss/lib:gpiod_line",
-<<<<<<< HEAD
-        "//folly:file_util",
-        "//folly:string",
-        "//folly/logging:logging",
-||||||| db68cb3d89
-        "//folly/logging:logging",
-=======
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
     ],
     exported_external_deps = [
         ("libgpiod", None, "gpiod"),

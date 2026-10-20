@@ -44,16 +44,9 @@ class PackageTest(unittest.TestCase):
     @mock.patch.object(package, "get_forwarding_stack_config_paths", return_value={})
     @mock.patch.object(package, "_find_getdeps_libs", return_value={})
     def test_forwarding_package_includes_platform_descriptors(
-<<<<<<< HEAD
-        self, _mock_find_getdeps_libs: mock.MagicMock
-||||||| db68cb3d89
-        self,
-        _mock_find_getdeps_libs: mock.MagicMock,
-=======
         self,
         _mock_find_getdeps_libs: mock.MagicMock,
         _mock_get_forwarding_stack_config_paths: mock.MagicMock,
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
     ) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             platforms_dir = pathlib.Path(temp_dir) / "platforms"
@@ -119,9 +112,7 @@ class PackageTest(unittest.TestCase):
             self.assertNotIn(config_path, production_files)
             self.assertEqual(archive_path, test_files[config_path])
 
-    def test_agent_benchmark_package_includes_generated_platform_configs(
-        self,
-    ) -> None:
+    def test_agent_benchmark_package_includes_generated_platform_configs(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             platforms_dir = pathlib.Path(temp_dir) / "platforms"
             config_path = (

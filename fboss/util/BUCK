@@ -213,13 +213,7 @@ cpp_library(
     deps = [
         "fbsource//xplat/folly:file_util",
         "//fboss/agent/hw:hardware_stats-cpp2-types",
-<<<<<<< HEAD
         "//fboss/qsfp_service:sdk_dump_path",
-        "//folly:file_util",
-||||||| db68cb3d89
-        "//folly:file_util",
-=======
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
         "//thrift/lib/cpp2/protocol:protocol",
     ],
     exported_deps = [
