@@ -23,9 +23,13 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/fmt:fmt",
+<<<<<<< HEAD
         "//fboss/platform/config_lib:config_lib",
+||||||| db68cb3d89
+=======
+        "fbsource//xplat/folly/logging:logging",
+>>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
         "//fboss/platform/platform_manager:config_validator",
-        "//folly/logging:logging",
         "//thrift/lib/cpp2/protocol:protocol",
     ],
 )
@@ -39,14 +43,14 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/fmt:fmt",
+        "fbsource//xplat/folly/hash:hash",
+        "fbsource//xplat/folly/testing:test_util",
         "//fboss/platform/config_lib:config_lib",
         "//fboss/platform/config_lib:mock_config_lib",
         "//fboss/platform/helpers:init",
         "//fboss/platform/helpers:mock_platform_fs_utils",
         "//fboss/platform/helpers:platform_name_lib",
         "//fboss/platform/platform_manager:config_utils",
-        "//folly/hash:hash",
-        "//folly/testing:test_util",
         "//thrift/lib/cpp2/protocol:protocol",
     ],
 )
@@ -70,11 +74,11 @@ cpp_unittest(
     ],
     network_access = network_access_utils.none(),
     deps = [
+        "fbsource//xplat/folly:file_util",
+        "fbsource//xplat/folly/testing:test_util",
         "//fb303:service_data",
         "//fboss/platform/helpers:platform_fs_utils",
         "//fboss/platform/platform_manager:platform_explorer",
-        "//folly:file_util",
-        "//folly/testing:test_util",
     ],
 )
 
@@ -176,10 +180,10 @@ cpp_unittest(
         "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/googletest:gmock",
         "fbsource//third-party/range-v3:range-v3",
+        "fbsource//xplat/folly:file_util",
+        "fbsource//xplat/folly/testing:test_util",
         "//fb303:service_data",
         "//fboss/platform/platform_manager:pkg_manager",
-        "//folly:file_util",
-        "//folly/testing:test_util",
         "//thrift/lib/cpp2/protocol:protocol",
     ],
 )
@@ -205,8 +209,8 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     supports_static_listing = False,
     deps = [
+        "fbsource//xplat/folly:file_util",
+        "fbsource//xplat/folly/testing:test_util",
         "//fboss/platform/platform_manager:platform_manager_handler",
-        "//folly:file_util",
-        "//folly/testing:test_util",
     ],
 )
