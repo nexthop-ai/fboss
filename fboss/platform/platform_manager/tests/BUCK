@@ -23,12 +23,8 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/fmt:fmt",
-<<<<<<< HEAD
-        "//fboss/platform/config_lib:config_lib",
-||||||| db68cb3d89
-=======
         "fbsource//xplat/folly/logging:logging",
->>>>>>> 0aa803b09c383b5954aa0ee67fe2fef2b9a3f9b5
+        "//fboss/platform/config_lib:config_lib",
         "//fboss/platform/platform_manager:config_validator",
         "//thrift/lib/cpp2/protocol:protocol",
     ],
