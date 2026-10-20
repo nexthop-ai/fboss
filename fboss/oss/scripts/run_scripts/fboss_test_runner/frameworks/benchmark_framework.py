@@ -275,33 +275,29 @@ class BenchmarkFramework:
 
     @staticmethod
     def _read_stream(
-        stream: Iterable[str], lines_list: list[str] | None = None, prefix: str = ""
+        stream: Iterable[str], lines_list: list[str], prefix: str = ""
     ) -> None:
-        """Read lines from a stream, echo in real-time, and collect them.
-
-        ``lines_list`` may be None to echo without retaining the output, for
-        streams (e.g. diagnostics) that are only ever read back from the log.
-        """
+        """Read lines from a stream, echo in real-time, and collect them."""
         for line in stream:
             print(f"{prefix}{line}", end="", flush=True)
-            if lines_list is not None:
-                lines_list.append(line)
+            lines_list.append(line)
 
     def _capture_subprocess(self, cmd: list[str], timeout: int) -> tuple[int, bool]:
         """Run cmd, tee its output to the benchmark log in real time, and return
         (returncode, timed_out).
 
         Output is streamed via ``print`` rather than inherited fds so it
-        interleaves with the framework's own output instead of racing it.
+        interleaves with the framework's own output instead of racing it. It is
+        only read back from the log, so the collected lines are discarded.
         """
         process = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
         stdout_thread = threading.Thread(
-            target=self._read_stream, args=(process.stdout,)
+            target=self._read_stream, args=(process.stdout, [])
         )
         stderr_thread = threading.Thread(
-            target=self._read_stream, args=(process.stderr, None, "[stderr] ")
+            target=self._read_stream, args=(process.stderr, [], "[stderr] ")
         )
         stdout_thread.start()
         stderr_thread.start()
