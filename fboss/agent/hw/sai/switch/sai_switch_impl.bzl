@@ -114,6 +114,7 @@ def sai_switch_impl():
         hdrs = native.glob(["*.h"]),
         copts = _SAI_COPTS,
         deps = [
+            ":drop_reason_utils",
             ":if",
             "//fboss/agent:core",
             "//fboss/agent:fboss-error",
