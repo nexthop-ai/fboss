@@ -97,14 +97,13 @@ TEST_F(BspPlatformMapTest, checkNumPimTransceivers) {
   EXPECT_EQ(
       *nh4010fBspPlatformMap.getLedMapping(1, 64).yellowPath(),
       "/sys/class/leds/port64_led1:amber:status");
-  // fboss_bsp_kmods exposes xcvr_reset active high (1 = held in reset).
   for (int tcvrId = 1; tcvrId <= 64; ++tcvrId) {
     EXPECT_EQ(
         *nh4010fBspPlatformMap.getTcvrMapping(tcvrId)
              .accessControl()
              ->reset()
              ->resetHoldHi(),
-        1);
+        0);
   }
   // Check Nh4220f
   auto nh4220fBspPlatformMap = Nh4220fBspPlatformMapping();
