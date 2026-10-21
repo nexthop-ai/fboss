@@ -452,6 +452,7 @@ _NH_FBOSS_BROADCOM_XGS_DEPS = [
     "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
     "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
     "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
+    "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
     "fboss_platform_stack.tar",
     "//BGP:distro_bgpd.rpm",
     "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
@@ -462,6 +463,7 @@ _NH_FBOSS_BROADCOM_XGS_BUILD_INFO = {
     "image_type": "broadcom_xgs",
     "keys": [
         "GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS",
+        "GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS",
         "GIT_COMMIT_NHBROADCOMSAI_FBOSS_XGS",
     ],
 }
@@ -518,7 +520,7 @@ _NH_FBOSS_BROADCOM_TH6_DEPS = [
     "distro_kernel_6.11.tar",
     "//nhbroadcomsai/fboss-th6:distro_sai.tar",
     "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
-    "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
+    "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
     "fboss_platform_stack.tar",
     "//BGP:distro_bgpd.rpm",
     "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
@@ -528,7 +530,7 @@ _NH_FBOSS_BROADCOM_TH6_DEPS = [
 _NH_FBOSS_BROADCOM_TH6_BUILD_INFO = {
     "image_type": "broadcom_th6",
     "keys": [
-        "GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS",
+        "GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS",
         "GIT_COMMIT_NHBROADCOMSAI_FBOSS_TH6",
     ],
 }
@@ -585,7 +587,7 @@ _NH_FBOSS_BROADCOM_DNX_DEPS = [
     "distro_kernel_6.11.tar",
     "//nhbroadcomsai/fboss-dnx:distro_sai_dnx.tar",
     "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
-    "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
+    "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
     "fboss_platform_stack.tar",
     "//BGP:distro_bgpd.rpm",
     "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
@@ -595,7 +597,7 @@ _NH_FBOSS_BROADCOM_DNX_DEPS = [
 _NH_FBOSS_BROADCOM_DNX_BUILD_INFO = {
     "image_type": "broadcom_dnx",
     "keys": [
-        "GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS",
+        "GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS",
         "GIT_COMMIT_NHBROADCOMSAI_FBOSS_DNX",
     ],
 }

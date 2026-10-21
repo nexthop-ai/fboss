@@ -16,6 +16,7 @@
     "download": "file:.nh-broadcom-xgs/fboss_platform_stack.tar"
   },
   "bsps": [
+    { "download": "file:.nh-broadcom-xgs/distro_nexthop_bsp.tar" },
     { "download": "file:.nh-broadcom-xgs/distro_fboss_bsp.tar" }
   ],
   "npu_sai": {
