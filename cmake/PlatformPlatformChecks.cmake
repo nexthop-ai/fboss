@@ -57,14 +57,8 @@ add_library(platform_checks
   fboss/platform/platform_checks/checks/PciDeviceCheck.cpp
   fboss/platform/platform_checks/checks/PowerCycleChecks.cpp
   fboss/platform/platform_checks/checks/PowerResetCheck.cpp
-<<<<<<< HEAD
   fboss/platform/platform_checks/checks/KernelVersionCheck.cpp
-||||||| 0aa803b09c
-  # Not including KernelVersionCheck since it relies on internal tools
-=======
   fboss/platform/platform_checks/checks/SolConsoleCheck.cpp
-  # Not including KernelVersionCheck since it relies on internal tools
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
   fboss/platform/platform_checks/checks/i801SmbusTimeoutCheck.cpp
 )
 

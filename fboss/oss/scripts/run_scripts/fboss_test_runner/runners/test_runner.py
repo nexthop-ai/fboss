@@ -13,15 +13,9 @@ import threading
 import time
 import xml.etree.ElementTree as ET
 from argparse import ArgumentParser, Namespace
-<<<<<<< HEAD
+from collections.abc import Collection
 from contextlib import suppress
 from datetime import datetime, timezone
-||||||| 0aa803b09c
-from datetime import datetime
-=======
-from collections.abc import Collection
-from datetime import datetime
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
 from pathlib import Path
 
 from nh_test_xml_utils import (
@@ -99,11 +93,7 @@ from fboss_test_runner.runners.utils import (
     RMA_SHOWTECH_SINCE_MARGIN_S,
     test_matches_any_regex,
 )
-<<<<<<< HEAD
 from fboss_test_runner.services.fboss_agent_utils import FBOSS_AGENT_VOLATILE_STATE_DIR
-||||||| 0aa803b09c
-from npu_sdk_utils import materialize_agent_config, NPU_SDK_METADATA_FILENAME
-=======
 from fboss_test_runner.tier_selection import (
     load_test_metadata_rules,
     parse_test_tier,
@@ -112,8 +102,6 @@ from fboss_test_runner.tier_selection import (
     TestMetadataError,
     TestTier,
 )
-from npu_sdk_utils import materialize_agent_config, NPU_SDK_METADATA_FILENAME
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
 
 _YELLOW = "\033[1;33m"
 _RED = "\033[1;31m"
@@ -581,9 +569,7 @@ class TestRunner(abc.ABC):
             raise TestRunnerUsageError(str(error)) from error
 
         return select_test_patterns_for_tier(
-            rules,
-            tier,
-            available_capabilities=self._get_available_test_capabilities(),
+            rules, tier, available_capabilities=self._get_available_test_capabilities()
         )
 
     def _filter_tests_for_tier(self, tests: list[str], tier: TestTier) -> list[str]:

@@ -12,12 +12,8 @@ per-family behavior in test_sai_benchmark_suite.py / test_qsfp_benchmark_suite.p
 from unittest.mock import Mock, patch
 
 import pytest
-<<<<<<< HEAD
 
-||||||| 0aa803b09c
-=======
 from fboss_test_runner.errors import TestRunnerUsageError
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
 from fboss_test_runner.frameworks.qsfp_benchmark_suite import QsfpBenchmarkSuite
 from fboss_test_runner.frameworks.sai_benchmark_suite import SaiBenchmarkSuite
 from fboss_test_runner.main import _build_parser

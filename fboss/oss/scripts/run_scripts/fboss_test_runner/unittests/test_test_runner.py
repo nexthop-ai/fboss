@@ -9,17 +9,12 @@ by _get_tests_to_run via args.filter_file."""
 import json
 import os
 import tempfile
-<<<<<<< HEAD
 import xml.etree.ElementTree as ET
-from unittest.mock import ANY, MagicMock, patch
-||||||| 0aa803b09c
-from unittest.mock import MagicMock, patch
-=======
 from argparse import Namespace
-from unittest.mock import MagicMock, patch
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
+from unittest.mock import ANY, MagicMock, patch
 
 import pytest
+
 from fboss_test_runner.errors import TestRunnerUsageError
 from fboss_test_runner.result_types import GtestResult, GtestStatus, RunOutcome
 from fboss_test_runner.runners.utils import load_from_file
@@ -105,7 +100,6 @@ class TestLoadFromFile:
             os.unlink(temp_file)
 
 
-<<<<<<< HEAD
 def _make_capture_writing(stdout_bytes: bytes, runner, xml_to_write: bytes | None):
     """Build a fake `_capture_subprocess` that optionally writes a gtest XML
     to runner.TESTRESULT_CURRENT_RUN_FILE and returns
@@ -128,8 +122,8 @@ _STUB_GTEST_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
   </testsuite>
 </testsuites>
 """
-||||||| 0aa803b09c
-=======
+
+
 class TestTierFilterComposition:
     def test_prepare_tests_applies_tier_filter_after_runner_filter(self, runner):
         args = Namespace(tier="0")
@@ -158,10 +152,7 @@ class TestTierFilterComposition:
 
     @pytest.mark.parametrize(
         "requested_tier,expected",
-        [
-            (TestTier.T0, ["Suite.B", "Suite.A"]),
-            (TestTier.T1, []),
-        ],
+        [(TestTier.T0, ["Suite.B", "Suite.A"]), (TestTier.T1, [])],
     )
     def test_uniform_tier_filters_without_metadata(
         self, runner, requested_tier, expected
@@ -205,11 +196,7 @@ class TestTierFilterComposition:
                 }
             )
         )
-        candidates = [
-            "Unrelated.Test",
-            "CapableTest.Case",
-            "EmptyTest.CheckInit",
-        ]
+        candidates = ["Unrelated.Test", "CapableTest.Case", "EmptyTest.CheckInit"]
         with (
             patch.object(runner, "_get_tier_metadata_file", return_value=str(metadata)),
             patch.object(
@@ -259,7 +246,6 @@ class TestTierFilterComposition:
             assert runner._filter_tests_for_tier(["Suite.Test"], TestTier.T0) == []
 
         expand_patterns.assert_not_called()
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
 
 
 class TestRunTestGtestFallback:

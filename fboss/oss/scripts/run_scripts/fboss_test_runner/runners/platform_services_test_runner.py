@@ -10,18 +10,12 @@ from typing import ClassVar
 from fboss_test_runner.constants import SUB_ARG_PLATFORM_MANAGER_HW_TEST
 from fboss_test_runner.reporters.json_reporter import JsonReporter
 from fboss_test_runner.result_types import GtestResult, TestExecutionResult
-<<<<<<< HEAD
 from fboss_test_runner.runners.test_runner import (
     disable_services,
     enable_services,
     TestRunner,
 )
-||||||| 0aa803b09c
-from fboss_test_runner.runners.test_runner import TestRunner
-=======
-from fboss_test_runner.runners.test_runner import TestRunner
 from fboss_test_runner.tier_selection import TestTier
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
 
 SUB_ARG_TEST_TYPE = "--type"
 SUB_ARG_PLATFORM_HW_TEST = "platform_hw_test"

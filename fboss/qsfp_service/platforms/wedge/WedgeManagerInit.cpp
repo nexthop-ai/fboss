@@ -137,7 +137,6 @@ std::unique_ptr<WedgeManager> createWedgeManager(
       return createBspWedgeManager<
           M4062nhpBspPlatformMapping,
           PlatformType::PLATFORM_M4062NHP>(platformMapping, qsfpServiceThreads);
-<<<<<<< HEAD
     case PlatformType::PLATFORM_M4061NHP:
       return createBspWedgeManager<
           M4061nhpBspPlatformMapping,
@@ -146,8 +145,6 @@ std::unique_ptr<WedgeManager> createWedgeManager(
       return createBspWedgeManager<
           M4340nhpBspPlatformMapping,
           PlatformType::PLATFORM_M4340NHP>(platformMapping, qsfpServiceThreads);
-||||||| 0aa803b09c
-=======
     case PlatformType::PLATFORM_M5120CSC:
       return createBspWedgeManager<
           M5120cscBspPlatformMapping,
@@ -157,7 +154,6 @@ std::unique_ptr<WedgeManager> createWedgeManager(
           M4061clscBspPlatformMapping,
           PlatformType::PLATFORM_M4061CLSC>(
           platformMapping, qsfpServiceThreads);
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
     case PlatformType::PLATFORM_ICETEA800BC:
       return createBspWedgeManager<
           Icetea800bcBspPlatformMapping,

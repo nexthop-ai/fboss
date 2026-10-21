@@ -370,12 +370,8 @@ target_link_libraries(qsfp_bsp_core
   m4052actm_bsp
   m4061nhp_bsp
   m4062nhp_bsp
-<<<<<<< HEAD
   m4340nhp_bsp
-||||||| 0aa803b09c
-=======
   m5120csc_bsp
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
   device_mdio
   fpga_device
   phy_management_base

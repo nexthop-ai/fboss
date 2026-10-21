@@ -576,12 +576,7 @@
           "sysfsPath": "/run/devmap/sensors/PSU1/power1_input",
           "type": 0,
           "thresholds": {
-<<<<<<< HEAD
-||||||| 0aa803b09c
-            "upperCriticalVal": 1000
-=======
             "maxAlarmVal": 2600,
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
             "upperCriticalVal": 3240
           },
           "compute": "@/1000000"
@@ -591,13 +586,8 @@
           "sysfsPath": "/run/devmap/sensors/PSU1/in1_input",
           "type": 1,
           "thresholds": {
-<<<<<<< HEAD
-||||||| 0aa803b09c
-            "upperCriticalVal": 300
-=======
             "maxAlarmVal": 254,
             "minAlarmVal": 190,
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
             "upperCriticalVal": 264,
             "lowerCriticalVal": 180
           },
@@ -690,12 +680,7 @@
           "sysfsPath": "/run/devmap/sensors/PSU2/power1_input",
           "type": 0,
           "thresholds": {
-<<<<<<< HEAD
-||||||| 0aa803b09c
-            "upperCriticalVal": 1000
-=======
             "maxAlarmVal": 2600,
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
             "upperCriticalVal": 3240
           },
           "compute": "@/1000000"
@@ -705,13 +690,8 @@
           "sysfsPath": "/run/devmap/sensors/PSU2/in1_input",
           "type": 1,
           "thresholds": {
-<<<<<<< HEAD
-||||||| 0aa803b09c
-            "upperCriticalVal": 300
-=======
             "maxAlarmVal": 254,
             "minAlarmVal": 190,
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
             "upperCriticalVal": 264,
             "lowerCriticalVal": 180
           },
@@ -804,12 +784,7 @@
           "sysfsPath": "/run/devmap/sensors/PSU3/power1_input",
           "type": 0,
           "thresholds": {
-<<<<<<< HEAD
-||||||| 0aa803b09c
-            "upperCriticalVal": 1000
-=======
             "maxAlarmVal": 2600,
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
             "upperCriticalVal": 3240
           },
           "compute": "@/1000000"
@@ -819,13 +794,8 @@
           "sysfsPath": "/run/devmap/sensors/PSU3/in1_input",
           "type": 1,
           "thresholds": {
-<<<<<<< HEAD
-||||||| 0aa803b09c
-            "upperCriticalVal": 300
-=======
             "maxAlarmVal": 254,
             "minAlarmVal": 190,
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
             "upperCriticalVal": 264,
             "lowerCriticalVal": 180
           },
@@ -918,12 +888,7 @@
           "sysfsPath": "/run/devmap/sensors/PSU4/power1_input",
           "type": 0,
           "thresholds": {
-<<<<<<< HEAD
-||||||| 0aa803b09c
-            "upperCriticalVal": 1000
-=======
             "maxAlarmVal": 2600,
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
             "upperCriticalVal": 3240
           },
           "compute": "@/1000000"
@@ -933,13 +898,8 @@
           "sysfsPath": "/run/devmap/sensors/PSU4/in1_input",
           "type": 1,
           "thresholds": {
-<<<<<<< HEAD
-||||||| 0aa803b09c
-            "upperCriticalVal": 300
-=======
             "maxAlarmVal": 254,
             "minAlarmVal": 190,
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
             "upperCriticalVal": 264,
             "lowerCriticalVal": 180
           },

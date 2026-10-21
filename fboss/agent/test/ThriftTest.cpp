@@ -5520,7 +5520,6 @@ TEST_F(ThriftTest, routeCounterUpdatedWhenNamedNhgChanges) {
   EXPECT_EQ(rt->getForwardInfo().getCounterID(), "nhg_two");
 }
 
-<<<<<<< HEAD
 // Interfaces without addresses contribute no interface routes, but the default
 // VRF must still exist so route clients (BGP, the fboss2 integration tests)
 // can program routes after the config is applied.
@@ -5543,8 +5542,8 @@ TEST_F(ThriftTest, addUnicastRoutesWithoutInterfaceAddresses) {
   routes->push_back(std::move(route));
   EXPECT_NO_THROW(handler.addUnicastRoutes(
       static_cast<int16_t>(ClientID::BGPD), std::move(routes)));
-||||||| 0aa803b09c
-=======
+}
+
 TEST_F(NamedNextHopGroupThriftTest, addPoliciesRejectsInlineNexthopsInPolicy) {
   ThriftHandler handler(sw_);
   auto inlineNhops = makeGroup("classNhg", {"2401:db00:2110:3001::2"});
@@ -5572,5 +5571,4 @@ TEST_F(NamedNextHopGroupThriftTest, addPoliciesPassesValidationWhenWellFormed) {
           "defaultNhg",
           {{ForwardingClass::CLASS_1, namedNhgRef("classNhg")}}))),
       FbossHwUpdateError);
->>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
 }
