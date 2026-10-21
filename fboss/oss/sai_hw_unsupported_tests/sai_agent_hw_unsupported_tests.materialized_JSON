@@ -2880,6 +2880,24 @@
         },
         {
           "test_name_regex": "AgentCoppGlobalRateLimitTest\\..*"
+        },
+        {
+          "test_name_regex": "AgentMirrorOnDropDnxTest/AgentMirrorOnDropDnxTest\\..*"
+        },
+        {
+          "test_name_regex": "AgentMirrorOnDropMtuTest\\..*"
+        },
+        {
+          "test_name_regex": "AgentMirrorOnDropDestMacTest\\..*"
+        },
+        {
+          "test_name_regex": "AgentMirrorOnDropReconfigTest\\..*"
+        },
+        {
+          "test_name_regex": "AgentHwSflowMirrorTest/[01]\\..*"
+        },
+        {
+          "test_name_regex": "AgentSflowMirror.*Test.*"
         }
     ],
     "brcm/16.0_ea_odp/16.0_ea_odp/tomahawk6/multi_switch": [
