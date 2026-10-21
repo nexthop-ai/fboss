@@ -155,6 +155,11 @@ MANAGEMENT_PORT_DESCRIPTION = "Management port (front-panel)"
 HIGH_PRIO_CPU_QUEUE_BY_ASIC: dict[int, int] = {20: 7}
 DEFAULT_HIGH_PRIO_CPU_QUEUE = 9
 
+# G202X CPU queues are UNICAST (G202xAsic::getQueueStreamTypes); the agent
+# rejects a config whose cpuQueues use a streamType the CPU port does not support.
+CPU_QUEUE_STREAM_TYPE_BY_ASIC: dict[int, int] = {20: 0}
+DEFAULT_CPU_QUEUE_STREAM_TYPE = 1
+
 # switch_config.thrift PacketRxReason values used by the ACL-based policy.
 RX_REASON_TTL_1 = 6
 RX_REASON_PORT_MTU_ERROR = 21
@@ -487,19 +492,30 @@ def _is_primary_port(port_name: str) -> bool:
 def _build_cpu_queues(asic_type: int) -> list[dict]:
     if asic_type in ACL_COPP_ASIC_TYPES:
         return _build_q4d_cpu_queues(scheduling=1)
+    high_prio_queue_id = HIGH_PRIO_CPU_QUEUE_BY_ASIC.get(
+        asic_type, DEFAULT_HIGH_PRIO_CPU_QUEUE
+    )
+    stream_type = CPU_QUEUE_STREAM_TYPE_BY_ASIC.get(
+        asic_type, DEFAULT_CPU_QUEUE_STREAM_TYPE
+    )
     return [
-        {"id": 9, "streamType": 1, "scheduling": 1, "name": "cpuQueue-high"},
-        {"id": 2, "streamType": 1, "scheduling": 1, "name": "cpuQueue-mid"},
+        {
+            "id": high_prio_queue_id,
+            "streamType": stream_type,
+            "scheduling": 1,
+            "name": "cpuQueue-high",
+        },
+        {"id": 2, "streamType": stream_type, "scheduling": 1, "name": "cpuQueue-mid"},
         {
             "id": 1,
-            "streamType": 1,
+            "streamType": stream_type,
             "scheduling": 1,
             "name": "cpuQueue-default",
             "portQueueRate": {"pktsPerSec": {"minimum": 0, "maximum": 1000}},
         },
         {
             "id": 0,
-            "streamType": 1,
+            "streamType": stream_type,
             "scheduling": 1,
             "name": "cpuQueue-low",
             "portQueueRate": {"pktsPerSec": {"minimum": 0, "maximum": 500}},
