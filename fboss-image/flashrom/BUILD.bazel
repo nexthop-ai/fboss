@@ -5,14 +5,15 @@ load("//fboss:fboss_build_types.bzl", "distro_build")
 
 distro_build(
     name = "distro_flashrom",
-    artifact = "flashrom-1.7.0-1.x86_64.rpm",
+    artifact = "flashrom-1.7.0-2.x86_64.rpm",
     component = "other_dependencies",
     execute = ["flashrom/build.sh"],
     manifest = "nh-fboss-broadcom-xgs.json",
     needs = "one_core",
-    outs_map = {"distro_flashrom.rpm": "fboss/fboss-image/flashrom/dist/flashrom-1.7.0-1.x86_64.rpm"},
+    outs_map = {"distro_flashrom.rpm": "fboss/fboss-image/flashrom/dist/flashrom-1.7.0-2.x86_64.rpm"},
     srcs = [
         "build.sh",
+        "rpmbuild/SOURCES/0001-flashchips-Add-Macronix-MX77U51255G.patch",
         "rpmbuild/SPECS/flashrom.spec",
     ],
     visibility = ["//fboss:__subpackages__"],

@@ -19,6 +19,7 @@ TARBALL_NAME="${NAME}-v${VERSION}.tar.xz"
 curl -L "${TARBALL_URL}" -o "${TOPDIR}/SOURCES/${TARBALL_NAME}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cp "${SCRIPT_DIR}"/rpmbuild/SOURCES/*.patch "${TOPDIR}/SOURCES/"
 SPEC_FILE="${SCRIPT_DIR}/rpmbuild/SPECS/${NAME}.spec"
 
 # Install build dependencies and build the RPM
@@ -42,4 +43,4 @@ rpmbuild -bb \
 # (no %{dist} in Release to keep the filename stable across builds).
 OUTPUT_DIR="/output"
 mkdir -p "${OUTPUT_DIR}"
-cp "${TOPDIR}/RPMS/x86_64/flashrom-1.7.0-1.x86_64.rpm" "${OUTPUT_DIR}/"
+cp "${TOPDIR}/RPMS/x86_64/flashrom-1.7.0-2.x86_64.rpm" "${OUTPUT_DIR}/"

@@ -1,0 +1,95 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ravi Rama <ravi.rama@nexthop.ai>
+Date: Sun, 18 Oct 2026 13:33:00 -0500
+Subject: [PATCH] flashchips: Add support for MXIC MX77U51255G
+
+MX77U51255G is a 1.8V 512Mbit SPI NOR flash with RDID device ID
+0xC2 0x763A. Its command set and erase layout match the existing
+MX77U51250F entry.
+
+Datasheet:
+https://www.mxic.com.tw/en-us/products/NOR-Flash/Serial-NOR-Flash/Pages/spec.aspx?p=MX77U51255G&m=Serial+NOR+Flash&n=PM3335#Technical-Documents
+
+Tested on a local board with MX77U51255G SPI flash, using the
+internal programmer (chipset "AMD FP4", PCI ID 1022:790e):
+    probe: OK
+    read:  OK
+    erase: OK
+    write: OK
+
+Probe output:
+    Found Macronix flash chip "MX77U51255G" (65536 kB, SPI)
+    mapped at physical address 0x00000000fc000000.
+
+Log: https://gist.github.com/ravindra-nexthop/470475454de1c95e7797d3f365fd4080
+
+Change-Id: I075eefb4dcdb0842a3e15381e847ba520668c00a
+Signed-off-by: Ravi Rama <ravi.rama@nexthop.ai>
+Upstream: https://review.coreboot.org/c/flashrom/+/96393 (patch set 2)
+[Backported to v1.7.0: SIZE_64MiB and MV_1650/MV_2000 do not exist
+there yet, so they are written as 65536 and {1650, 2000}.]
+---
+ flashchips/macronix.c | 38 ++++++++++++++++++++++++++++++++++++++
+ include/flashchips.h  |  1 +
+ 2 files changed, 39 insertions(+)
+
+diff --git a/flashchips/macronix.c b/flashchips/macronix.c
+index 409892c..908fda3 100644
+--- a/flashchips/macronix.c
++++ b/flashchips/macronix.c
+@@ -3169,4 +3169,42 @@
+ 		.write		= SPI_CHIP_WRITE256,
+ 		.read		= SPI_CHIP_READ, /* Fast read (0x0B) supported */
+ 		.voltage	= {1650, 2000},
++	},
++
++	{
++		.vendor		= "Macronix",
++		.name		= "MX77U51255G",
++		.bustype	= BUS_SPI,
++		.manufacture_id	= MACRONIX_ID,
++		.model_id	= MACRONIX_MX77U51255G,
++		.total_size	= 65536,
++		.page_size	= 256,
++		.feature_bits	= FEATURE_WRSR_WREN | FEATURE_OTP | FEATURE_CFGR | FEATURE_4BA,
++		.tested		= TEST_OK_PREW,
++		.probe		= PROBE_SPI_RDID,
++		.probe_timing	= TIMING_ZERO,
++		.block_erasers	=
++		{
++			{
++				.eraseblocks = { {4 * KiB, 16384} },
++				.block_erase = SPI_BLOCK_ERASE_20,
++			}, {
++				.eraseblocks = { {32 * KiB, 2048} },
++				.block_erase = SPI_BLOCK_ERASE_52,
++			}, {
++				.eraseblocks = { {64 * KiB, 1024} },
++				.block_erase = SPI_BLOCK_ERASE_D8,
++			}, {
++				.eraseblocks = { {64 * MiB, 1} },
++				.block_erase = SPI_BLOCK_ERASE_60,
++			}, {
++				.eraseblocks = { {64 * MiB, 1} },
++				.block_erase = SPI_BLOCK_ERASE_C7,
++			}
++		},
++		.printlock	= SPI_PRETTYPRINT_STATUS_REGISTER_BP3_SRWD, /* bit6 is quad enable */
++		.unlock		= SPI_DISABLE_BLOCKPROTECT_BP3_SRWD,
++		.write		= SPI_CHIP_WRITE256,
++		.read		= SPI_CHIP_READ, /* Fast read (0x0B) supported */
++		.voltage	= {1650, 2000},
+ 	},
+\ No newline at end of file
+diff --git a/include/flashchips.h b/include/flashchips.h
+index b46e821..2ef86d5 100644
+--- a/include/flashchips.h
++++ b/include/flashchips.h
+@@ -548,6 +548,7 @@
+ #define MACRONIX_MX77L25650F	0x7519
+ #define MACRONIX_MX77U25650F	0x7539
+ #define MACRONIX_MX77U51250F	0x753A
++#define MACRONIX_MX77U51255G	0x763A
+ #define MACRONIX_MX25L3239E     0x2536
+ 
+ #define MACRONIX_MX25R512F	0x2810

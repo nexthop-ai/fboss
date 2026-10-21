@@ -1,10 +1,15 @@
 Name:           flashrom
 Version:        1.7.0
-Release:        1
+Release:        2
 Summary:        Utility for reading, writing, verifying and erasing flash chips
 License:        GPL-2.0-only
 URL:            https://www.flashrom.org/
 Source0:        flashrom-v%{version}.tar.xz
+# The 64 MiB BIOS flash on the Black Turtle CPU card (m4061nhp, m4062nhp).
+# Without it the chip probes as "unknown Macronix SPI chip" and fw_util cannot
+# program the BIOS. Backport of https://review.coreboot.org/c/flashrom/+/96393;
+# drop it once a flashrom release includes that change.
+Patch0:         0001-flashchips-Add-Macronix-MX77U51255G.patch
 
 # Disable automatic debuginfo/debugsource subpackages. This is a small
 # helper RPM built inside the fboss-image container; we don't need
@@ -30,7 +35,7 @@ network cards, SATA controller cards, and other external devices which can
 program flash chips.
 
 %prep
-%setup -q -n flashrom-v%{version}
+%autosetup -p1 -n flashrom-v%{version}
 
 %build
 # -Dtests=disabled: flashrom 1.7 bundles cmocka 1.1.5 which fails to compile
