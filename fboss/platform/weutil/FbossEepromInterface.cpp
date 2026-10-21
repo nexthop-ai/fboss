@@ -265,8 +265,10 @@ FbossEepromInterface::getContents() const {
     }
     if (entry.fieldType == FIELD_MAC) {
       if (version_ == kOnieEepromVersion) {
-        // ONIE format: MAC is just the address, no size field
+        // ONIE has one MAC with no size field; also publish it under the v6
+        // name getEepromContents() maps it to, so weutil consumers find it.
         contents.emplace_back(entry.fieldName, entry.value);
+        contents.emplace_back("X86 CPU MAC Base", entry.value);
       } else {
         // Meta format: MAC field is composite with base and size
         // Format: (00:00:00:00:00:00,222)
