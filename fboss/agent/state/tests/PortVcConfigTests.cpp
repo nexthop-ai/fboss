@@ -41,6 +41,8 @@ cfg::CbfcConfig makeCbfcConfig() {
   cfg::CbfcConfig cbfcConfig;
   cbfcConfig.virtualChannels() = {rdma, monitoring};
   cbfcConfig.senderCreditLimit() = 8192;
+  cbfcConfig.senderCreditSize() = 56;
+  cbfcConfig.senderPacketOverhead() = 16;
   return cbfcConfig;
 }
 
@@ -68,8 +70,8 @@ TEST(PortVcConfig, ConfigApplied) {
 
   EXPECT_EQ(port->getCbfcConfigName(), "cbfc_foo");
   EXPECT_EQ(port->getCbfcSenderCreditLimit(), 8192);
-  EXPECT_FALSE(port->getCbfcSenderCreditSize().has_value());
-  EXPECT_FALSE(port->getCbfcSenderPacketOverhead().has_value());
+  EXPECT_EQ(port->getCbfcSenderCreditSize(), 56);
+  EXPECT_EQ(port->getCbfcSenderPacketOverhead(), 16);
 
   auto vcs = port->getVirtualChannels();
   ASSERT_TRUE(vcs);
@@ -375,9 +377,20 @@ TEST(PortVcConfig, AbsentWhenNotConfigured) {
   EXPECT_FALSE(port->getVirtualChannels());
 }
 
+TEST(PortVcConfig, MissingSenderCreditSize) {
+  auto cbfcConfig = makeCbfcConfig();
+  cbfcConfig.senderCreditSize().reset();
+  auto platform = createMockPlatform();
+  auto stateV0 = make_shared<SwitchState>();
+  auto config = makeConfigWithCbfc(cbfcConfig);
+
+  EXPECT_THROW(
+      publishAndApplyConfig(stateV0, &config, platform.get()), FbossError);
+}
+
 TEST(PortVcConfig, SenderCreditSizeApplied) {
   auto cbfcConfig = makeCbfcConfig();
-  cbfcConfig.senderCreditSize() = 56;
+  cbfcConfig.senderCreditSize() = 32;
   auto platform = createMockPlatform();
   auto stateV0 = make_shared<SwitchState>();
   auto config = makeConfigWithCbfc(cbfcConfig);
@@ -386,7 +399,7 @@ TEST(PortVcConfig, SenderCreditSizeApplied) {
   ASSERT_NE(nullptr, stateV1);
   auto port = stateV1->getPorts()->getNodeIf(PortID(1));
   ASSERT_NE(nullptr, port);
-  EXPECT_EQ(port->getCbfcSenderCreditSize(), 56);
+  EXPECT_EQ(port->getCbfcSenderCreditSize(), 32);
 }
 
 TEST(PortVcConfig, SenderCreditSizeChangeApplied) {
@@ -420,9 +433,20 @@ TEST(PortVcConfig, UnsupportedSenderCreditSize) {
       publishAndApplyConfig(stateV0, &config, platform.get()), FbossError);
 }
 
+TEST(PortVcConfig, MissingSenderPacketOverhead) {
+  auto cbfcConfig = makeCbfcConfig();
+  cbfcConfig.senderPacketOverhead().reset();
+  auto platform = createMockPlatform();
+  auto stateV0 = make_shared<SwitchState>();
+  auto config = makeConfigWithCbfc(cbfcConfig);
+
+  EXPECT_THROW(
+      publishAndApplyConfig(stateV0, &config, platform.get()), FbossError);
+}
+
 TEST(PortVcConfig, SenderPacketOverheadApplied) {
   auto cbfcConfig = makeCbfcConfig();
-  cbfcConfig.senderPacketOverhead() = 16;
+  cbfcConfig.senderPacketOverhead() = 48;
   auto platform = createMockPlatform();
   auto stateV0 = make_shared<SwitchState>();
   auto config = makeConfigWithCbfc(cbfcConfig);
@@ -431,7 +455,7 @@ TEST(PortVcConfig, SenderPacketOverheadApplied) {
   ASSERT_NE(nullptr, stateV1);
   auto port = stateV1->getPorts()->getNodeIf(PortID(1));
   ASSERT_NE(nullptr, port);
-  EXPECT_EQ(port->getCbfcSenderPacketOverhead(), 16);
+  EXPECT_EQ(port->getCbfcSenderPacketOverhead(), 48);
 }
 
 TEST(PortVcConfig, SenderPacketOverheadChangeApplied) {

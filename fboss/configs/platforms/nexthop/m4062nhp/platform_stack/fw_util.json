@@ -7,21 +7,39 @@
       },
       "priority": 1
     },
+<<<<<<< HEAD
     "scm_iob": {
+||||||| 0aa803b09c
+    "SCM_IOB": {
+=======
+    "scm_cpld": {
+>>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
       "version": {
         "versionType": "sysfs",
         "path": "/run/devmap/inforoms/SCM_IOB_INFO_ROM/fw_ver"
       },
       "priority": 2
     },
+<<<<<<< HEAD
     "smb0_iob": {
+||||||| 0aa803b09c
+    "SMB0_IOB": {
+=======
+    "smb1_fpga": {
+>>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
       "version": {
         "versionType": "sysfs",
         "path": "/run/devmap/inforoms/SMB0_IOB_INFO_ROM/fw_ver"
       },
       "priority": 3
     },
+<<<<<<< HEAD
     "smb1_iob": {
+||||||| 0aa803b09c
+    "SMB1_IOB": {
+=======
+    "smb2_fpga": {
+>>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
       "version": {
         "versionType": "sysfs",
         "path": "/run/devmap/inforoms/SMB1_IOB_INFO_ROM/fw_ver"

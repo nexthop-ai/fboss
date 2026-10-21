@@ -871,6 +871,32 @@ Policy toThriftPolicy(const std::shared_ptr<ClassBasedPolicyNode>& node) {
   policy.cbfPolicy() = std::move(cbf);
   return policy;
 }
+
+void validateClassBasedPolicies(
+    const SwSwitch* sw,
+    const std::vector<ClassBasedPolicy>& policies) {
+  if (sw->getScopeResolver()->hasMultipleSwitches()) {
+    throw FbossError(
+        "Class-based policies are not supported on a multi-ASIC switch");
+  }
+  if (!sw->getHwAsicTable()->isFeatureSupportedOnAllAsic(
+          HwAsic::Feature::PBR_ACL)) {
+    throw FbossError("Class-based policies are not supported on this platform");
+  }
+
+  for (const auto& policy : policies) {
+    for (const auto& [forwardingClass, nhg] : *policy.class2NextHopGroup()) {
+      if (!nhg.nexthops()->empty()) {
+        throw FbossError(
+            "Class-based policy '",
+            *policy.name(),
+            "' supplies inline next hops for traffic class ",
+            apache::thrift::util::enumNameSafe(forwardingClass),
+            "; a policy references a named next-hop group by name only");
+      }
+    }
+  }
+}
 } // namespace
 
 namespace facebook::fboss {
@@ -3599,6 +3625,7 @@ void ThriftHandler::addPolicies(std::unique_ptr<std::vector<Policy>> policies) {
     }
     classBasedPolicies.push_back(std::move(*policy.cbfPolicy()));
   }
+  validateClassBasedPolicies(sw_, classBasedPolicies);
 
   rib->addOrUpdatePolicies(
       classBasedPolicies, createNextHopIdStateUpdate(sw_, "addPolicies"));

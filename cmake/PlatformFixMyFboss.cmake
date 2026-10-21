@@ -15,9 +15,11 @@ add_library(fixmyfboss_lib
   fboss/platform/fixmyfboss/CheckEnvironment.cpp
   fboss/platform/fixmyfboss/CheckRegistry.cpp
   fboss/platform/fixmyfboss/CheckRunner.cpp
+  fboss/platform/fixmyfboss/PasswordPrompt.cpp
 )
 
 target_link_libraries(fixmyfboss_lib
+  ${RE2}
   platform_checks
   platform_checks_host
   platform_checks_platform_name

@@ -96,6 +96,7 @@ cpp_library(
 )
 
 cpp_library(
+<<<<<<< HEAD
     name = "transceiver-delay-constants",
     headers = [
         "facebook/TransceiverDelayConstants.h",
@@ -108,6 +109,16 @@ cpp_library(
 # bazelify: extra_dep = :handler
 # bazelify: extra_dep = //fboss/lib:thrift_method_rate_limit_setup
 cpp_library(
+||||||| 0aa803b09c
+    name = "transceiver-delay-constants",
+    headers = [
+        "facebook/TransceiverDelayConstants.h",
+    ],
+)
+
+cpp_library(
+=======
+>>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
     name = "core-default",
     exported_deps = [
         ":core-credo-0.7.2",  # @manual

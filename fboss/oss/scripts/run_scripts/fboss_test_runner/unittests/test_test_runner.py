@@ -6,13 +6,24 @@ fallback for early-exit binaries, warmboot loop, timeout handling, config
 backup, filter merging), plus the load_from_file helper consumed
 by _get_tests_to_run via args.filter_file."""
 
+import json
 import os
 import tempfile
+<<<<<<< HEAD
 import xml.etree.ElementTree as ET
 from unittest.mock import ANY, MagicMock, patch
+||||||| 0aa803b09c
+from unittest.mock import MagicMock, patch
+=======
+from argparse import Namespace
+from unittest.mock import MagicMock, patch
+>>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
 
+import pytest
+from fboss_test_runner.errors import TestRunnerUsageError
 from fboss_test_runner.result_types import GtestResult, GtestStatus, RunOutcome
 from fboss_test_runner.runners.utils import load_from_file
+from fboss_test_runner.tier_selection import TestCapability, TestTier
 
 
 class TestLoadFromFile:
@@ -94,6 +105,7 @@ class TestLoadFromFile:
             os.unlink(temp_file)
 
 
+<<<<<<< HEAD
 def _make_capture_writing(stdout_bytes: bytes, runner, xml_to_write: bytes | None):
     """Build a fake `_capture_subprocess` that optionally writes a gtest XML
     to runner.TESTRESULT_CURRENT_RUN_FILE and returns
@@ -116,6 +128,138 @@ _STUB_GTEST_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
   </testsuite>
 </testsuites>
 """
+||||||| 0aa803b09c
+=======
+class TestTierFilterComposition:
+    def test_prepare_tests_applies_tier_filter_after_runner_filter(self, runner):
+        args = Namespace(tier="0")
+        with (
+            patch("shutil.which", return_value="/opt/fboss/bin/test_binary"),
+            patch.object(runner, "_initialize_test_lists"),
+            patch.object(
+                runner, "_get_tests_to_run", return_value=["Suite.B", "Suite.A"]
+            ),
+            patch.object(
+                runner, "_filter_tests", return_value=["Suite.A"]
+            ) as runner_filter,
+            patch.object(
+                runner, "_filter_tests_for_tier", return_value=["Suite.A"]
+            ) as tier_filter,
+        ):
+            assert runner._prepare_tests(args) == ["Suite.A"]
+
+        runner_filter.assert_called_once_with(["Suite.B", "Suite.A"])
+        tier_filter.assert_called_once_with(["Suite.A"], TestTier.T0)
+
+    def test_base_runner_rejects_tier_selection(self, runner):
+        runner.args = Namespace(command="unsupported")
+        with pytest.raises(TestRunnerUsageError, match="not supported for unsupported"):
+            runner._filter_tests_for_tier([], TestTier.T0)
+
+    @pytest.mark.parametrize(
+        "requested_tier,expected",
+        [
+            (TestTier.T0, ["Suite.B", "Suite.A"]),
+            (TestTier.T1, []),
+        ],
+    )
+    def test_uniform_tier_filters_without_metadata(
+        self, runner, requested_tier, expected
+    ):
+        tests = ["Suite.B", "Suite.A"]
+        with (
+            patch.object(runner, "_get_uniform_test_tier", return_value=TestTier.T0),
+            patch.object(runner, "_get_tier_metadata_file") as metadata_file,
+        ):
+            assert runner._filter_tests_for_tier(tests, requested_tier) == expected
+
+        metadata_file.assert_not_called()
+
+    def test_metadata_filter_expands_patterns_and_intersects_candidates(
+        self, runner, tmp_path
+    ):
+        metadata = tmp_path / "test_metadata.json"
+        metadata.write_text(
+            json.dumps(
+                {
+                    "rules": [
+                        {
+                            "testNamePattern": "EmptyTest.*",
+                            "tier": "T0",
+                            "requiredCapabilities": [],
+                            "profiles": [],
+                        },
+                        {
+                            "testNamePattern": "CapableTest.*",
+                            "tier": "T0",
+                            "requiredCapabilities": [TestCapability.TRANSCEIVER.value],
+                            "profiles": [],
+                        },
+                        {
+                            "testNamePattern": "OtherTier.*",
+                            "tier": "T1",
+                            "requiredCapabilities": [],
+                            "profiles": [],
+                        },
+                    ]
+                }
+            )
+        )
+        candidates = [
+            "Unrelated.Test",
+            "CapableTest.Case",
+            "EmptyTest.CheckInit",
+        ]
+        with (
+            patch.object(runner, "_get_tier_metadata_file", return_value=str(metadata)),
+            patch.object(
+                runner,
+                "_get_available_test_capabilities",
+                return_value=(TestCapability.TRANSCEIVER,),
+            ),
+            patch.object(
+                runner,
+                "_list_tests_to_run",
+                return_value=["EmptyTest.CheckInit", "CapableTest.Case"],
+            ) as expand_patterns,
+        ):
+            selected = runner._filter_tests_for_tier(candidates, TestTier.T0)
+
+        expand_patterns.assert_called_once_with("EmptyTest.*:CapableTest.*")
+        assert selected == ["CapableTest.Case", "EmptyTest.CheckInit"]
+
+    def test_metadata_filter_reports_missing_file(self, runner, tmp_path):
+        missing = str(tmp_path / "missing.json")
+        with (
+            patch.object(runner, "_get_tier_metadata_file", return_value=missing),
+            pytest.raises(TestRunnerUsageError, match="Unable to load test metadata"),
+        ):
+            runner._filter_tests_for_tier([], TestTier.T0)
+
+    def test_metadata_filter_skips_gtest_when_no_patterns_match(self, runner, tmp_path):
+        metadata = tmp_path / "test_metadata.json"
+        metadata.write_text(
+            json.dumps(
+                {
+                    "rules": [
+                        {
+                            "testNamePattern": "OtherTier.*",
+                            "tier": "T1",
+                            "requiredCapabilities": [],
+                            "profiles": [],
+                        }
+                    ]
+                }
+            )
+        )
+        with (
+            patch.object(runner, "_get_tier_metadata_file", return_value=str(metadata)),
+            patch.object(runner, "_list_tests_to_run") as expand_patterns,
+        ):
+            assert runner._filter_tests_for_tier(["Suite.Test"], TestTier.T0) == []
+
+        expand_patterns.assert_not_called()
+>>>>>>> 13fa61530067407c4beff81a61a1acbe5d18db04
 
 
 class TestRunTestGtestFallback:
