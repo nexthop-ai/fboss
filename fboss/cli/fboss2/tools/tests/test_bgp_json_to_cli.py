@@ -31,14 +31,10 @@ from fboss.cli.fboss2.tools.bgp_json_to_cli import (
     generate_policy_commands,
     generate_prefix_list_commands,
     generate_prefix_list_entry_commands,
-<<<<<<< HEAD
     generate_routing_policy_commands,
     generate_routing_policy_term_action_commands,
     generate_routing_policy_term_commands,
     generate_routing_policy_term_match_commands,
-||||||| 13fa615300
-=======
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
     json_to_cli,
 )
 
@@ -1437,7 +1433,6 @@ class GeneratePrefixListEntryCommandsTest(unittest.TestCase):
         )
 
 
-<<<<<<< HEAD
 class GenerateRoutingPolicyCommandsTest(unittest.TestCase):
     """Tests for generate_routing_policy_commands (routing-policy grammar)."""
 
@@ -1703,9 +1698,6 @@ class GenerateRoutingPolicyTermMatchCommandsTest(unittest.TestCase):
         )
 
 
-||||||| 13fa615300
-=======
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
 class GenerateScriptCommandsTest(unittest.TestCase):
     """Tests for generate_exec_commands."""
 

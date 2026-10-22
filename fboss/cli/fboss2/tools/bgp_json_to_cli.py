@@ -783,7 +783,6 @@ def generate_prefix_list_entry_commands(
     return commands
 
 
-<<<<<<< HEAD
 _FLOW_CONTROL_ACTION_NAMES = {
     1: "ACCEPT",
     2: "DENY",
@@ -1104,9 +1103,6 @@ def generate_routing_policy_term_match_commands(
     return commands
 
 
-||||||| 13fa615300
-=======
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
 def generate_policy_commands(config: dict[str, Any]) -> list[str]:
     """Generate the `config protocol bgp policy ...` commands.
 

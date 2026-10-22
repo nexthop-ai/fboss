@@ -7,20 +7,15 @@ SAI replayer flags, and platform-mapping override placement, plus the
 production-feature filtering implemented in _filter_tests."""
 
 import json
+from typing import ClassVar
 from unittest.mock import MagicMock, patch
 
 import pytest
-<<<<<<< HEAD
 
-from fboss_test_runner.runners.sai_agent_test_runner import SaiAgentTestRunner
-||||||| 13fa615300
-from fboss_test_runner.runners.sai_agent_test_runner import SaiAgentTestRunner
-=======
 from fboss_test_runner.runners.sai_agent_test_runner import (
     SaiAgentTestRunner,
     sdk_version_key,
 )
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
 
 
 @pytest.fixture
@@ -68,9 +63,7 @@ class TestWarmbootCheckFile:
 class TestBinaryName:
     def test_multi_switch_binary_name(self, sai_agent_runner):
         with patch.object(
-            sai_agent_runner,
-            "args",
-            new=_make_args(agent_run_mode="multi_switch"),
+            sai_agent_runner, "args", new=_make_args(agent_run_mode="multi_switch")
         ):
             assert (
                 sai_agent_runner._get_test_binary_name() == "multi_switch_agent_hw_test"
@@ -78,9 +71,7 @@ class TestBinaryName:
 
     def test_mono_binary_name(self, sai_agent_runner):
         with patch.object(
-            sai_agent_runner,
-            "args",
-            new=_make_args(agent_run_mode="mono"),
+            sai_agent_runner, "args", new=_make_args(agent_run_mode="mono")
         ):
             assert (
                 sai_agent_runner._get_test_binary_name() == "sai_agent_hw_test-sai_impl"
@@ -209,7 +200,7 @@ class TestFilterTestsProductionFeatures:
 
 class TestSdkGatedProductionFeatures:
     # Feature ids mirror production_features.thrift: MIRROR_ON_DROP=49, SRV6_ENCAP=100
-    FEATURES = {
+    FEATURES: ClassVar[dict] = {
         "asicToFeatures": {"yuba": [3, 49], "tomahawk5": [3, 100]},
         "asicToFeatureNames": {
             "yuba": ["L3_FORWARDING", "MIRROR_ON_DROP"],

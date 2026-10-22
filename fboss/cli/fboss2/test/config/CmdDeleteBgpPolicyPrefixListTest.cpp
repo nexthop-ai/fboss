@@ -128,14 +128,7 @@ TEST_F(CmdDeleteBgpPolicyPrefixListTestFixture, argValidation) {
   EXPECT_EQ(listOnly.listName(), "PL100");
   EXPECT_FALSE(listOnly.hasPrefix());
 
-<<<<<<< HEAD
-  auto withPrefix = BgpPrefixListRef({"PL100", "prefix", "10.0.0.0/8"});
-||||||| 13fa615300
-  // Invalid: empty, empty name, any second token (entries are deleted
-  // through the entry subcommand, not here).
-=======
   auto withPrefix = BgpPrefixListRef({"PL100", "prefix", "10.255.1.2/8"});
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
   EXPECT_EQ(withPrefix.listName(), "PL100");
   EXPECT_TRUE(withPrefix.hasPrefix());
   EXPECT_EQ(withPrefix.basePrefix(), "10.0.0.0/8");
@@ -221,12 +214,7 @@ TEST_F(CmdDeleteBgpPolicyPrefixListTestFixture, deleteExistingEntry) {
   configureEntry("PL100", "10.0.0.0/8");
   configureEntry("PL100", "192.168.0.0/16");
 
-<<<<<<< HEAD
-  auto result = del({"PL100", "prefix", "10.0.0.0/8"});
-||||||| 13fa615300
-=======
   auto result = del({"PL100", "prefix", "10.255.1.2/8"});
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
   EXPECT_THAT(
       result,
       HasSubstr(

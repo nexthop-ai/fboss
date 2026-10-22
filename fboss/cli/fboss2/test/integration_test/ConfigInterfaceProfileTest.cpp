@@ -190,18 +190,12 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
     return std::nullopt;
   }
 
-<<<<<<< HEAD
-  // A present, self-controlling port + a profile (!= current) it supports,
-  // its optics allow, and that subsumes at least one currently-present port.
-||||||| 13fa615300
-  // A present, self-controlling port + a supported profile (!= current)
-  // that subsumes at least one currently-present port.
-=======
   // Two distinct present controlling ports with a common supported profile
-  // that differs from both current profiles.
+  // that differs from both current profiles and that both ports' optics allow.
   std::optional<MultiInterfaceCandidate> findMultiInterfaceCandidate() const {
     auto mapping = fetchPlatformMapping();
     auto present = fetchPresentPorts();
+    auto optics = fetchOpticsProfiles();
     auto groups = utility::getSubsidiaryPortIDs(mapping.getPlatformPorts());
     std::map<std::string, Candidate> candidateByTargetProfile;
     for (const auto& [controlling, unused] : groups) {
@@ -216,6 +210,9 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
         if (name == pit->second.profileId) {
           continue;
         }
+        if (!opticsAllow(optics, pit->second.name, profileId)) {
+          continue;
+        }
         Candidate candidate{pit->second.name, pit->second.profileId, name, {}};
         auto [it, inserted] = candidateByTargetProfile.emplace(name, candidate);
         if (!inserted) {
@@ -226,9 +223,8 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
     return std::nullopt;
   }
 
-  // A present, self-controlling port + a supported profile (!= current)
-  // that subsumes at least one currently-present port.
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
+  // A present, self-controlling port + a profile (!= current) it supports,
+  // its optics allow, and that subsumes at least one currently-present port.
   std::optional<Candidate> findSubsumingCandidate() const {
     auto mapping = fetchPlatformMapping();
     auto present = fetchPresentPorts();

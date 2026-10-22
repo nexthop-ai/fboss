@@ -63,35 +63,6 @@ inline bgp::routing_policy::PrefixList& findOrCreatePrefixList(
   return list;
 }
 
-<<<<<<< HEAD
-// A prefix with an explicit /len, as every entry key must be. folly fills in
-// a default mask for a bare address, so the slash is checked separately. The
-// string is stored as typed, not normalized.
-inline bool isPrefixWithLength(const std::string& s) {
-  return s.find('/') != std::string::npos &&
-      !folly::IPAddress::tryCreateNetwork(s).hasError();
-}
-
-inline bool prefixListEntryExists(
-    const bgp::routing_policy::PrefixList& list,
-    const std::string& basePrefix) {
-  const auto& entries = *list.prefixes();
-  return std::any_of(entries.begin(), entries.end(), [&](const auto& entry) {
-    return *entry.base_prefix() == basePrefix;
-  });
-}
-
-// Find the entry keyed by base_prefix within a list's prefixes[], creating it
-// if absent. bgpd merges entries that share a base_prefix, so one entry per
-// prefix is the only shape the CLI needs to address.
-inline bgp::routing_policy::PrefixListEntry& findOrCreatePrefixListEntry(
-    bgp::routing_policy::PrefixList& list,
-    const std::string& basePrefix) {
-  auto& entries = *list.prefixes();
-  for (auto& entry : entries) {
-    if (*entry.base_prefix() == basePrefix) {
-||||||| 13fa615300
-=======
 // A prefix with an explicit /len, normalized with host bits cleared. folly
 // fills in a default mask for a bare address, so the slash is checked
 // separately.
@@ -133,7 +104,6 @@ inline bgp::routing_policy::PrefixListEntry& findOrCreatePrefixListEntry(
   for (auto& entry : entries) {
     if (prefixListEntryMatches(entry, basePrefix)) {
       entry.base_prefix() = basePrefix;
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
       return entry;
     }
   }

@@ -497,7 +497,6 @@ const CommandTree& kConfigCommandTree() {
                                    argRegistrar<
                                        CmdConfigProtocolBgpPolicyPrefixListEntryTraits>,
                                }},
-<<<<<<< HEAD
                            },
                            {
                                "routing-policy",
@@ -552,9 +551,6 @@ const CommandTree& kConfigCommandTree() {
                                             CmdConfigProtocolBgpPolicyRoutingPolicyTermMatchTraits>,
                                     }},
                                }},
-||||||| 13fa615300
-=======
->>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
                            }},
                       },
                   },
