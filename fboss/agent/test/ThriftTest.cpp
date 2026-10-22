@@ -95,6 +95,33 @@ IpPrefix ipPrefix(StringPiece prefixStr) {
   return ipPrefix(IPAddress::createNetwork(prefixStr));
 }
 
+Policy makeCbfPolicy(
+    const std::string& name,
+    const std::string& defaultNhg,
+    const std::map<ForwardingClass, NextHopGroup>& class2Nhg = {}) {
+  ClassBasedPolicy cbfPolicy;
+  cbfPolicy.name() = name;
+  cbfPolicy.defaultNexthopGroup() = defaultNhg;
+  for (const auto& [forwardingClass, nhg] : class2Nhg) {
+    cbfPolicy.class2NextHopGroup()[forwardingClass] = nhg;
+  }
+  Policy policy;
+  policy.cbfPolicy() = std::move(cbfPolicy);
+  return policy;
+}
+
+NextHopGroup namedNhgRef(const std::string& name) {
+  NextHopGroup nhg;
+  nhg.name() = name;
+  return nhg;
+}
+
+std::unique_ptr<std::vector<Policy>> onePolicy(Policy policy) {
+  auto policies = std::make_unique<std::vector<Policy>>();
+  policies->push_back(std::move(policy));
+  return policies;
+}
+
 } // unnamed namespace
 
 class ThriftTest : public ::testing::Test {
@@ -5515,4 +5542,33 @@ TEST_F(ThriftTest, addUnicastRoutesWithoutInterfaceAddresses) {
   routes->push_back(std::move(route));
   EXPECT_NO_THROW(handler.addUnicastRoutes(
       static_cast<int16_t>(ClientID::BGPD), std::move(routes)));
+}
+
+TEST_F(NamedNextHopGroupThriftTest, addPoliciesRejectsInlineNexthopsInPolicy) {
+  ThriftHandler handler(sw_);
+  auto inlineNhops = makeGroup("classNhg", {"2401:db00:2110:3001::2"});
+  EXPECT_THAT(
+      [&] {
+        handler.addPolicies(onePolicy(makeCbfPolicy(
+            "pol1", "defaultNhg", {{ForwardingClass::CLASS_1, inlineNhops}})));
+      },
+      ::testing::ThrowsMessage<FbossError>(
+          ::testing::HasSubstr("supplies inline next hops")));
+}
+
+// testConfigA has no PBR ACL table, so a policy that passes validation fails
+// the HW update.
+TEST_F(NamedNextHopGroupThriftTest, addPoliciesPassesValidationWhenWellFormed) {
+  ThriftHandler handler(sw_);
+  auto groups = std::make_unique<std::vector<NextHopGroup>>();
+  groups->push_back(makeGroup("defaultNhg", {"2401:db00:2110:3001::2"}));
+  groups->push_back(makeGroup("classNhg", {"2401:db00:2110:3001::3"}));
+  handler.addOrUpdateNamedNextHopGroups(std::move(groups));
+
+  EXPECT_THROW(
+      handler.addPolicies(onePolicy(makeCbfPolicy(
+          "pol1",
+          "defaultNhg",
+          {{ForwardingClass::CLASS_1, namedNhgRef("classNhg")}}))),
+      FbossHwUpdateError);
 }

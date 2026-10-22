@@ -13,6 +13,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from fboss_test_runner.errors import TestRunnerUsageError
 from fboss_test_runner.frameworks.qsfp_benchmark_suite import QsfpBenchmarkSuite
 from fboss_test_runner.frameworks.sai_benchmark_suite import SaiBenchmarkSuite
 from fboss_test_runner.main import _build_parser
@@ -31,6 +32,7 @@ def args():
     a.qsfp = False
     a.agent_run_mode = "mono"
     a.config = None
+    a.tier = None
     a.run_on_reference_board = False
     return a
 
@@ -99,7 +101,7 @@ def test_run_test_delegates_to_framework_with_sai_suite(runner, args):
         exit_code = runner.run_test(args)
     suite = mock_fw.call_args[0][0]
     assert isinstance(suite, SaiBenchmarkSuite)
-    mock_fw.return_value.run.assert_called_once_with(args)
+    mock_fw.return_value.run.assert_called_once_with(args, None)
     mock_fw.return_value.list_tests.assert_not_called()
     assert exit_code == 0
 
@@ -113,7 +115,7 @@ def test_run_test_delegates_to_framework_with_qsfp_suite(runner, args):
         exit_code = runner.run_test(args)
     suite = mock_fw.call_args[0][0]
     assert isinstance(suite, QsfpBenchmarkSuite)
-    mock_fw.return_value.run.assert_called_once_with(args)
+    mock_fw.return_value.run.assert_called_once_with(args, None)
     mock_fw.return_value.list_tests.assert_not_called()
     assert exit_code == 0
 
@@ -126,6 +128,27 @@ def test_list_tests_delegates_to_framework(runner, args):
         exit_code = runner.list_tests(args)
     suite = mock_fw.call_args[0][0]
     assert isinstance(suite, SaiBenchmarkSuite)
-    mock_fw.return_value.list_tests.assert_called_once_with(args)
+    mock_fw.return_value.list_tests.assert_called_once_with(args, None)
     mock_fw.return_value.run.assert_not_called()
     assert exit_code == 0
+
+
+def test_tier_patterns_are_passed_to_framework(runner, args):
+    args.tier = "2"
+    with (
+        patch.object(runner, "_get_test_patterns_for_tier", return_value=[".*Scale.*"]),
+        patch(
+            "fboss_test_runner.runners.benchmark_test_runner.BenchmarkFramework"
+        ) as mock_fw,
+    ):
+        runner.list_tests(args)
+
+    mock_fw.return_value.list_tests.assert_called_once_with(args, [".*Scale.*"])
+
+
+def test_qsfp_benchmarks_reject_tier(runner, args):
+    args.qsfp = True
+    args.qsfp_config = "/tmp/qsfp.json"
+    args.tier = "1"
+    with pytest.raises(TestRunnerUsageError, match="not supported for QSFP benchmarks"):
+        runner.list_tests(args)

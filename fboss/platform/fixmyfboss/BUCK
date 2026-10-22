@@ -28,6 +28,7 @@ cpp_library(
         "CheckRunner.h",
     ],
     deps = [
+        "fbsource//third-party/re2:re2",
         "fbsource//xplat/folly/logging:logging",
     ],
     exported_deps = [
@@ -55,6 +56,20 @@ cpp_library(
 )
 
 cpp_library(
+    name = "password_prompt",
+    srcs = [
+        "PasswordPrompt.cpp",
+    ],
+    headers = [
+        "PasswordPrompt.h",
+    ],
+    deps = [
+        "fbsource//xplat/folly:file_util",
+        "fbsource//xplat/folly:scope_guard",
+    ],
+)
+
+cpp_library(
     name = "check_registry",
     srcs = [
         "CheckRegistry.cpp",
@@ -63,6 +78,7 @@ cpp_library(
         "CheckRegistry.h",
     ],
     deps = [
+        "//fboss/platform/platform_checks:host",
         "//fboss/platform/platform_checks:platform_checks",
     ],
     exported_deps = [
@@ -77,11 +93,14 @@ cpp_binary(
         "main.cpp",
     ],
     deps = [
+        "fbsource//xplat/folly:string",
         "fbsource//xplat/folly/logging:logging",
         ":check_environment",
         ":check_registry",
         ":check_runner",
+        ":password_prompt",
         ":result_printer",
+        "//thrift/lib/cpp2/protocol:protocol",
     ],
     external_deps = [
         "CLI11",

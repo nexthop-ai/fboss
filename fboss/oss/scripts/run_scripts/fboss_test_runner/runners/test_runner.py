@@ -13,6 +13,7 @@ import threading
 import time
 import xml.etree.ElementTree as ET
 from argparse import ArgumentParser, Namespace
+from collections.abc import Collection
 from contextlib import suppress
 from datetime import datetime, timezone
 from pathlib import Path
@@ -58,6 +59,7 @@ from fboss_test_runner.constants import (
     OPT_ARG_SKIP_KNOWN_BAD_TESTS,
     OPT_ARG_SWITCH_ID_FOR_TESTING,
     OPT_ARG_TEST_RUN_TIMEOUT,
+    OPT_ARG_TIER,
     OPT_KNOWN_BAD_TESTS_FILE,
     OPT_UNSUPPORTED_TESTS_FILE,
     SUB_ARG_BSP_HW_TEST,
@@ -73,6 +75,7 @@ from fboss_test_runner.crash_detection import (
     get_core_dump_info,
     list_core_dumps,
 )
+from fboss_test_runner.errors import TestRunnerUsageError
 from fboss_test_runner.reporters.console_reporter import ConsoleReporter
 from fboss_test_runner.reporters.csv_reporter import CsvReporter
 from fboss_test_runner.reporters.json_reporter import JsonReporter
@@ -91,6 +94,14 @@ from fboss_test_runner.runners.utils import (
     test_matches_any_regex,
 )
 from fboss_test_runner.services.fboss_agent_utils import FBOSS_AGENT_VOLATILE_STATE_DIR
+from fboss_test_runner.tier_selection import (
+    load_test_metadata_rules,
+    parse_test_tier,
+    select_test_patterns_for_tier,
+    TestCapability,
+    TestMetadataError,
+    TestTier,
+)
 
 _YELLOW = "\033[1;33m"
 _RED = "\033[1;31m"
@@ -377,7 +388,13 @@ class TestRunner(abc.ABC):
         sub_parser.add_argument(
             OPT_ARG_PROFILE,
             type=str,
-            help="only include patterns tagged with this profile (requires --filter_file)",
+            help="only include patterns tagged with this profile",
+        )
+        sub_parser.add_argument(
+            OPT_ARG_TIER,
+            choices=("0", "1", "2"),
+            default=None,
+            help="only run tests classified in this certification tier",
         )
         sub_parser.add_argument(
             OPT_ARG_LIST_TESTS,
@@ -529,6 +546,43 @@ class TestRunner(abc.ABC):
 
     def _filter_tests(self, tests: list[str]) -> list[str]:
         return tests
+
+    def _get_tier_metadata_file(self) -> str | None:
+        return None
+
+    def _get_uniform_test_tier(self) -> TestTier | None:
+        """Return the tier shared by every test exposed by this runner."""
+        return None
+
+    def _get_available_test_capabilities(self) -> Collection[TestCapability]:
+        return ()
+
+    def _get_test_patterns_for_tier(self, tier: TestTier) -> list[str]:
+        metadata_file = self._get_tier_metadata_file()
+        if metadata_file is None:
+            command = self.args.command
+            raise TestRunnerUsageError(f"--tier is not supported for {command}")
+
+        try:
+            rules = load_test_metadata_rules(metadata_file)
+        except TestMetadataError as error:
+            raise TestRunnerUsageError(str(error)) from error
+
+        return select_test_patterns_for_tier(
+            rules, tier, available_capabilities=self._get_available_test_capabilities()
+        )
+
+    def _filter_tests_for_tier(self, tests: list[str], tier: TestTier) -> list[str]:
+        uniform_tier = self._get_uniform_test_tier()
+        if uniform_tier is not None:
+            return tests if tier is uniform_tier else []
+
+        patterns = self._get_test_patterns_for_tier(tier)
+        if not patterns:
+            return []
+
+        tier_tests = set(self._list_tests_to_run(":".join(patterns)))
+        return [test for test in tests if test in tier_tests]
 
     def _get_sai_replayer_log_path(
         self,
@@ -1445,6 +1499,11 @@ class TestRunner(abc.ABC):
             )
         tests_to_run = self._get_tests_to_run()
         tests_to_run = self._filter_tests(tests_to_run)
+        tier_value = args.tier
+        if tier_value is not None:
+            tests_to_run = self._filter_tests_for_tier(
+                tests_to_run, parse_test_tier(tier_value)
+            )
         # Sort the tests to run to match internal test infra behavior
         return sorted(tests_to_run)
 

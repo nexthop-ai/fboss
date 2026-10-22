@@ -3274,18 +3274,31 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
             folly::join(", ", supported));
       }
     };
-    if (auto size = it->second.senderCreditSize()) {
-      checkSupported(
-          "senderCreditSize", *size, asic->getCbfcSenderCreditSizes());
-      cbfcSenderCreditSize = *size;
+    auto size = it->second.senderCreditSize();
+    if (!size) {
+      throw FbossError(
+          "Port ",
+          orig->getID(),
+          " cbfc config ",
+          *cbfcConfigName,
+          ": senderCreditSize is required");
     }
-    if (auto overhead = it->second.senderPacketOverhead()) {
-      checkSupported(
-          "senderPacketOverhead",
-          *overhead,
-          asic->getCbfcSenderPacketOverheads());
-      cbfcSenderPacketOverhead = *overhead;
+    checkSupported("senderCreditSize", *size, asic->getCbfcSenderCreditSizes());
+    cbfcSenderCreditSize = *size;
+    auto overhead = it->second.senderPacketOverhead();
+    if (!overhead) {
+      throw FbossError(
+          "Port ",
+          orig->getID(),
+          " cbfc config ",
+          *cbfcConfigName,
+          ": senderPacketOverhead is required");
     }
+    checkSupported(
+        "senderPacketOverhead",
+        *overhead,
+        asic->getCbfcSenderPacketOverheads());
+    cbfcSenderPacketOverhead = *overhead;
     virtualChannels = std::move(configuredVcs);
   }
 
