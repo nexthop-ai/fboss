@@ -11,15 +11,28 @@
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 
 #include <fmt/format.h>
+#include <folly/Conv.h>
 #include <folly/String.h>
+#include <folly/logging/xlog.h>
 #include <glog/logging.h>
+#include <algorithm>
 #include <chrono>
+#include <exception>
+#include <functional>
+#include <memory>
+#include <optional>
 #include <stdexcept>
+#include <string>
+#include <string_view>
 #include <thread>
+#include <utility>
+#include <vector>
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/SwitchInfoUtils.h"
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
+#include "fboss/agent/if/gen-cpp2/FbossCtrlAsyncClient.h"
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/SystemdInterface.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
@@ -69,6 +82,65 @@ FbossServiceUtil::FbossServiceUtil(
       dirUtil_(std::move(dirUtil)),
       switchIndexes_(std::move(switchIndexes)),
       multiSwitch_(multiSwitch) {}
+
+std::unique_ptr<FbossServiceUtil> FbossServiceUtil::fromSystemd(
+    std::unique_ptr<SystemdInterface> systemd,
+    AgentDirectoryUtil dirUtil) {
+  std::vector<int> switchIndexes;
+  // --all in getMatchingServices() includes inactive/failed units, which is
+  // what we need here since the agent is down.
+  for (const auto& unit : systemd->getMatchingServices(
+           fmt::format("{}*{}", kHwAgentPrefix, kSystemdServiceSuffix))) {
+    // "fboss_hw_agent@0.service" -> 0
+    std::string instance = unit.substr(kHwAgentPrefix.size());
+    auto dot = instance.find('.');
+    if (dot != std::string::npos) {
+      instance.erase(dot);
+    }
+    auto idx = folly::tryTo<int>(instance);
+    if (idx.hasValue()) {
+      switchIndexes.push_back(*idx);
+    } else {
+      LOG(WARNING) << "Ignoring systemd unit with non-numeric instance: "
+                   << unit;
+    }
+  }
+  std::sort(switchIndexes.begin(), switchIndexes.end());
+
+  bool multiSwitch = !switchIndexes.empty();
+  if (!multiSwitch) {
+    if (systemd->isServiceEnabled(std::string(kSwAgent))) {
+      throw std::runtime_error(
+          fmt::format(
+              "{} is enabled but systemd knows no {}<N> unit; cannot "
+              "determine which hw_agent instances to manage while the agent "
+              "is down",
+              kSwAgent,
+              kHwAgentPrefix));
+    }
+    if (!systemd->isServiceEnabled(std::string(kWedgeAgent))) {
+      throw std::runtime_error(
+          fmt::format(
+              "Neither {} nor {} is known to systemd; cannot determine the "
+              "agent mode while the agent is down",
+              kSwAgent,
+              kWedgeAgent));
+    }
+  }
+  XLOG(INFO) << "Agent mode detected via systemd: "
+             << (multiSwitch ? fmt::format(
+                                   "split ({} hw_agent instance(s))",
+                                   switchIndexes.size())
+                             : "monolithic");
+
+  auto util = std::make_unique<FbossServiceUtil>(
+      std::move(switchIndexes),
+      multiSwitch,
+      std::move(systemd),
+      std::move(dirUtil));
+  util->agentReachable_ = false;
+  return util;
+}
 
 std::string FbossServiceUtil::getServiceName(cli::ServiceType service) {
   switch (service) {
@@ -330,6 +402,16 @@ std::vector<std::string> FbossServiceUtil::reloadConfig(
   std::vector<std::string> reloadedServices;
   switch (service) {
     case cli::ServiceType::AGENT: {
+      if (!agentReachable_) {
+        // A hitless reload needs a live agent. The agent is down (typically
+        // crash-looping on the config we are replacing), so bounce it: it
+        // reads the new config from disk on start. Warm boot is requested but
+        // a crashed agent left no warm boot state, so it will cold boot.
+        XLOG(WARN)
+            << "Agent is not reachable; applying the config with a service "
+            << "restart instead of a hitless reload";
+        return restartService(service, cli::ConfigActionLevel::SERVICE_RESTART);
+      }
       std::string serviceName =
           isSplitMode() ? std::string(kSwAgent) : getServiceName(service);
 

@@ -11,17 +11,26 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <fmt/format.h>
 #include <folly/FileUtil.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 #include <unistd.h>
 #include <filesystem>
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/test/TestableConfigSession.h"
 #include "fboss/cli/fboss2/test/config/MockFbossServiceUtil.h"
 #include "fboss/cli/fboss2/test/config/MockSystemdInterface.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
+#include "folly/IPAddress.h"
 
 using ::testing::_; // NOLINT(bugprone-reserved-identifier)
 using ::testing::InSequence;
@@ -706,6 +715,260 @@ TEST(
 
   std::filesystem::remove_all("/tmp/test_session_thrift");
   std::filesystem::remove_all("/tmp/test_system_thrift");
+}
+
+// ============================================================
+// Config rollback/commit must work when the agent is down.
+// FbossServiceUtil::fromSystemd() detects the mode from systemd, and
+// reloadConfig() on an unreachable agent falls back to a restart.
+// ============================================================
+
+namespace {
+
+// Let each service resolve to its own (Classic) systemd unit name.
+void expectClassicUnits(
+    MockSystemdInterface& systemd,
+    const std::vector<std::string>& services) {
+  for (const auto& service : services) {
+    auto unit = fmt::format("{}.service", service);
+    EXPECT_CALL(systemd, getMatchingServices(unit))
+        .WillRepeatedly(Return(std::vector<std::string>{unit}));
+  }
+}
+
+// Expect the stop-all-then-start-all warm boot sequence for a split-mode box
+// with a single hw_agent: sw_agent stops first, hw_agent starts first.
+void expectSplitWarmbootSequence(MockSystemdInterface& systemd) {
+  expectClassicUnits(systemd, {"fboss_hw_agent@0", "fboss_sw_agent"});
+  InSequence seq;
+  EXPECT_CALL(systemd, stopService("fboss_sw_agent"));
+  EXPECT_CALL(systemd, waitForServiceInactive("fboss_sw_agent", _, _));
+  EXPECT_CALL(systemd, stopService("fboss_hw_agent@0"));
+  EXPECT_CALL(systemd, waitForServiceInactive("fboss_hw_agent@0", _, _));
+  EXPECT_CALL(systemd, startService("fboss_hw_agent@0"));
+  EXPECT_CALL(systemd, waitForServiceActive("fboss_hw_agent@0", _, _));
+  EXPECT_CALL(systemd, startService("fboss_sw_agent"));
+  EXPECT_CALL(systemd, waitForServiceActive("fboss_sw_agent", _, _));
+}
+
+} // namespace
+
+// fromSystemd(): hw_agent template instances known to systemd => split mode,
+// with indexes parsed from the unit names and sorted.
+TEST(
+    FbossServiceUtilOfflineTest,
+    FromSystemd_DetectsSplitModeFromHwAgentUnits) {
+  auto systemd = std::make_unique<MockSystemdInterface>();
+  EXPECT_CALL(*systemd, getMatchingServices("fboss_hw_agent@*.service"))
+      .WillOnce(Return(
+          std::vector<std::string>{
+              "fboss_hw_agent@1.service", "fboss_hw_agent@0.service"}));
+  // Split mode is established from the instances alone; is-enabled is not
+  // consulted.
+  EXPECT_CALL(*systemd, isServiceEnabled(_)).Times(0);
+  auto* systemdPtr = systemd.get();
+
+  auto util = FbossServiceUtil::fromSystemd(std::move(systemd));
+  EXPECT_TRUE(util->isSplitMode());
+  EXPECT_FALSE(util->isAgentReachable());
+
+  // The restart order reflects the sorted indexes.
+  expectClassicUnits(
+      *systemdPtr, {"fboss_hw_agent@0", "fboss_hw_agent@1", "fboss_sw_agent"});
+  {
+    InSequence seq;
+    EXPECT_CALL(*systemdPtr, stopService("fboss_sw_agent"));
+    EXPECT_CALL(*systemdPtr, waitForServiceInactive("fboss_sw_agent", _, _));
+    EXPECT_CALL(*systemdPtr, stopService("fboss_hw_agent@1"));
+    EXPECT_CALL(*systemdPtr, waitForServiceInactive("fboss_hw_agent@1", _, _));
+    EXPECT_CALL(*systemdPtr, stopService("fboss_hw_agent@0"));
+    EXPECT_CALL(*systemdPtr, waitForServiceInactive("fboss_hw_agent@0", _, _));
+    EXPECT_CALL(*systemdPtr, startService("fboss_hw_agent@0"));
+    EXPECT_CALL(*systemdPtr, waitForServiceActive("fboss_hw_agent@0", _, _));
+    EXPECT_CALL(*systemdPtr, startService("fboss_hw_agent@1"));
+    EXPECT_CALL(*systemdPtr, waitForServiceActive("fboss_hw_agent@1", _, _));
+    EXPECT_CALL(*systemdPtr, startService("fboss_sw_agent"));
+    EXPECT_CALL(*systemdPtr, waitForServiceActive("fboss_sw_agent", _, _));
+  }
+  auto restarted = util->restartService(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
+  ASSERT_EQ(restarted.size(), 3);
+  EXPECT_EQ(restarted[0], "fboss_hw_agent@0");
+  EXPECT_EQ(restarted[1], "fboss_hw_agent@1");
+  EXPECT_EQ(restarted[2], "fboss_sw_agent");
+}
+
+// fromSystemd(): no hw_agent instances and wedge_agent enabled => monolithic.
+TEST(FbossServiceUtilOfflineTest, FromSystemd_DetectsMonolithicMode) {
+  auto systemd = std::make_unique<MockSystemdInterface>();
+  EXPECT_CALL(*systemd, getMatchingServices("fboss_hw_agent@*.service"))
+      .WillOnce(Return(std::vector<std::string>{}));
+  EXPECT_CALL(*systemd, isServiceEnabled("fboss_sw_agent"))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*systemd, isServiceEnabled("wedge_agent")).WillOnce(Return(true));
+
+  auto util = FbossServiceUtil::fromSystemd(std::move(systemd));
+  EXPECT_FALSE(util->isSplitMode());
+  EXPECT_FALSE(util->isAgentReachable());
+}
+
+// fromSystemd(): sw_agent enabled but no hw_agent instance to manage is an
+// error rather than a guess.
+TEST(FbossServiceUtilOfflineTest, FromSystemd_SplitWithoutHwAgentThrows) {
+  auto systemd = std::make_unique<MockSystemdInterface>();
+  EXPECT_CALL(*systemd, getMatchingServices("fboss_hw_agent@*.service"))
+      .WillOnce(Return(std::vector<std::string>{}));
+  EXPECT_CALL(*systemd, isServiceEnabled("fboss_sw_agent"))
+      .WillOnce(Return(true));
+
+  EXPECT_THROW(
+      FbossServiceUtil::fromSystemd(std::move(systemd)), std::runtime_error);
+}
+
+// fromSystemd(): nothing known to systemd is an error too.
+TEST(FbossServiceUtilOfflineTest, FromSystemd_NoAgentUnitsThrows) {
+  auto systemd = std::make_unique<MockSystemdInterface>();
+  EXPECT_CALL(*systemd, getMatchingServices("fboss_hw_agent@*.service"))
+      .WillOnce(Return(std::vector<std::string>{}));
+  EXPECT_CALL(*systemd, isServiceEnabled("fboss_sw_agent"))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*systemd, isServiceEnabled("wedge_agent"))
+      .WillOnce(Return(false));
+
+  EXPECT_THROW(
+      FbossServiceUtil::fromSystemd(std::move(systemd)), std::runtime_error);
+}
+
+// reloadConfig() on an unreachable agent: no thrift, a warm boot restart
+// instead (split mode).
+TEST(FbossServiceUtilOfflineTest, ReloadConfig_AgentDown_RestartsSplitMode) {
+  auto systemd = std::make_unique<MockSystemdInterface>();
+  EXPECT_CALL(*systemd, getMatchingServices("fboss_hw_agent@*.service"))
+      .WillOnce(Return(std::vector<std::string>{"fboss_hw_agent@0.service"}));
+  auto* systemdPtr = systemd.get();
+  auto util = FbossServiceUtil::fromSystemd(std::move(systemd));
+
+  expectSplitWarmbootSequence(*systemdPtr);
+
+  HostInfo hostInfo(
+      "localhost", "localhost-oob", folly::IPAddress("127.0.0.1"));
+  auto services = util->reloadConfig(cli::ServiceType::AGENT, hostInfo);
+  ASSERT_EQ(services.size(), 2);
+  EXPECT_EQ(services[0], "fboss_hw_agent@0");
+  EXPECT_EQ(services[1], "fboss_sw_agent");
+}
+
+// reloadConfig() on an unreachable agent, monolithic mode: a plain restart of
+// wedge_agent.
+TEST(FbossServiceUtilOfflineTest, ReloadConfig_AgentDown_RestartsMonolithic) {
+  auto systemd = std::make_unique<MockSystemdInterface>();
+  EXPECT_CALL(*systemd, getMatchingServices("fboss_hw_agent@*.service"))
+      .WillOnce(Return(std::vector<std::string>{}));
+  EXPECT_CALL(*systemd, isServiceEnabled("fboss_sw_agent"))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*systemd, isServiceEnabled("wedge_agent")).WillOnce(Return(true));
+  auto* systemdPtr = systemd.get();
+  auto util = FbossServiceUtil::fromSystemd(std::move(systemd));
+
+  {
+    InSequence seq;
+    EXPECT_CALL(*systemdPtr, restartService("wedge_agent"));
+    EXPECT_CALL(*systemdPtr, waitForServiceActive("wedge_agent", _, _));
+  }
+
+  HostInfo hostInfo(
+      "localhost", "localhost-oob", folly::IPAddress("127.0.0.1"));
+  auto services = util->reloadConfig(cli::ServiceType::AGENT, hostInfo);
+  ASSERT_EQ(services.size(), 1);
+  EXPECT_EQ(services[0], "wedge_agent");
+}
+
+// A reachable agent (the normal constructors) keeps the thrift reload path:
+// setAgentReachable(false) is what flips it.
+TEST(FbossServiceUtilOfflineTest, ReloadConfig_ReachableFlagDefaultsTrue) {
+  FbossServiceUtil util(
+      std::vector<int>{0}, true, std::make_unique<MockSystemdInterface>());
+  EXPECT_TRUE(util.isAgentReachable());
+  util.setAgentReachable(false);
+  EXPECT_FALSE(util.isAgentReachable());
+}
+
+// ConfigSession: local host, thrift probe fails => systemd fallback, and a
+// HITLESS action becomes a restart of the services systemd reported.
+TEST(
+    ConfigSessionServiceTest,
+    EnsureFbossServiceUtil_AgentDown_LocalFallsBack) {
+  cfg::AgentConfig agentConfig;
+  auto configJson =
+      apache::thrift::SimpleJSONSerializer::serialize<std::string>(agentConfig);
+  std::filesystem::create_directories("/tmp/test_system_agent_down");
+  std::filesystem::create_directories("/tmp/test_session_agent_down");
+  folly::writeFile(configJson, "/tmp/test_system_agent_down/agent.conf");
+
+  TestableConfigSession session(
+      "/tmp/test_session_agent_down", "/tmp/test_system_agent_down");
+  session.setAgentUnreachable(true);
+  session.setMockSystemdFactory([] {
+    auto systemd = std::make_unique<MockSystemdInterface>();
+    EXPECT_CALL(*systemd, getMatchingServices("fboss_hw_agent@*.service"))
+        .WillOnce(Return(std::vector<std::string>{"fboss_hw_agent@0.service"}));
+    expectSplitWarmbootSequence(*systemd);
+    return systemd;
+  });
+
+  HostInfo hostInfo(
+      "localhost", "localhost-oob", folly::IPAddress("127.0.0.1"));
+  std::map<cli::ServiceType, cli::ConfigActionLevel> actions = {
+      {cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS}};
+
+  auto serviceNames = session.applyServiceActions(actions, hostInfo);
+
+  ASSERT_EQ(serviceNames[cli::ServiceType::AGENT].size(), 2);
+  EXPECT_EQ(serviceNames[cli::ServiceType::AGENT][0], "fboss_hw_agent@0");
+  EXPECT_EQ(serviceNames[cli::ServiceType::AGENT][1], "fboss_sw_agent");
+
+  std::filesystem::remove_all("/tmp/test_session_agent_down");
+  std::filesystem::remove_all("/tmp/test_system_agent_down");
+}
+
+// ConfigSession: remote host, thrift probe fails => no systemd fallback (we
+// cannot drive a remote systemd); the original "Is the agent running?" error.
+TEST(ConfigSessionServiceTest, EnsureFbossServiceUtil_AgentDown_RemoteThrows) {
+  cfg::AgentConfig agentConfig;
+  auto configJson =
+      apache::thrift::SimpleJSONSerializer::serialize<std::string>(agentConfig);
+  std::filesystem::create_directories("/tmp/test_system_agent_down_remote");
+  std::filesystem::create_directories("/tmp/test_session_agent_down_remote");
+  folly::writeFile(configJson, "/tmp/test_system_agent_down_remote/agent.conf");
+
+  TestableConfigSession session(
+      "/tmp/test_session_agent_down_remote",
+      "/tmp/test_system_agent_down_remote");
+  session.setAgentUnreachable(true);
+  bool systemdRequested = false;
+  session.setMockSystemdFactory([&systemdRequested] {
+    systemdRequested = true;
+    return std::make_unique<MockSystemdInterface>();
+  });
+
+  HostInfo hostInfo("rsw001", "rsw001-oob", folly::IPAddress("10.1.2.3"));
+  std::map<cli::ServiceType, cli::ConfigActionLevel> actions = {
+      {cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS}};
+
+  try {
+    session.applyServiceActions(actions, hostInfo);
+    FAIL() << "expected applyServiceActions to throw";
+  } catch (const std::runtime_error& ex) {
+    EXPECT_THAT(
+        std::string(ex.what()),
+        ::testing::HasSubstr("Failed to query agent run state from rsw001"));
+    EXPECT_THAT(
+        std::string(ex.what()), ::testing::HasSubstr("Is the agent running?"));
+  }
+  EXPECT_FALSE(systemdRequested);
+
+  std::filesystem::remove_all("/tmp/test_session_agent_down_remote");
+  std::filesystem::remove_all("/tmp/test_system_agent_down_remote");
 }
 
 } // namespace facebook::fboss
