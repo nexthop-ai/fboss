@@ -300,10 +300,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in1_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 12.6,
-            "minAlarmVal": 11.4,
-            "upperCriticalVal": 13.2,
-            "lowerCriticalVal": 10.8
+            "maxAlarmVal": 13.199,
+            "minAlarmVal": 10.8,
+            "upperCriticalVal": 13.439,
+            "lowerCriticalVal": 9.6
           },
           "compute": "@/1000.0"
         },
@@ -312,10 +312,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in2_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 5.25,
-            "minAlarmVal": 4.75,
-            "upperCriticalVal": 5.5,
-            "lowerCriticalVal": 4.5
+            "maxAlarmVal": 5.5,
+            "minAlarmVal": 4.5,
+            "upperCriticalVal": 5.75,
+            "lowerCriticalVal": 4.0
           },
           "compute": "@/1000.0"
         },
@@ -324,10 +324,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in3_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.84,
-            "minAlarmVal": 0.76,
-            "upperCriticalVal": 0.88,
-            "lowerCriticalVal": 0.72
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.54
           },
           "compute": "@/1000.0"
         },
@@ -336,10 +334,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in4_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.945,
-            "minAlarmVal": 0.855,
-            "upperCriticalVal": 0.99,
-            "lowerCriticalVal": 0.81
+            "upperCriticalVal": 1.17,
+            "lowerCriticalVal": 0.72
           },
           "compute": "@/1000.0"
         },
@@ -348,10 +344,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in5_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.788,
-            "minAlarmVal": 0.712,
-            "upperCriticalVal": 0.825,
-            "lowerCriticalVal": 0.675
+            "upperCriticalVal": 0.975,
+            "lowerCriticalVal": 0.6
           },
           "compute": "@/1000.0"
         },
@@ -360,10 +354,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in6_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.84,
-            "minAlarmVal": 0.76,
-            "upperCriticalVal": 0.88,
-            "lowerCriticalVal": 0.72
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.54
           },
           "compute": "@/1000.0"
         },
@@ -372,10 +364,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in7_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.05,
-            "minAlarmVal": 0.95,
+            "maxAlarmVal": 1.049,
+            "minAlarmVal": 0.899,
             "upperCriticalVal": 1.1,
-            "lowerCriticalVal": 0.9
+            "lowerCriticalVal": 0.799
           },
           "compute": "@/1000.0"
         },
@@ -384,10 +376,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in8_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 3.465,
-            "minAlarmVal": 3.135,
-            "upperCriticalVal": 3.63,
-            "lowerCriticalVal": 2.97
+            "maxAlarmVal": 3.63,
+            "minAlarmVal": 2.969,
+            "upperCriticalVal": 3.795,
+            "lowerCriticalVal": 2.64
           },
           "compute": "@/1000.0"
         },
@@ -396,10 +388,9 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in9_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.84,
-            "minAlarmVal": 0.76,
-            "upperCriticalVal": 0.88,
-            "lowerCriticalVal": 0.72
+            "minAlarmVal": 0.399,
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.54
           },
           "compute": "@/1000.0"
         },
@@ -414,10 +405,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in11_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.26,
-            "minAlarmVal": 1.14,
+            "maxAlarmVal": 1.299,
+            "minAlarmVal": 1.08,
             "upperCriticalVal": 1.32,
-            "lowerCriticalVal": 1.08
+            "lowerCriticalVal": 0.96
           },
           "compute": "@/1000.0"
         },
@@ -426,10 +417,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in12_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.84,
-            "minAlarmVal": 0.76,
-            "upperCriticalVal": 0.88,
-            "lowerCriticalVal": 0.72
+            "maxAlarmVal": 0.88,
+            "minAlarmVal": 0.72,
+            "upperCriticalVal": 0.92,
+            "lowerCriticalVal": 0.639
           },
           "compute": "@/1000.0"
         },
@@ -438,10 +429,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in13_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.945,
-            "minAlarmVal": 0.855,
-            "upperCriticalVal": 0.99,
-            "lowerCriticalVal": 0.81
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.72
           },
           "compute": "@/1000.0"
         },
@@ -450,10 +439,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in14_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.945,
-            "minAlarmVal": 0.855,
-            "upperCriticalVal": 0.99,
-            "lowerCriticalVal": 0.81
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.72
           },
           "compute": "@/1000.0"
         },
@@ -462,10 +449,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in15_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.756,
-            "minAlarmVal": 0.684,
-            "upperCriticalVal": 0.792,
-            "lowerCriticalVal": 0.648
+            "upperCriticalVal": 0.936,
+            "lowerCriticalVal": 0.575
           },
           "compute": "@/1000.0"
         },
@@ -474,10 +459,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in16_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.756,
-            "minAlarmVal": 0.684,
-            "upperCriticalVal": 0.792,
-            "lowerCriticalVal": 0.648
+            "upperCriticalVal": 0.936,
+            "lowerCriticalVal": 0.575
           },
           "compute": "@/1000.0"
         },
@@ -486,10 +469,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_1/in17_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.89,
-            "minAlarmVal": 1.71,
-            "upperCriticalVal": 1.98,
-            "lowerCriticalVal": 1.62
+            "maxAlarmVal": 1.872,
+            "minAlarmVal": 1.619,
+            "upperCriticalVal": 1.89,
+            "lowerCriticalVal": 1.44
           },
           "compute": "@/1000.0"
         },
@@ -498,10 +481,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in1_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 12.6,
-            "minAlarmVal": 11.4,
-            "upperCriticalVal": 13.2,
-            "lowerCriticalVal": 10.8
+            "upperCriticalVal": 13.439,
+            "lowerCriticalVal": 9.6
           },
           "compute": "@/1000.0"
         },
@@ -511,9 +492,9 @@
           "type": 1,
           "thresholds": {
             "maxAlarmVal": 3.465,
-            "minAlarmVal": 3.135,
+            "minAlarmVal": 2.969,
             "upperCriticalVal": 3.63,
-            "lowerCriticalVal": 2.97
+            "lowerCriticalVal": 2.64
           },
           "compute": "@/1000.0"
         },
@@ -522,10 +503,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in3_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.575,
-            "minAlarmVal": 1.425,
-            "upperCriticalVal": 1.65,
-            "lowerCriticalVal": 1.35
+            "maxAlarmVal": 1.595,
+            "minAlarmVal": 1.304,
+            "upperCriticalVal": 1.725,
+            "lowerCriticalVal": 1.2
           },
           "compute": "@/1000.0"
         },
@@ -534,10 +515,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in4_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.945,
-            "minAlarmVal": 0.855,
-            "upperCriticalVal": 0.99,
-            "lowerCriticalVal": 0.81
+            "upperCriticalVal": 1.17,
+            "lowerCriticalVal": 0.72
           },
           "compute": "@/1000.0"
         },
@@ -546,10 +525,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in5_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.788,
-            "minAlarmVal": 0.712,
-            "upperCriticalVal": 0.825,
-            "lowerCriticalVal": 0.675
+            "upperCriticalVal": 0.975,
+            "lowerCriticalVal": 0.6
           },
           "compute": "@/1000.0"
         },
@@ -558,10 +535,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in6_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.84,
-            "minAlarmVal": 0.76,
-            "upperCriticalVal": 0.88,
-            "lowerCriticalVal": 0.72
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.54
           },
           "compute": "@/1000.0"
         },
@@ -570,10 +545,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in7_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.26,
-            "minAlarmVal": 1.14,
-            "upperCriticalVal": 1.32,
-            "lowerCriticalVal": 1.08
+            "maxAlarmVal": 1.32,
+            "minAlarmVal": 1.079,
+            "upperCriticalVal": 1.38,
+            "lowerCriticalVal": 0.96
           },
           "compute": "@/1000.0"
         },
@@ -582,10 +557,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in8_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 3.465,
-            "minAlarmVal": 3.135,
-            "upperCriticalVal": 3.63,
-            "lowerCriticalVal": 2.97
+            "maxAlarmVal": 3.63,
+            "minAlarmVal": 2.969,
+            "upperCriticalVal": 3.795,
+            "lowerCriticalVal": 2.64
           },
           "compute": "@/1000.0"
         },
@@ -594,10 +569,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in9_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.575,
-            "minAlarmVal": 1.425,
-            "upperCriticalVal": 1.65,
-            "lowerCriticalVal": 1.35
+            "upperCriticalVal": 1.725,
+            "lowerCriticalVal": 1.2
           },
           "compute": "@/1000.0"
         },
@@ -606,10 +579,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in10_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.89,
-            "minAlarmVal": 1.71,
-            "upperCriticalVal": 1.98,
-            "lowerCriticalVal": 1.62
+            "maxAlarmVal": 1.979,
+            "minAlarmVal": 1.619,
+            "upperCriticalVal": 2.07,
+            "lowerCriticalVal": 1.44
           },
           "compute": "@/1000.0"
         },
@@ -618,10 +591,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in11_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.84,
-            "minAlarmVal": 0.76,
-            "upperCriticalVal": 0.88,
-            "lowerCriticalVal": 0.72
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.54
           },
           "compute": "@/1000.0"
         },
@@ -630,10 +601,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in12_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.945,
-            "minAlarmVal": 0.855,
-            "upperCriticalVal": 0.99,
-            "lowerCriticalVal": 0.81
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.72
           },
           "compute": "@/1000.0"
         },
@@ -642,10 +611,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in13_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.945,
-            "minAlarmVal": 0.855,
-            "upperCriticalVal": 0.99,
-            "lowerCriticalVal": 0.81
+            "upperCriticalVal": 1.035,
+            "lowerCriticalVal": 0.72
           },
           "compute": "@/1000.0"
         },
@@ -654,10 +621,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in14_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.756,
-            "minAlarmVal": 0.684,
-            "upperCriticalVal": 0.792,
-            "lowerCriticalVal": 0.648
+            "upperCriticalVal": 0.936,
+            "lowerCriticalVal": 0.575
           },
           "compute": "@/1000.0"
         },
@@ -666,10 +631,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in15_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 0.756,
-            "minAlarmVal": 0.684,
-            "upperCriticalVal": 0.792,
-            "lowerCriticalVal": 0.648
+            "upperCriticalVal": 0.936,
+            "lowerCriticalVal": 0.575
           },
           "compute": "@/1000.0"
         },
@@ -678,10 +641,10 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in16_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.26,
-            "minAlarmVal": 1.14,
-            "upperCriticalVal": 1.32,
-            "lowerCriticalVal": 1.08
+            "maxAlarmVal": 1.32,
+            "minAlarmVal": 1.079,
+            "upperCriticalVal": 1.38,
+            "lowerCriticalVal": 0.959
           },
           "compute": "@/1000.0"
         },
@@ -690,10 +653,8 @@
           "sysfsPath": "/run/devmap/sensors/DPM_2/in17_input",
           "type": 1,
           "thresholds": {
-            "maxAlarmVal": 1.575,
-            "minAlarmVal": 1.425,
-            "upperCriticalVal": 1.65,
-            "lowerCriticalVal": 1.35
+            "upperCriticalVal": 1.725,
+            "lowerCriticalVal": 1.2
           },
           "compute": "@/1000.0"
         },
