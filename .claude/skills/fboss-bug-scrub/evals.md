@@ -19,3 +19,4 @@
 - **E-rank:** the top of the list is ordered by 7-day hits; tickets with high 30-day but zero 7-day hits carry a "verify fixed" note rather than being ranked top-10 or dropped.
 - **E-tail:** long-tail STARS rows have an auto note stating age and 90-day hit count.
 - **E-sheet:** the sheet is checked empty before writing; Jira IDs are HYPERLINK formulas; `gws` output is stripped of its first line before parsing.
+- **E-fix:** every non-open QPN ticket gets a fix verdict. A ticket whose hits stop within the grace period of its merged PR reads `FIXED`; one still hitting after `merge + grace` reads `STILL FIRING` and names the PR that did not take; a merge younger than the grace period reads as TIDE lag rather than a failed fix. The merge date comes from a merged PR whose title carries the Jira key, not from the Jira changelog. A failed QPN or `gh` fetch reads as an `ERROR` verdict (never as a clean "no hits"), with a stderr warning and a non-zero exit.

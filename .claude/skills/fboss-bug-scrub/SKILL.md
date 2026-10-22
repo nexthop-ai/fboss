@@ -41,11 +41,13 @@ OUT=$(mktemp -d)
 fboss/.claude/skills/fboss-bug-scrub/scripts/fetch.sh "$OUT"      # Jira via acli + QPN via curl
 # write $OUT/notes.json ({key: note}) and $OUT/order.json ([keys, best first]) — see Ranking
 python3 fboss/.claude/skills/fboss-bug-scrub/scripts/build_csv.py "$OUT"   # -> $OUT/fboss_cli_bug_scrub.csv
+python3 fboss/.claude/skills/fboss-bug-scrub/scripts/fixcheck.py "$OUT"   # -> $OUT/fixcheck.csv
 # then, always: update the triage tab (see below) and report the watch list
 ```
 
 `fetch.sh` needs `acli` authenticated (`acli jira auth status`) and reachability
-to `qpn.sw.internal.nexthop.ai`. It writes `j1.json j2.json j3.json`
+to `qpn.sw.internal.nexthop.ai`; `fixcheck.py` additionally needs `gh`
+authenticated against `nexthop-ai/private-fboss`. It writes `j1.json j2.json j3.json`
 (epic children), `j4all.json` (all open `stars-ai-triage-auto`), `top{7,30,90}.json`
 (QPN heavy hitters), `cat4.keys`, `platforms.jsonl` (per-model hit breakdown),
 `platform_pairs/` (one file per ticket, model+testbed pairs), and `meta/<KEY>.json`
@@ -61,7 +63,9 @@ is the authority for "hit by CLI tests": it gives `hit_count`, `unique_tests`,
 that the label query missed** — real heavy hitters have shown up with the label
 `stars-ai-triage` (no `-auto`) or no label at all (NOS-15884, NOS-14705 in Sept 2026).
 QPN tickets whose status is Done/WONTFIX/Blocked/In Review are excluded by the
-status rule; mention them to the user as a watch list rather than dropping silently.
+status rule; mention them to the user as a watch list rather than dropping
+silently, and run the fix check over that watch list (below) — for those, the
+question is not "who owns this" but "did the fix stop the hits".
 
 Agent/led_service crashes that are not CLI code still count: if STARS filed the
 failure under `package=cli` it hurts the CLI pass rate, which is the metric.
@@ -167,6 +171,74 @@ Group siblings in notes (same test, same crash family, e.g. uncaught
 Notes column: 1–3 sentences, why it matters or doesn't. Long tail default is
 generated: "opened N weeks ago, H hits in 90d; candidate for WONTFIX if quiet."
 Only hand-write notes for roughly the top 60; `build_csv.py` fills the rest.
+
+## Verify the fixes landed
+
+The status rule keeps New/Reopened/Backlog, so everything with a fix in flight
+(`In Merge`) or already closed (`Done`/`WONTFIX`/`Duplicate`) falls out of the CSV
+into the watch list. That watch list is not "ignore" — it holds the two most
+useful answers of the run: a ticket whose fix landed and whose hits went to zero
+can be closed, and a ticket whose fix landed and whose hits **did not** stop is
+still burning testbeds and belongs at the top of the sheet.
+
+```bash
+python3 fboss/.claude/skills/fboss-bug-scrub/scripts/fixcheck.py "$OUT"   # -> $OUT/fixcheck.csv
+```
+
+For every QPN ticket whose Jira status is not New/Reopened/Backlog it fetches the
+daily hit series and the merged PR(s) and prints a verdict:
+
+| Verdict | Meaning |
+|---|---|
+| `FIXED - quiet Nd, stopped Md after merge <day> (#PR)` | hit rate went to zero right after the fix landed — close it |
+| `STILL FIRING - H hits/7d; fix #PR merged <day> did not take` | a fix has been merged for longer than the grace period and hits continue — escalate, and rank it at the top |
+| `firing, but merge <day> is only Nd old (TIDE lag)` | too soon: a new image has to be marked stable in TIDE first |
+| `quiet Nd - stopped Md after merge ... later than the TIDE lag` | quiet, but the tail was longer than the lag — worth a glance |
+| `quiet Nd since <day>, Xd BEFORE the merge ... the fix is not what stopped it` | hits stopped before the fix landed; something else changed |
+| `quiet Nd - <status>, no merged PR to attribute it to` | quiet but never fixed (`In Review`, `Blocked`, ...) |
+| `no CLI hits in Nd` | nothing in this window |
+| `ERROR - QPN fetch failed (...)`, `ERROR - gh failed (...)` | the fetch failed, so the verdict is *unknown* — never read it as "no hits". The script warns on stderr and exits 1 |
+
+Two endpoints, both with a wrinkle:
+
+- **Hits.** `GET /api/v1/stars/top-bugs/timeline?ticket_id=<KEY>&bucket=day&days=30&os=fboss&package=cli&source=t_recs`
+  returns a *flat* `[{"time","count"}]` array of zero-filled daily counts — a
+  different shape from `group_by=model`, which returns `{"groups","points"}`.
+  Use `bucket=`, not `group_by=`: `group_by=day` is a 400 (`group_by` only takes
+  `testbed|model|testname|branch|topology`). `after=`/`before=` are documented on
+  this endpoint but do not filter in practice — a 90d window with `after=<merge>`
+  still returns all 90 days, so slice the series client-side.
+- **Merge date.** `gh pr list --repo nexthop-ai/private-fboss --state merged
+  --search "<KEY> in:title"` — the PR title carries the Jira key (that is the
+  link the Jira changelog shows). Take the newest merge, but keep them all: a
+  ticket can have several, and naming an earlier one that did not take is the
+  point. Match on a `\bKEY\b` word boundary, or `NOS-16533` also hits `NOS-165330`.
+  The Jira changelog itself is not reachable from `acli` (`changelog` comes back
+  null even with `--fields '*all'`), which is why the merge date comes from `gh`.
+
+The grace period (default 2 days, `FIXCHECK_GRACE`) is the TIDE stable-image lag:
+hits keep landing for a day or so after the merge because the fleet is still
+running the previous image. NOS-17718 merged 2026-09-25, still hit on 09-26, zero
+from 09-27 → `FIXED`. Anything still hitting after `merge + grace` is a fix that
+did not take. Window and grace are separate knobs: `FIXCHECK_DAYS` (default 30) is
+the timeline window the series covers, `FIXCHECK_GRACE` (default 2) is the lag —
+setting `FIXCHECK_DAYS=4` to get a 4-day grace silently gets you a 4-day window
+and a grace of 2.
+
+**A fix that did not take comes back on the same ticket, not a new one.** STARS
+does not file a second ticket for a failure it already knows: a match is
+attributed to the ticket that owns the fingerprint — that is what lets the
+regression-reopen gate act on the *existing* key (`nhtools/stars/stars/core/
+regression_gate.py` decides "whether a fingerprint match should reopen a closed
+ticket"), and a closed ticket keeps its series (NOS-16889 is `UNREPRODUCIBLE` and
+still carries 3447 hits over 90d). Production (`STARS_REGRESSION_REOPEN=1`) runs
+that gate: a match landing on a build that does not contain the ticket's fix
+transitions the ticket back to `Reopened`, and an `UNREPRODUCIBLE` closure reopens
+outright. So a still-broken fix normally reappears in the CSV on the next run —
+the status rule keeps `New`/`Reopened` — and this pass is the same judgement made
+from the hit *series* rather than from a single match event. It also covers what
+the gate leaves alone: `WONTFIX` and `Duplicate` (deliberately comment-only
+there), and the tickets that are quiet but not closed (`In Review`, `Blocked`).
 
 ## Update the triage tab (every run)
 
