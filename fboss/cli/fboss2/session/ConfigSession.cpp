@@ -15,6 +15,7 @@
 #include <folly/String.h>
 #include <folly/json/dynamic.h>
 #include <folly/json/json.h>
+#include <folly/logging/xlog.h>
 #include <glog/logging.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -41,10 +42,12 @@
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
+#include "fboss/agent/if/gen-cpp2/ctrl_types.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/ConfigFileManager.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/Git.h"
+#include "fboss/cli/fboss2/session/SystemdInterface.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtils.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
@@ -922,6 +925,15 @@ const std::vector<std::string>& ConfigSession::getCommands() const {
   return commands_;
 }
 
+MultiSwitchRunState ConfigSession::queryMultiSwitchRunState(
+    const HostInfo& hostInfo) const {
+  return utils::getMultiSwitchRunState(hostInfo);
+}
+
+std::unique_ptr<SystemdInterface> ConfigSession::makeSystemdInterface() const {
+  return std::make_unique<SystemdInterface>();
+}
+
 void ConfigSession::ensureFbossServiceUtil(
     const HostInfo& hostInfo,
     bool needsAgentState) {
@@ -937,14 +949,26 @@ void ConfigSession::ensureFbossServiceUtil(
 
   MultiSwitchRunState runState;
   try {
-    runState = utils::getMultiSwitchRunState(hostInfo);
+    runState = queryMultiSwitchRunState(hostInfo);
   } catch (const std::exception& e) {
-    throw std::runtime_error(
-        fmt::format(
-            "Failed to query agent run state from {}. "
-            "Is the agent running? Error: {}",
-            hostInfo.getName(),
-            e.what()));
+    if (!hostInfo.isLocalHost()) {
+      throw std::runtime_error(
+          fmt::format(
+              "Failed to query agent run state from {}. "
+              "Is the agent running? Error: {}",
+              hostInfo.getName(),
+              e.what()));
+    }
+    // The local agent is down (e.g. crash-looping on a bad config, which is
+    // exactly when a rollback is most needed). Fall back to systemd for the
+    // mode/instance detection; the resulting FbossServiceUtil applies config
+    // changes with a restart since a hitless reload is impossible.
+    XLOG(WARN) << "Agent is not reachable over thrift (" << e.what()
+               << "). Falling back to systemd to detect the agent mode; "
+               << "config changes will be applied by restarting the agent.";
+    fbossServiceUtil_ = FbossServiceUtil::fromSystemd(makeSystemdInterface());
+    fbossServiceUtilHasAgentState_ = true;
+    return;
   }
 
   std::vector<int> switchIndexes;
@@ -1310,6 +1334,11 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
   // Path discovery may have added metadata while examining staged domains.
   saveMetadata();
 
+  // Decide up front how service actions will be applied (live agent over
+  // thrift, or systemd-only if the agent is down), before any file is touched.
+  // A remote, unreachable agent throws here with nothing to undo.
+  ensureFbossServiceUtil(hostInfo, actions.contains(cli::ServiceType::AGENT));
+
   // Write the metadata file alongside the config revision (required for
   // rollback). Use folly::writeFileAtomic rather than fs::copy_file so we only
   // write content without fchmod()ing a differently-owned destination (EPERM).
@@ -1662,6 +1691,11 @@ std::string ConfigSession::rollback(
             Git::shortSha1(resolvedSha),
             ex.what()));
   }
+
+  // Decide up front how service actions will be applied (live agent over
+  // thrift, or systemd-only if the agent is down), before any file is touched.
+  // A remote, unreachable agent throws here with nothing to undo.
+  ensureFbossServiceUtil(hostInfo, actions.contains(cli::ServiceType::AGENT));
 
   // Apply the rolled-back config. Any metadata, filesystem, service, or Git
   // failure restores the captured pre-rollback state.

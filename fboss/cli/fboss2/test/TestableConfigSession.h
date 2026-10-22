@@ -11,11 +11,13 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "fboss/agent/if/gen-cpp2/ctrl_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/SystemdInterface.h"
@@ -79,9 +81,36 @@ class TestableConfigSession : public ConfigSession {
     configPathResolver_ = std::move(resolver);
   }
 
-  void ensureFbossServiceUtil(
-      const HostInfo& /*hostInfo*/,
-      bool /*needsAgentState*/) override {
+  // Simulate an agent that is down: the real ConfigSession::
+  // ensureFbossServiceUtil() runs, its thrift probe throws, and the systemd
+  // fallback is served by mockSystemdFactory_.
+  void setAgentUnreachable(bool unreachable) {
+    agentUnreachable_ = unreachable;
+  }
+
+  MultiSwitchRunState queryMultiSwitchRunState(
+      const HostInfo& hostInfo) const override {
+    if (agentUnreachable_) {
+      throw std::runtime_error(
+          "simulated: AsyncSocketException: connect failed, errno = 111 "
+          "(Connection refused)");
+    }
+    return ConfigSession::queryMultiSwitchRunState(hostInfo);
+  }
+
+  std::unique_ptr<SystemdInterface> makeSystemdInterface() const override {
+    if (mockSystemdFactory_) {
+      return mockSystemdFactory_();
+    }
+    return ConfigSession::makeSystemdInterface();
+  }
+
+  void ensureFbossServiceUtil(const HostInfo& hostInfo, bool needsAgentState)
+      override {
+    if (agentUnreachable_) {
+      ConfigSession::ensureFbossServiceUtil(hostInfo, needsAgentState);
+      return;
+    }
     if (!fbossServiceUtil_) {
       if (mockSystemdFactory_) {
         fbossServiceUtil_ = std::make_unique<NoAgentServiceUtil>(
@@ -124,6 +153,7 @@ class TestableConfigSession : public ConfigSession {
   std::string systemConfigDir_;
   ConfigPathResolver configPathResolver_;
   std::string commandLine_;
+  bool agentUnreachable_{false};
   bool multiSwitchOverride_{false};
   std::vector<int> switchIndexesOverride_{0};
   std::function<std::unique_ptr<SystemdInterface>()> mockSystemdFactory_;

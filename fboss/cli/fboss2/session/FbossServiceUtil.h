@@ -40,7 +40,28 @@ class FbossServiceUtil {
       bool multiSwitch,
       std::unique_ptr<SystemdInterface> systemd);
 
+  // Offline constructor for when the agent cannot be reached over thrift
+  // (e.g. it is crash-looping on a bad config): derives the mode and the
+  // hw_agent instances from what systemd knows instead of asking the agent.
+  // Split mode if any fboss_hw_agent@<N> unit exists (or fboss_sw_agent is
+  // enabled), monolithic if wedge_agent is enabled; throws if neither can be
+  // established. The returned object reports isAgentReachable() == false, so
+  // reloadConfig() applies changes with a restart instead of a thrift call.
+  static std::unique_ptr<FbossServiceUtil> fromSystemd(
+      std::unique_ptr<SystemdInterface> systemd,
+      AgentDirectoryUtil dirUtil = AgentDirectoryUtil());
+
   virtual ~FbossServiceUtil() = default;
+
+  // Whether the agent answered over thrift when this object was built. When
+  // false, hitless reloads are not possible and reloadConfig() falls back to a
+  // (warm boot) restart, which reads the new config from disk.
+  bool isAgentReachable() const {
+    return agentReachable_;
+  }
+  void setAgentReachable(bool reachable) {
+    agentReachable_ = reachable;
+  }
 
   // Restart services for the given service type and action level.
   // Returns the list of actual systemd service names that were restarted.
@@ -59,8 +80,10 @@ class FbossServiceUtil {
 
   // Reload config for a service without restart (for HITLESS changes).
   // Calls sync_reloadConfig() on the primary service (sw_agent in split mode,
-  // wedge_agent in monolithic mode).
-  // Returns the list of actual service names that were reloaded.
+  // wedge_agent in monolithic mode). If the agent is known to be unreachable
+  // (see isAgentReachable()), a hitless reload is impossible, so this instead
+  // restarts the agent services (SERVICE_RESTART, i.e. a warmboot) and returns
+  // those names. Returns the list of actual service names that were reloaded.
   virtual std::vector<std::string> reloadConfig(
       cli::ServiceType service,
       const HostInfo& hostInfo);
@@ -81,6 +104,7 @@ class FbossServiceUtil {
   std::unique_ptr<SystemdInterface> systemd_;
   std::vector<int> switchIndexes_;
   bool multiSwitch_;
+  bool agentReachable_{true};
 
   // Returns ordered list of services to restart (hw_agent first, sw_agent last)
   std::vector<std::string> getServicesToRestart(cli::ServiceType service) const;

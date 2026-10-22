@@ -15,7 +15,11 @@
 #include <string>
 #include <string_view>
 #include <vector>
+<<<<<<< HEAD
 
+=======
+#include "fboss/agent/if/gen-cpp2/ctrl_types_fwd.h"
+>>>>>>> f3e2cca783 (NOS-7077: fboss2 config rollback/commit work when the agent is down (#1882))
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/Git.h"
@@ -336,6 +340,30 @@ class ConfigSession {
   // Service orchestration for systemd operations
   std::unique_ptr<FbossServiceUtil> fbossServiceUtil_;
 
+  // Lazily initialize fbossServiceUtil_. Agent actions require the running
+  // agent's multi-switch state (needsAgentState), queried via Thrift rather
+  // than read from the config file (the config may omit multi_switch when it
+  // is passed on the command line); actions for other services do not.
+  // If the agent cannot be reached and hostInfo is the local host, fall back to
+  // FbossServiceUtil::fromSystemd() so a commit/rollback can still be applied
+  // by restarting the agent (rollback must work when the agent is
+  // crash-looping on a bad config). A remote host with an unreachable agent
+  // still throws, since systemd cannot be driven remotely.
+  // commit()/rollback() call this before touching any file so the strategy is
+  // decided up front rather than discovered in their failure paths.
+  virtual void ensureFbossServiceUtil(
+      const HostInfo& hostInfo,
+      bool needsAgentState);
+
+  // Thrift probe used by ensureFbossServiceUtil(); virtual so tests can
+  // simulate an unreachable agent by throwing.
+  virtual MultiSwitchRunState queryMultiSwitchRunState(
+      const HostInfo& hostInfo) const;
+
+  // SystemdInterface used for the offline fallback; virtual so tests can
+  // inject a mock.
+  virtual std::unique_ptr<SystemdInterface> makeSystemdInterface() const;
+
  private:
   std::string sessionConfigDir_; // Typically ~/.fboss2
   std::string systemConfigDir_; // Typically /etc/coop
@@ -422,12 +450,6 @@ class ConfigSession {
   // Load/save metadata (action levels and commands) from disk
   void loadMetadata();
   void saveMetadata();
-
-  // Agent actions require the running agent's multi-switch state; actions for
-  // other services do not.
-  virtual void ensureFbossServiceUtil(
-      const HostInfo& hostInfo,
-      bool needsAgentState);
 
   // Initialize shared session state without loading either service config.
   void initializeSession(SessionInit init);
