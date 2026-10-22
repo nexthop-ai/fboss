@@ -579,6 +579,53 @@ class TestFilterFiles(unittest.TestCase):
             self.assertNotIn('name = "Cmd"', deep_impl)
             self.assertFalse((excl / "BUILD.bazel").exists())
 
+    def test_export_file_keeps_package_thrift_only(self):
+        """An export_file next to a thrift_library must not turn the package
+        into a C++ package: the parent's sources in it still need the _impl
+        target, as in fboss/qsfp_service/module/cmis."""
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            parent = tmp_path / "fboss" / "module"
+            sub = parent / "cmis"
+            sub.mkdir(parents=True)
+            (parent / "Lib.cpp").touch()
+            (sub / "Module.cpp").touch()
+            (sub / "model.thrift").touch()
+            (parent / "BUCK").write_text(
+                'load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")\n'
+                'oncall("test")\n'
+                "cpp_library(\n"
+                '    name = "module-lib",\n'
+                '    srcs = ["Lib.cpp", "cmis/Module.cpp"],\n'
+                ")\n"
+            )
+            (sub / "BUCK").write_text(
+                'load("@fbcode_macros//build_defs:export_files.bzl", "export_file")\n'
+                'load("@fbcode_macros//build_defs:thrift_library.bzl", '
+                '"thrift_library")\n'
+                'oncall("test")\n'
+                'export_file(name = "Module.cpp")\n'
+                "thrift_library(\n"
+                '    name = "model",\n'
+                '    languages = ["cpp2"],\n'
+                '    thrift_srcs = {"model.thrift": []},\n'
+                ")\n"
+            )
+
+            parser = BuckParser(str(tmp_path))
+            targets = parser.parse_all()
+            resolver = DepResolver({}, parser.all_targets, str(tmp_path))
+            generator = BuildFileGenerator(resolver, str(tmp_path))
+            generator.generate_all(targets)
+
+            parent_build = (parent / "BUILD.bazel").read_text()
+            self.assertIn("//fboss/module/cmis:_impl", parent_build)
+            self.assertNotIn("cmis/Module.cpp", parent_build)
+
+            sub_build = (sub / "BUILD.bazel").read_text()
+            self.assertIn('name = "_impl"', sub_build)
+            self.assertIn('"Module.cpp"', sub_build)
+
     def test_deduplication(self):
         self._make_dir("fboss/agent")
         result = self.gen._filter_files(

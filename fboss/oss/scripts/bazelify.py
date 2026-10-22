@@ -1867,13 +1867,16 @@ class BuildFileGenerator:
             for target in targets:
                 if self._will_skip_target(target):
                     self._skipped_target_labels.add(f"{buck_path}:{target.name}")
-            # A package is thrift-only when every target is a thrift_library AND
+            # A package is thrift-only when every target is a thrift_library
+            # (export_file targets only re-export files, so they don't count) AND
             # the package hasn't been annotated with # bazelify: exclude-all.
             # Packages with exclude-all may have .cpp files that must NOT be compiled
             # (e.g. fboss/agent/hw/bcm which requires the proprietary BCM SDK).
             if (
-                targets
-                and all(t.rule_type == "thrift_library" for t in targets)
+                any(t.rule_type == "thrift_library" for t in targets)
+                and all(
+                    t.rule_type in ("thrift_library", "export_file") for t in targets
+                )
                 and buck_path not in _exclude_all
             ):
                 self._thrift_only_pkgs.add(buck_path)
