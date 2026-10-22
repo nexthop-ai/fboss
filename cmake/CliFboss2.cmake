@@ -945,8 +945,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/interface/InterfaceAttrArgsBase.cpp
   fboss/cli/fboss2/commands/config/interface/InterfaceAttrArgsBase.h
   fboss/cli/fboss2/commands/config/interface/InterfaceIpUtils.h
-  fboss/cli/fboss2/commands/config/interface/ProfileValidation.cpp
-  fboss/cli/fboss2/commands/config/interface/ProfileValidation.h
   fboss/cli/fboss2/commands/config/interface/dhcp/CmdConfigInterfaceDhcp.cpp
   fboss/cli/fboss2/commands/config/interface/dhcp/CmdConfigInterfaceDhcp.h
   fboss/cli/fboss2/commands/config/interface/dhcp/relay/CmdConfigInterfaceDhcpRelay.cpp
@@ -1004,9 +1002,9 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/CmdConfigProtocolBgpPolicyPrefixList.h
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/entry/CmdConfigProtocolBgpPolicyPrefixListEntry.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/entry/CmdConfigProtocolBgpPolicyPrefixListEntry.h
+  fboss/cli/fboss2/commands/config/protocol/bgp/policy/routing-policy/BgpRoutingPolicyCliUtils.h
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/routing-policy/CmdConfigProtocolBgpPolicyRoutingPolicy.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/routing-policy/CmdConfigProtocolBgpPolicyRoutingPolicy.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/policy/routing-policy/BgpRoutingPolicyCliUtils.h
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/routing-policy/term/CmdConfigProtocolBgpPolicyRoutingPolicyTerm.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/routing-policy/term/CmdConfigProtocolBgpPolicyRoutingPolicyTerm.h
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/routing-policy/term/action/CmdConfigProtocolBgpPolicyRoutingPolicyTermAction.cpp

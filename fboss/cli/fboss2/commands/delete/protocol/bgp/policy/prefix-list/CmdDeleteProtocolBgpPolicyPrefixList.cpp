@@ -103,14 +103,25 @@ BgpPrefixListRef::BgpPrefixListRef(std::vector<std::string> v)
         selector.memberName
             ? fmt::format(
                   "Error: unexpected token '{}' after prefix <prefix/len>",
+<<<<<<< HEAD
                   v[selector.restStart])
             : fmt::format(
                   "Error: unexpected token '{}'. Usage: delete protocol bgp "
                   "policy prefix-list <name> [prefix <prefix/len>]",
                   v[selector.restStart]));
+||||||| 13fa615300
+        "Error: delete protocol bgp policy prefix-list requires <name>");
+=======
+                  v.at(selector.restStart))
+            : fmt::format(
+                  "Error: unexpected token '{}'. Usage: delete protocol bgp "
+                  "policy prefix-list <name> [prefix <prefix/len>]",
+                  v.at(selector.restStart)));
+>>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
   }
   listName_ = std::move(selector.listName);
   if (selector.memberName) {
+<<<<<<< HEAD
     if (!bgpcli::isPrefixWithLength(*selector.memberName)) {
       throw std::invalid_argument(
           fmt::format(
@@ -118,6 +129,20 @@ BgpPrefixListRef::BgpPrefixListRef(std::vector<std::string> v)
               *selector.memberName));
     }
     basePrefix_ = *selector.memberName;
+||||||| 13fa615300
+  if (v[0].empty()) {
+    throw std::invalid_argument("Error: prefix-list name must not be empty");
+=======
+    const auto normalizedPrefix =
+        bgpcli::normalizePrefixWithLength(*selector.memberName);
+    if (!normalizedPrefix) {
+      throw std::invalid_argument(
+          fmt::format(
+              "Error: Invalid prefix '{}'; expected <prefix/len>",
+              *selector.memberName));
+    }
+    basePrefix_ = *normalizedPrefix;
+>>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
   }
 }
 
@@ -150,7 +175,12 @@ CmdDeleteProtocolBgpPolicyPrefixList::queryClient(
     auto& entries = *it->prefixes();
     auto entryIt =
         std::find_if(entries.begin(), entries.end(), [&](const auto& entry) {
+<<<<<<< HEAD
           return *entry.base_prefix() == args.basePrefix();
+||||||| 13fa615300
+=======
+          return bgpcli::prefixListEntryMatches(entry, args.basePrefix());
+>>>>>>> 8086cebab2d1fae4d054b2b0028815e3bde5b52c
         });
     if (entryIt == entries.end()) {
       return fmt::format(

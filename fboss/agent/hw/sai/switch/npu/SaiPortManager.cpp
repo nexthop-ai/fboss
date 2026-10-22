@@ -595,6 +595,10 @@ void SaiPortManager::changePortImpl(
       portStats_.erase(statsItr);
     }
   }
+  // Before the qos policy: on TU1, VC create on a second port of an input
+  // buffer fails with INVALID PARAMETER once QUEUE_TO_VC is bound to it.
+  managerTable_->virtualChannelManager().programVirtualChannels(
+      oldPort, newPort, saiPort->adapterKey());
   changeQueue(
       newPort,
       oldPort->getPortQueues()->impl(),
@@ -623,8 +627,6 @@ void SaiPortManager::changePortImpl(
     resetCableLength(newPort->getID());
   }
   changePortFlowletConfig(oldPort, newPort);
-  managerTable_->virtualChannelManager().programVirtualChannels(
-      oldPort, newPort, saiPort->adapterKey());
   if (programLlrForPort) {
     programLlr(newPort, existingPort);
     if (deferAdminEnable) {

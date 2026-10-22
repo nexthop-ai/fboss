@@ -17,10 +17,10 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdConfigBgpPolicyCommunityListTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigBgpPolicyPrefixListEntryTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigBgpPolicyPrefixListTest.cpp
-  fboss/cli/fboss2/test/config/CmdConfigBgpPolicyRoutingPolicyTest.cpp
-  fboss/cli/fboss2/test/config/CmdConfigBgpPolicyRoutingPolicyTermTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigBgpPolicyRoutingPolicyTermActionTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigBgpPolicyRoutingPolicyTermMatchTest.cpp
+  fboss/cli/fboss2/test/config/CmdConfigBgpPolicyRoutingPolicyTermTest.cpp
+  fboss/cli/fboss2/test/config/CmdConfigBgpPolicyRoutingPolicyTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigCoppTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigDataPlaneTrafficPolicyTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigDhcpTest.cpp
@@ -87,7 +87,6 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteTrafficCounterTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteVlanTest.cpp
   fboss/cli/fboss2/test/config/ConfigSessionSystemdTest.cpp
-  fboss/cli/fboss2/test/config/ProfileValidationTest.cpp
 )
 
 target_link_libraries(fboss2_cmd_config_test
