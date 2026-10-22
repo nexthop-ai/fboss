@@ -215,9 +215,6 @@ cfg::PortSpeed getPortSpeed(PlatformType platformType) {
     case PlatformType::PLATFORM_WEDGE800CNHP:
       portSpeed = cfg::PortSpeed::FOURHUNDREDG;
       break;
-    case PlatformType::PLATFORM_M4062NHP:
-      portSpeed = cfg::PortSpeed::EIGHTHUNDREDG;
-      break;
     default:
       /* do nothing */
       break;
