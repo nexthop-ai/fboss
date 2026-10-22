@@ -1,3 +1,5 @@
-# Compress in parallel
+# kiwi runtime config for the ONIE build only (kiwi-ng --config). kiwi's tbz
+# type always writes xz, and build_image_in_container.sh unpacks that tarball
+# and repacks it with zstd right away, so ask for the cheapest xz.
 xz:
-  - options: '--threads=0'
+  options: -0 --threads=0

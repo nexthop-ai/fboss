@@ -517,6 +517,7 @@ if [ -n "${BUILD_ONIE}" ]; then
   (
     set -e -o pipefail
     kiwi-ng-3 \
+      --config ${DESCRIPTION_DIR}/kiwi_conf.yaml \
       --shared-cache-dir=/var/cache/kiwi-onie \
       --profile FBOSS \
       --type tbz \
