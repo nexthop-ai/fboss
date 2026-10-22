@@ -7,6 +7,9 @@ on:
   push:
     branches:
       - main
+      # Release and EFT branches. A push runs the branch's own copy of this
+      # file, so a branch is covered only if it was cut after this line landed.
+      - 'nh-fboss-*'
     paths:
       - 'tests/**'
       # fboss scanner skips tests/libs/ explicitly; don't trigger on changes there.
