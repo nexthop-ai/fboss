@@ -5,7 +5,8 @@ name: FBOSS Batch Wait
 #
 # Loop semantics:
 #   - On each cycle, query each still-pending batch once.
-#   - When a batch reaches 100%, record pass/fail and stop polling it.
+#   - When a batch reaches 100%, record pass/fail (Conductor infra outcome
+#     plus T-Recs test results) and stop polling it.
 #   - Do NOT break early on failure — keep polling the others so the final
 #     report shows every pool's result.
 #   - Exit when all batches have completed.
@@ -93,11 +94,42 @@ jobs:
           declare -a STATE
           declare -a DISPLAY        # what to show for this pool each cycle
           declare -a FAILED_DETAIL  # human-readable reason once STATE=fail
+          declare -a TRECS_MISSES   # completed-batch polls that found no T-Recs results
           for ((i=0; i<N; i++)); do
             STATE[i]="pending"
             DISPLAY[i]="(not yet polled)"
             FAILED_DETAIL[i]=""
+            TRECS_MISSES[i]=0
           done
+
+          # Conductor's "Failed tests" only counts infra outcomes
+          # (prep_failed/run_failed): a test that runs and FAILs is "finished",
+          # so the test verdict has to come from T-Recs. Sets TRECS_ROWS (test
+          # results, excluding the Testfile "0" prepare rows) and TRECS_BAD
+          # (one "STATUS testfile" line per result that isn't PASS or SKIP).
+          # Returns 1 if T-Recs couldn't be queried: `nh trecs results` exits 0
+          # on API errors, so a missing table header is the failure signal.
+          trecs_check() {
+            local out rows
+            out=$(nh trecs results --batch-id "$1" --limit 1000 2>&1) || return 1
+            TRECS_ROWS=0
+            TRECS_BAD=""
+            if grep -q "No results found" <<< "$out"; then
+              return 0
+            fi
+            grep -qE '│ *ID *│ *Status *│' <<< "$out" || return 1
+            rows=$(awk -F'│' 'NF > 7 {
+                st = $3; tf = $5
+                gsub(/^ +| +$/, "", st); gsub(/^ +| +$/, "", tf)
+                if (st == "Status" || tf == "0") next
+                print st " " tf
+              }' <<< "$out")
+            if [ -n "$rows" ]; then
+              TRECS_ROWS=$(wc -l <<< "$rows")
+              TRECS_BAD=$(grep -vE '^(PASS|SKIP) ' <<< "$rows" || true)
+            fi
+            return 0
+          }
 
           echo "Polling ${N} batches sequentially every ${POLL_INTERVAL}s (budget: ${POLL_BUDGET_MINUTES}m)"
           echo
@@ -124,8 +156,11 @@ jobs:
                     all_done=0
                   elif [ "$progress" -ge 100 ]; then
                     failed=$(echo "$summary" | grep "Failed tests:" | awk '{print $3}')
-                    if [[ "$failed" =~ ^[0-9]+$ ]] && [ "$failed" -gt 0 ]; then
-                      STATE[i]="fail"
+                    finished=$(echo "$summary" | grep "Finished tests:" | awk '{print $3}')
+                    [[ "$failed" =~ ^[0-9]+$ ]] || failed=0
+                    [[ "$finished" =~ ^[0-9]+$ ]] || finished=0
+                    infra_detail=""
+                    if [ "$failed" -gt 0 ]; then
                       # "Failed tests" from the summary lumps together real test
                       # failures and infra failures: a testbed that never got a
                       # healthy image (prep_failed) or never started the run
@@ -139,16 +174,48 @@ jobs:
                       runf=$(echo "$entries" | grep -c 'run_failed' || true)
                       if [ "$((prep + runf))" -ge "$failed" ] && [ "$((prep + runf))" -gt 0 ]; then
                         if [ "$runf" -eq 0 ]; then
-                          FAILED_DETAIL[i]="prepare failed, no tests ran"
+                          infra_detail="prepare failed, no tests ran"
                         elif [ "$prep" -eq 0 ]; then
-                          FAILED_DETAIL[i]="run failed, no test results"
+                          infra_detail="run failed, no test results"
                         else
-                          FAILED_DETAIL[i]="infra failure (${prep} prepare, ${runf} run), no test results"
+                          infra_detail="infra failure (${prep} prepare, ${runf} run), no test results"
                         fi
                       elif [ "$((prep + runf))" -gt 0 ]; then
-                        FAILED_DETAIL[i]="fail, ${failed} test(s) incl. ${prep} prepare / ${runf} run failure(s)"
+                        infra_detail="fail, ${failed} test(s) incl. ${prep} prepare / ${runf} run failure(s)"
                       else
-                        FAILED_DETAIL[i]="fail, ${failed} test(s)"
+                        infra_detail="fail, ${failed} test(s)"
+                      fi
+                    fi
+
+                    test_detail=""
+                    resolved=1
+                    if [ "$finished" -gt 0 ]; then
+                      if ! trecs_check "$bid"; then
+                        DISPLAY[i]="⚠️  T-Recs query failed (transient?)"
+                        resolved=0
+                      elif [ "$TRECS_ROWS" -eq 0 ]; then
+                        # Results can land in T-Recs a little after Conductor
+                        # marks the entry finished; give them a few cycles.
+                        TRECS_MISSES[i]=$((TRECS_MISSES[i] + 1))
+                        if [ "${TRECS_MISSES[i]}" -lt 3 ]; then
+                          DISPLAY[i]="⏳ 100% (waiting for T-Recs results)"
+                          resolved=0
+                        else
+                          test_detail="no T-Recs results for ${finished} finished test(s)"
+                        fi
+                      elif [ -n "$TRECS_BAD" ]; then
+                        test_detail="$(wc -l <<< "$TRECS_BAD") test(s) failed in T-Recs: $(paste -sd, <<< "$TRECS_BAD" | sed 's/,/, /g')"
+                      fi
+                    fi
+
+                    if [ "$resolved" -eq 0 ]; then
+                      all_done=0
+                    elif [ -n "$infra_detail" ] || [ -n "$test_detail" ]; then
+                      STATE[i]="fail"
+                      if [ -n "$infra_detail" ] && [ -n "$test_detail" ]; then
+                        FAILED_DETAIL[i]="${infra_detail}; ${test_detail}"
+                      else
+                        FAILED_DETAIL[i]="${infra_detail}${test_detail}"
                       fi
                       DISPLAY[i]="❌ DONE (${FAILED_DETAIL[i]})"
                     else
