@@ -1,16 +1,11 @@
 {
-  "___COMMENT___": "Platform Manager Configuration for NH-4220-F with a Black Mamba CPU card",
+  "___COMMENT___": "Platform Manager Configuration for NH-4220-F with a Black Mamba CPU card. SCM_SLOT has no idpromConfig: the SONiC BIOS instantiates the CPU IDPROM (CPU_BUS@3, 0x50) through ACPI, so creating it here fails with EBUSY.",
   "platformName": "NH4220F",
   "rootPmUnitName": "SCM",
   "rootSlotType": "SCM_SLOT",
   "slotTypeConfigs": {
     "SCM_SLOT": {
       "numOutgoingI2cBuses": 10,
-      "idpromConfig": {
-        "busName": "CPU_BUS@3",
-        "address": "0x50",
-        "kernelDeviceName": "24c64"
-      },
       "pmUnitName": "SCM"
     },
     "SMB_SLOT": {
@@ -409,7 +404,6 @@
   ],
   "symbolicLinkToDevicePath": {
     "/run/devmap/eeproms/CHASSIS_EEPROM": "/[CHASSIS_EEPROM]",
-    "/run/devmap/eeproms/SCM_EEPROM": "/[IDPROM]",
     "/run/devmap/sensors/DPM": "/[DPM]",
     "/run/devmap/sensors/DPM_2": "/[DPM_2]",
     "/run/devmap/fpgas/SCM_IOB": "/[SCM_IOB]",
