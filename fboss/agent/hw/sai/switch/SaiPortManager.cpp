@@ -3484,13 +3484,19 @@ void SaiPortManager::setQosMapsOnPort(
             SaiPortTraits::Attributes::QosTcAndColorToDot1pMap{mapping});
         break;
 #if defined(SAI_CBFC_SUPPORTED)
+      // On every port: brcm-sai folds TC_TO_VC into the port's DSCP_TO_TC
+      // map, and every port sharing that map must carry the same TC_TO_VC.
       case SAI_QOS_MAP_TYPE_TC_TO_VC:
         port->setOptionalAttribute(
             SaiPortTraits::Attributes::QosTcToVcMap{mapping});
         break;
+      // Same ports as the PFC maps: the TU1 management port rejects it with
+      // INVALID PORT NUMBER.
       case SAI_QOS_MAP_TYPE_QUEUE_TO_VC:
-        port->setOptionalAttribute(
-            SaiPortTraits::Attributes::QosQueueToVcMap{mapping});
+        if (isPfcSupported) {
+          port->setOptionalAttribute(
+              SaiPortTraits::Attributes::QosQueueToVcMap{mapping});
+        }
         break;
 #endif
       case SAI_QOS_MAP_TYPE_TC_TO_QUEUE:
@@ -3573,6 +3579,15 @@ SaiPortManager::getNullSaiIdsForQosMaps() {
 std::vector<std::pair<sai_qos_map_type_t, QosMapSaiId>>
 SaiPortManager::getSaiIdsForQosMaps(const SaiQosMapHandle* qosMapHandle) {
   std::vector<std::pair<sai_qos_map_type_t, QosMapSaiId>> qosMaps{};
+#if defined(SAI_CBFC_SUPPORTED)
+  // Bound before DSCP_TO_TC. brcm-sai stores TC_TO_VC inside the DSCP_TO_TC
+  // map, and fails a DSCP_TO_TC bind with OBJECT IN USE if another port on
+  // that map has a different TC_TO_VC (_brcm_sai_port_dscp_tc_map_set).
+  if (qosMapHandle->tcToVcMap) {
+    qosMaps.emplace_back(
+        SAI_QOS_MAP_TYPE_TC_TO_VC, qosMapHandle->tcToVcMap->adapterKey());
+  }
+#endif
   if (!globalQosMapSupported_) {
     qosMaps.emplace_back(
         SAI_QOS_MAP_TYPE_DSCP_TO_TC, qosMapHandle->dscpToTcMap->adapterKey());
@@ -3596,10 +3611,6 @@ SaiPortManager::getSaiIdsForQosMaps(const SaiQosMapHandle* qosMapHandle) {
         qosMapHandle->tcToPgMap->adapterKey());
   }
 #if defined(SAI_CBFC_SUPPORTED)
-  if (qosMapHandle->tcToVcMap) {
-    qosMaps.emplace_back(
-        SAI_QOS_MAP_TYPE_TC_TO_VC, qosMapHandle->tcToVcMap->adapterKey());
-  }
   if (qosMapHandle->queueToVcMap) {
     qosMaps.emplace_back(
         SAI_QOS_MAP_TYPE_QUEUE_TO_VC, qosMapHandle->queueToVcMap->adapterKey());

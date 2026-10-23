@@ -12,6 +12,7 @@
 
 #include <folly/IPAddress.h>
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #ifndef IS_OSS
@@ -62,12 +63,26 @@ inline bgp::routing_policy::PrefixList& findOrCreatePrefixList(
   return list;
 }
 
-// A prefix with an explicit /len, as every entry key must be. folly fills in
-// a default mask for a bare address, so the slash is checked separately. The
-// string is stored as typed, not normalized.
-inline bool isPrefixWithLength(const std::string& s) {
-  return s.find('/') != std::string::npos &&
-      !folly::IPAddress::tryCreateNetwork(s).hasError();
+// A prefix with an explicit /len, normalized with host bits cleared. folly
+// fills in a default mask for a bare address, so the slash is checked
+// separately.
+inline std::optional<std::string> normalizePrefixWithLength(
+    const std::string& s) {
+  if (s.find('/') == std::string::npos) {
+    return std::nullopt;
+  }
+  if (auto network = folly::IPAddress::tryCreateNetwork(
+          s, /* defaultCidr */ -1, /* applyMask */ true)) {
+    return folly::IPAddress::networkToString(*network);
+  }
+  return std::nullopt;
+}
+
+inline bool prefixListEntryMatches(
+    const bgp::routing_policy::PrefixListEntry& entry,
+    const std::string& normalizedBasePrefix) {
+  const auto storedPrefix = normalizePrefixWithLength(*entry.base_prefix());
+  return storedPrefix && *storedPrefix == normalizedBasePrefix;
 }
 
 inline bool prefixListEntryExists(
@@ -75,7 +90,7 @@ inline bool prefixListEntryExists(
     const std::string& basePrefix) {
   const auto& entries = *list.prefixes();
   return std::any_of(entries.begin(), entries.end(), [&](const auto& entry) {
-    return *entry.base_prefix() == basePrefix;
+    return prefixListEntryMatches(entry, basePrefix);
   });
 }
 
@@ -87,7 +102,8 @@ inline bgp::routing_policy::PrefixListEntry& findOrCreatePrefixListEntry(
     const std::string& basePrefix) {
   auto& entries = *list.prefixes();
   for (auto& entry : entries) {
-    if (*entry.base_prefix() == basePrefix) {
+    if (prefixListEntryMatches(entry, basePrefix)) {
+      entry.base_prefix() = basePrefix;
       return entry;
     }
   }

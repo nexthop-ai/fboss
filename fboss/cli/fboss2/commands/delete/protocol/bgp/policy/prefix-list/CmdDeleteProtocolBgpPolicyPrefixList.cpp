@@ -103,21 +103,23 @@ BgpPrefixListRef::BgpPrefixListRef(std::vector<std::string> v)
         selector.memberName
             ? fmt::format(
                   "Error: unexpected token '{}' after prefix <prefix/len>",
-                  v[selector.restStart])
+                  v.at(selector.restStart))
             : fmt::format(
                   "Error: unexpected token '{}'. Usage: delete protocol bgp "
                   "policy prefix-list <name> [prefix <prefix/len>]",
-                  v[selector.restStart]));
+                  v.at(selector.restStart)));
   }
   listName_ = std::move(selector.listName);
   if (selector.memberName) {
-    if (!bgpcli::isPrefixWithLength(*selector.memberName)) {
+    const auto normalizedPrefix =
+        bgpcli::normalizePrefixWithLength(*selector.memberName);
+    if (!normalizedPrefix) {
       throw std::invalid_argument(
           fmt::format(
               "Error: Invalid prefix '{}'; expected <prefix/len>",
               *selector.memberName));
     }
-    basePrefix_ = *selector.memberName;
+    basePrefix_ = *normalizedPrefix;
   }
 }
 
@@ -150,7 +152,7 @@ CmdDeleteProtocolBgpPolicyPrefixList::queryClient(
     auto& entries = *it->prefixes();
     auto entryIt =
         std::find_if(entries.begin(), entries.end(), [&](const auto& entry) {
-          return *entry.base_prefix() == args.basePrefix();
+          return bgpcli::prefixListEntryMatches(entry, args.basePrefix());
         });
     if (entryIt == entries.end()) {
       return fmt::format(

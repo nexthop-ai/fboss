@@ -1,6 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 
-#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -10,12 +9,18 @@
 #include <string>
 #include <vector>
 
-#include "configerator/structs/neteng/bgp_policy/thrift/gen-cpp2/routing_policy_types.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/CmdConfigProtocolBgpPolicyPrefixList.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/entry/CmdConfigProtocolBgpPolicyPrefixListEntry.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
+
+#ifndef IS_OSS
+#include <configerator/structs/neteng/bgp_policy/thrift/gen-cpp2/routing_policy_types.h>
+#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#else
+#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#endif
 
 using namespace ::testing;
 using facebook::bgp::routing_policy::ComparisonOperator;
@@ -93,10 +98,12 @@ TEST_F(CmdConfigBgpPolicyPrefixListEntryTestFixture, argValidation) {
   EXPECT_EQ(attr.attr(), "description");
   EXPECT_EQ(attr.values(), std::vector<std::string>({"a", "b"}));
 
-  // The prefix is stored as typed, including v6.
+  // Prefixes are stored in canonical form, including v6.
   EXPECT_EQ(
-      BgpPrefixListEntryConfig({"2001:db8::/32"}).basePrefix(),
+      BgpPrefixListEntryConfig({"2001:db8::1/32"}).basePrefix(),
       "2001:db8::/32");
+  EXPECT_EQ(
+      BgpPrefixListEntryConfig({"10.255.1.2/8"}).basePrefix(), "10.0.0.0/8");
 
   // Invalid: empty; a prefix without an explicit /len (folly would default
   // the mask), a non-address, an out-of-range mask, a second slash; unknown
@@ -137,6 +144,23 @@ TEST_F(CmdConfigBgpPolicyPrefixListEntryTestFixture, bareCreateEntry) {
   // rejects.
   EXPECT_EQ(*entry(0, 0).base_prefix(), "10.0.0.0/8");
   EXPECT_FALSE(entry(0, 0).seq_num().has_value());
+}
+
+TEST_F(
+    CmdConfigBgpPolicyPrefixListEntryTestFixture,
+    normalizesPrefixBeforeStoringAndLookup) {
+  auto result = runEntry({"PL100"}, {"10.255.1.2/8"});
+  EXPECT_THAT(
+      result,
+      HasSubstr(
+          "Successfully created BGP prefix-list PL100 prefix 10.0.0.0/8"));
+  ASSERT_EQ(lists().size(), 1);
+  ASSERT_EQ(lists()[0].prefixes()->size(), 1);
+  EXPECT_EQ(*entry(0, 0).base_prefix(), "10.0.0.0/8");
+
+  runEntry({"PL100"}, {"10.0.0.0/8", "description", "same-network"});
+  EXPECT_EQ(lists()[0].prefixes()->size(), 1);
+  EXPECT_EQ(*entry(0, 0).description(), "same-network");
 }
 
 TEST_F(CmdConfigBgpPolicyPrefixListEntryTestFixture, setAttributes) {
@@ -232,9 +256,8 @@ TEST_F(
 }
 
 TEST_F(CmdConfigBgpPolicyPrefixListEntryTestFixture, prefixAcceptsV6) {
-  auto result = runEntry({"PL100"}, {"2001:db8::/32"});
+  auto result = runEntry({"PL100"}, {"2001:db8::1/32"});
   EXPECT_THAT(result, HasSubstr("Successfully created"));
-  // Stored as typed, not normalized.
   EXPECT_EQ(*entry(0, 0).base_prefix(), "2001:db8::/32");
 }
 

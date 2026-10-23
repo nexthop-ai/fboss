@@ -2607,6 +2607,14 @@
         {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
+        },
+        {
+          "test_name_regex": "HwInitAndExit400Gx400GBenchmark",
+          "reason": "Times out on leaba 1.42.8 after D118563817 (MAC loopback storm)"
+        },
+        {
+          "test_name_regex": "HwInitAndExit40Gx10GBenchmark",
+          "reason": "Times out on leaba 1.42.8 after D118563817 (MAC loopback storm)"
         }
     ],
     "leaba/1.42.8/gibraltar/mono": [
@@ -2661,6 +2669,14 @@
         {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
+        },
+        {
+          "test_name_regex": "HwInitAndExit400Gx400GBenchmark",
+          "reason": "Times out on leaba 1.42.8 after D118563817 (MAC loopback storm)"
+        },
+        {
+          "test_name_regex": "HwInitAndExit40Gx10GBenchmark",
+          "reason": "Times out on leaba 1.42.8 after D118563817 (MAC loopback storm)"
         }
     ],
     "leaba/1.42.8/gibraltar/multi_switch": [
@@ -2715,6 +2731,14 @@
         {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
+        },
+        {
+          "test_name_regex": "HwInitAndExit400Gx400GBenchmark",
+          "reason": "Times out on leaba 1.42.8 after D118563817 (MAC loopback storm)"
+        },
+        {
+          "test_name_regex": "HwInitAndExit40Gx10GBenchmark",
+          "reason": "Times out on leaba 1.42.8 after D118563817 (MAC loopback storm)"
         }
     ],
     "leaba/24.8.3001/gibraltar": [

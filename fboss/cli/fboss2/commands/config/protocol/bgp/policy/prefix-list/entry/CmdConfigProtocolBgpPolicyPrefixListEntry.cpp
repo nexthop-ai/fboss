@@ -235,10 +235,10 @@ Result prefixLenRange(PrefixListEntry& entry, const Tokens& values) {
     ranges.emplace_back();
   }
   auto result =
-      handler->second(ranges.front(), Tokens(values.begin() + 1, values.end()));
+      handler->second(ranges.at(0), Tokens(values.begin() + 1, values.end()));
   // A rejected value must not leave a phantom range behind.
   if (!result.ok && rangeCreated) {
-    ranges.pop_back();
+    ranges.clear();
   }
   return result;
 }
@@ -306,11 +306,12 @@ BgpPrefixListEntryConfig::BgpPrefixListEntryConfig(std::vector<std::string> v)
         "Error: prefix <prefix/len> is required, optionally followed by an "
         "<attribute> <value>");
   }
-  if (!bgpcli::isPrefixWithLength(v[0])) {
+  const auto normalizedPrefix = bgpcli::normalizePrefixWithLength(v[0]);
+  if (!normalizedPrefix) {
     throw std::invalid_argument(
         fmt::format("Error: Invalid prefix '{}'; expected <prefix/len>", v[0]));
   }
-  basePrefix_ = v[0];
+  basePrefix_ = *normalizedPrefix;
   if (v.size() == 1) {
     return; // bare `prefix <prefix/len>`: create it
   }
@@ -383,7 +384,7 @@ CmdConfigProtocolBgpPolicyPrefixListEntry::queryClient(
       list.prefixes()->pop_back();
     }
     if (listCreated) {
-      cfg.policies()->prefix_lists()->pop_back();
+      cfg.policies().ensure().prefix_lists()->pop_back();
     }
   }
   return result.message;

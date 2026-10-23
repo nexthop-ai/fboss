@@ -128,7 +128,7 @@ TEST_F(CmdDeleteBgpPolicyPrefixListTestFixture, argValidation) {
   EXPECT_EQ(listOnly.listName(), "PL100");
   EXPECT_FALSE(listOnly.hasPrefix());
 
-  auto withPrefix = BgpPrefixListRef({"PL100", "prefix", "10.0.0.0/8"});
+  auto withPrefix = BgpPrefixListRef({"PL100", "prefix", "10.255.1.2/8"});
   EXPECT_EQ(withPrefix.listName(), "PL100");
   EXPECT_TRUE(withPrefix.hasPrefix());
   EXPECT_EQ(withPrefix.basePrefix(), "10.0.0.0/8");
@@ -214,7 +214,7 @@ TEST_F(CmdDeleteBgpPolicyPrefixListTestFixture, deleteExistingEntry) {
   configureEntry("PL100", "10.0.0.0/8");
   configureEntry("PL100", "192.168.0.0/16");
 
-  auto result = del({"PL100", "prefix", "10.0.0.0/8"});
+  auto result = del({"PL100", "prefix", "10.255.1.2/8"});
   EXPECT_THAT(
       result,
       HasSubstr(
