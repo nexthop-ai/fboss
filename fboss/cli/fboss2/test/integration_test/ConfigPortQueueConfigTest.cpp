@@ -22,6 +22,9 @@
  *
  * A third covers AQM entry selection: the congestion behavior is the key that
  * decides which of a queue's AQM entries an edit lands on.
+ *
+ * A fourth covers attribute-level delete of a queue's scalar fields:
+ *   fboss2-dev delete qos queue-config <name> queue-id <id> <attr>...
  */
 
 #include <folly/json/dynamic.h>
@@ -366,7 +369,35 @@ TEST_F(ConfigPortQueueConfigTest, AqmCongestionBehavior) {
   EXPECT_EQ(earlyDropLinear["minimumLength"].asInt(), kEarlyDropMin);
   EXPECT_EQ(earlyDropLinear["maximumLength"].asInt(), kEarlyDropMax);
 
-  XLOG(INFO) << "[Step 3] Removing " << name;
+  // The delete side of the same key: naming a behavior removes only that
+  // entry, the sibling and the rest of the queue stay (NOS-19912).
+  XLOG(INFO) << "[Step 3] Deleting the ECN entry, EARLY_DROP must remain";
+  discardSession();
+  auto delEcn = runCli(
+      {"delete",
+       "qos",
+       "queue-config",
+       name,
+       "queue-id",
+       std::to_string(kQueueId),
+       "active-queue-management",
+       "ECN"});
+  ASSERT_EQ(delEcn.exitCode, 0) << "CLI failed: " << delEcn.stderr;
+  commitConfig();
+  waitForAgentReady();
+
+  // Named local: getRunningConfig() returns by value and findQueue points
+  // into it.
+  auto afterEcnDelete = getRunningConfig();
+  const auto* queueAfter =
+      findQueue(afterEcnDelete["sw"]["portQueueConfigs"][name], kQueueId);
+  ASSERT_NE(queueAfter, nullptr) << "queue removed instead of its ECN entry";
+  ASSERT_TRUE(queueAfter->count("aqms"));
+  ASSERT_EQ((*queueAfter)["aqms"].size(), 1u);
+  EXPECT_EQ((*queueAfter)["aqms"][0]["behavior"].asInt(), kBehaviorEarlyDrop);
+  EXPECT_EQ((*queueAfter)["weight"].asInt(), 5) << "sibling attribute lost";
+
+  XLOG(INFO) << "[Step 4] Removing " << name;
   discardSession();
   ASSERT_EQ(runCli({"delete", "qos", "queue-config", name}).exitCode, 0);
   commitConfig();
@@ -446,6 +477,111 @@ TEST_F(ConfigPortQueueConfigTest, QueueConfigCreateShapeAndDelete) {
       swAfterDelete.count("portQueueConfigs") &&
       swAfterDelete["portQueueConfigs"].count(name))
       << name << " still present after delete";
+  XLOG(INFO) << "TEST PASSED";
+}
+
+// Attribute-level delete of the scalar fields has to survive the round trip:
+// the agent must accept a queue with those optionals absent, and only the
+// named fields may go -- the queue, its required fields and the attributes
+// that were not named stay. AqmCongestionBehavior covers the AQM entry form.
+TEST_F(ConfigPortQueueConfigTest, DeleteQueueAttributes) {
+  // Own name: tests are not ordered and may be sharded.
+  const std::string name = "cli_e2e_test_qc_attr_delete";
+  constexpr int kQueueId = 2;
+  constexpr int kWeight = 7;
+  constexpr int kReservedBytes = 5000;
+  constexpr int kSharedBytes = 1048576;
+  constexpr int kRateKbps = 12500000;
+  const std::string queueName = "cli_e2e_test_queue";
+
+  XLOG(INFO) << "[Step 1] Creating " << name << " queue-id " << kQueueId;
+  ASSERT_EQ(
+      runCli({"config",
+              "qos",
+              "queue-config",
+              name,
+              "queue-id",
+              std::to_string(kQueueId),
+              "scheduling",
+              "WRR",
+              "name",
+              queueName,
+              "weight",
+              std::to_string(kWeight),
+              "reserved-bytes",
+              std::to_string(kReservedBytes),
+              "shared-bytes",
+              std::to_string(kSharedBytes),
+              "rate-limit",
+              "kbps",
+              std::to_string(kRateKbps),
+              std::to_string(kRateKbps)})
+          .exitCode,
+      0);
+  commitConfig();
+  waitForAgentReady();
+
+  // Named local: getRunningConfig() returns by value and findQueue points
+  // into it.
+  auto afterCreate = getRunningConfig();
+  ASSERT_TRUE(afterCreate["sw"].count("portQueueConfigs"));
+  ASSERT_TRUE(afterCreate["sw"]["portQueueConfigs"].count(name))
+      << name << " missing after create";
+  const auto* created =
+      findQueue(afterCreate["sw"]["portQueueConfigs"][name], kQueueId);
+  ASSERT_NE(created, nullptr) << "queue " << kQueueId << " missing";
+  ASSERT_TRUE(created->count("weight"));
+  ASSERT_TRUE(created->count("reservedBytes"));
+  ASSERT_TRUE(created->count("portQueueRate"));
+  ASSERT_TRUE(created->count("name"));
+
+  XLOG(INFO) << "[Step 2] Resetting weight, reserved-bytes, rate-limit, name";
+  discardSession();
+  auto del = runCli(
+      {"delete",
+       "qos",
+       "queue-config",
+       name,
+       "queue-id",
+       std::to_string(kQueueId),
+       "weight",
+       "reserved-bytes",
+       "rate-limit",
+       "name"});
+  ASSERT_EQ(del.exitCode, 0) << "CLI failed: " << del.stderr;
+  commitConfig();
+  waitForAgentReady();
+
+  auto afterReset = getRunningConfig();
+  ASSERT_TRUE(afterReset["sw"].count("portQueueConfigs"));
+  ASSERT_TRUE(afterReset["sw"]["portQueueConfigs"].count(name))
+      << name << " removed instead of the queue's attributes";
+  const auto* queue =
+      findQueue(afterReset["sw"]["portQueueConfigs"][name], kQueueId);
+  ASSERT_NE(queue, nullptr) << "queue removed instead of its attributes";
+  EXPECT_FALSE(queue->count("weight")) << "weight still set";
+  EXPECT_FALSE(queue->count("reservedBytes")) << "reservedBytes still set";
+  EXPECT_FALSE(queue->count("portQueueRate")) << "portQueueRate still set";
+  EXPECT_FALSE(queue->count("name")) << "name still set";
+  // Untouched sibling and required fields survive.
+  ASSERT_TRUE(queue->count("sharedBytes")) << "sibling attribute lost";
+  EXPECT_EQ((*queue)["sharedBytes"].asInt(), kSharedBytes);
+  EXPECT_EQ((*queue)["scheduling"].asInt(), kSchedWrr);
+  EXPECT_EQ(
+      queue->getDefault("streamType", kStreamUnicast).asInt(), kStreamUnicast);
+
+  XLOG(INFO) << "[Step 3] Removing " << name;
+  discardSession();
+  ASSERT_EQ(runCli({"delete", "qos", "queue-config", name}).exitCode, 0);
+  commitConfig();
+  waitForAgentReady();
+
+  auto afterDelete = getRunningConfig();
+  EXPECT_FALSE(
+      afterDelete["sw"].count("portQueueConfigs") &&
+      afterDelete["sw"]["portQueueConfigs"].count(name))
+      << name << " still present after delete";
+
   XLOG(INFO) << "TEST PASSED";
 }
 

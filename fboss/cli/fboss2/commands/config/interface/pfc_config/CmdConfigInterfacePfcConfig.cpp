@@ -111,7 +111,9 @@ PfcConfigAttrs::PfcConfigAttrs(std::vector<std::string> v) {
     if (kValidAttrs.find(attr) == kValidAttrs.end()) {
       throw std::invalid_argument(
           fmt::format(
-              "Unknown attribute: '{}'. Valid attributes are: {}",
+              "Unknown attribute: '{}'. Valid attributes are: {}. To remove "
+              "the watchdog, rx-duration or tx-duration use: delete interface "
+              "<name> pfc-config <attr>",
               attr,
               folly::join(", ", kValidAttrs)));
     }

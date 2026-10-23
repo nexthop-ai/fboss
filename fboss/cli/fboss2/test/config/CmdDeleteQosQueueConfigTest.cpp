@@ -69,7 +69,15 @@ static const std::string kSeedConfig = R"({
       ],
       "unbound_qc": [
         {"id": 0, "streamType": 1, "weight": 1, "scheduling": 5},
-        {"id": 1, "streamType": 1, "weight": 2, "scheduling": 5}
+        {"id": 1, "streamType": 1, "weight": 2, "scheduling": 5,
+         "reservedBytes": 1000, "name": "q1",
+         "portQueueRate": {"kbitsPerSec": {"minimum": 100, "maximum": 200}},
+         "aqms": [
+           {"behavior": 1,
+            "detection": {"linear": {"minimumLength": 10, "maximumLength": 20}}},
+           {"behavior": 0,
+            "detection": {"linear": {"minimumLength": 30, "maximumLength": 40}}}
+         ]}
       ]
     }
   }
@@ -118,8 +126,39 @@ TEST_F(CmdDeleteQosQueueConfigTestFixture, emptyArgsFails) {
   EXPECT_THROW(DeleteQueueId({}), std::invalid_argument);
 }
 
-TEST_F(CmdDeleteQosQueueConfigTestFixture, multipleArgsFails) {
+TEST_F(CmdDeleteQosQueueConfigTestFixture, unknownAttributeFails) {
   EXPECT_THROW(DeleteQueueId({"0", "1"}), std::invalid_argument);
+  EXPECT_THROW(DeleteQueueId({"0", "bogus"}), std::invalid_argument);
+  // Required thrift fields cannot be deleted, only reconfigured.
+  EXPECT_THROW(DeleteQueueId({"0", "scheduling"}), std::invalid_argument);
+  EXPECT_THROW(DeleteQueueId({"0", "stream-type"}), std::invalid_argument);
+  // The agent does not re-program a queue when only these change, so a reset
+  // would silently not apply; reject them rather than report success.
+  EXPECT_THROW(
+      DeleteQueueId({"0", "max-dynamic-shared-bytes"}), std::invalid_argument);
+  EXPECT_THROW(DeleteQueueId({"0", "buffer-pool-name"}), std::invalid_argument);
+}
+
+TEST_F(CmdDeleteQosQueueConfigTestFixture, attributeArgsParse) {
+  DeleteQueueId args({"1", "weight", "aqm", "ecn", "rate-limit"});
+  EXPECT_EQ(args.getQueueId(), 1);
+  EXPECT_FALSE(args.wholeQueue());
+  EXPECT_EQ(
+      args.getAttributes(), (std::vector<std::string>{"weight", "rate-limit"}));
+  ASSERT_EQ(args.getAqmBehaviors().size(), 1);
+  EXPECT_EQ(args.getAqmBehaviors()[0], cfg::QueueCongestionBehavior::ECN);
+  EXPECT_TRUE(DeleteQueueId({"1"}).wholeQueue());
+}
+
+TEST_F(CmdDeleteQosQueueConfigTestFixture, aqmRequiresBehavior) {
+  EXPECT_THROW(
+      DeleteQueueId({"1", "active-queue-management"}), std::invalid_argument);
+  EXPECT_THROW(
+      DeleteQueueId({"1", "active-queue-management", "weight"}),
+      std::invalid_argument);
+  EXPECT_THROW(
+      DeleteQueueId({"1", "active-queue-management", "WRED"}),
+      std::invalid_argument);
 }
 
 TEST_F(CmdDeleteQosQueueConfigTestFixture, nonIntegerQueueIdFails) {
@@ -281,6 +320,120 @@ TEST_F(CmdDeleteQosQueueConfigTestFixture, deleteQueueFromBoundConfigAllowed) {
   const auto* queues = namedQueues(kBoundConfig);
   ASSERT_NE(queues, nullptr);
   EXPECT_TRUE(queues->empty());
+}
+
+// ---------------------------------------------------------------------------
+// Attribute-level reset -- `queue-config <name> queue-id <id> <attr> ...`
+// ---------------------------------------------------------------------------
+
+TEST_F(CmdDeleteQosQueueConfigTestFixture, deleteOneAqmEntryKeepsTheOther) {
+  setupTestableConfigSession(
+      "delete qos queue-config unbound_qc queue-id",
+      "1 active-queue-management ECN");
+
+  auto cmd = CmdDeleteQosQueueConfigQueueId();
+  auto result = cmd.queryClient(
+      localhost(),
+      utils::QueueConfigName({kUnboundConfig}),
+      DeleteQueueId(getCmdArgsList()));
+  EXPECT_THAT(result, ::testing::HasSubstr("Reset queue config 'unbound_qc'"));
+  EXPECT_THAT(result, ::testing::HasSubstr("active-queue-management ECN"));
+
+  const auto* queues = namedQueues(kUnboundConfig);
+  ASSERT_NE(queues, nullptr);
+  ASSERT_EQ(queues->size(), 2) << "attribute delete must keep the queue";
+  const auto& q1 = (*queues)[1];
+  ASSERT_TRUE(q1.aqms().has_value());
+  ASSERT_EQ(q1.aqms()->size(), 1);
+  EXPECT_EQ(
+      *(*q1.aqms())[0].behavior(), cfg::QueueCongestionBehavior::EARLY_DROP);
+  // Untouched siblings survive.
+  EXPECT_EQ(*q1.reservedBytes(), 1000);
+  EXPECT_EQ(*q1.weight(), 2);
+}
+
+TEST_F(CmdDeleteQosQueueConfigTestFixture, deleteLastAqmEntryClearsList) {
+  setupTestableConfigSession(
+      "delete qos queue-config unbound_qc queue-id",
+      "1 aqm ECN aqm EARLY_DROP");
+
+  auto cmd = CmdDeleteQosQueueConfigQueueId();
+  cmd.queryClient(
+      localhost(),
+      utils::QueueConfigName({kUnboundConfig}),
+      DeleteQueueId(getCmdArgsList()));
+
+  const auto& q1 = (*namedQueues(kUnboundConfig))[1];
+  EXPECT_FALSE(q1.aqms().has_value())
+      << "an emptied aqms list must be absent, like a queue that never had one";
+}
+
+TEST_F(CmdDeleteQosQueueConfigTestFixture, deleteMissingAqmBehaviorFails) {
+  setupTestableConfigSession(
+      "delete qos queue-config unbound_qc queue-id",
+      "0 active-queue-management ECN");
+
+  auto cmd = CmdDeleteQosQueueConfigQueueId();
+  EXPECT_THROW(
+      cmd.queryClient(
+          localhost(),
+          utils::QueueConfigName({kUnboundConfig}),
+          DeleteQueueId(getCmdArgsList())),
+      std::runtime_error);
+
+  // Queue 1 still has both entries: a failed delete on queue 0 is isolated.
+  const auto& q1 = (*namedQueues(kUnboundConfig))[1];
+  ASSERT_TRUE(q1.aqms().has_value());
+  EXPECT_EQ(q1.aqms()->size(), 2);
+}
+
+TEST_F(CmdDeleteQosQueueConfigTestFixture, failedResetLeavesQueueUntouched) {
+  // The second ECN removal fails because the first one already took it, so
+  // none of the earlier resets on the same queue may land.
+  setupTestableConfigSession(
+      "delete qos queue-config unbound_qc queue-id",
+      "1 reserved-bytes active-queue-management ECN "
+      "active-queue-management ECN");
+
+  auto cmd = CmdDeleteQosQueueConfigQueueId();
+  EXPECT_THROW(
+      cmd.queryClient(
+          localhost(),
+          utils::QueueConfigName({kUnboundConfig}),
+          DeleteQueueId(getCmdArgsList())),
+      std::runtime_error);
+
+  const auto& q1 = (*namedQueues(kUnboundConfig))[1];
+  ASSERT_TRUE(q1.reservedBytes().has_value());
+  EXPECT_EQ(*q1.reservedBytes(), 1000);
+  ASSERT_TRUE(q1.aqms().has_value());
+  EXPECT_EQ(q1.aqms()->size(), 2);
+}
+
+TEST_F(CmdDeleteQosQueueConfigTestFixture, deleteScalarAttributes) {
+  setupTestableConfigSession(
+      "delete qos queue-config unbound_qc queue-id",
+      "1 reserved-bytes rate-limit name shared-bytes");
+
+  auto cmd = CmdDeleteQosQueueConfigQueueId();
+  auto result = cmd.queryClient(
+      localhost(),
+      utils::QueueConfigName({kUnboundConfig}),
+      DeleteQueueId(getCmdArgsList()));
+  EXPECT_THAT(
+      result,
+      ::testing::HasSubstr("reserved-bytes, rate-limit, name, shared-bytes"));
+
+  const auto& q1 = (*namedQueues(kUnboundConfig))[1];
+  EXPECT_FALSE(q1.reservedBytes().has_value());
+  EXPECT_FALSE(q1.portQueueRate().has_value());
+  EXPECT_FALSE(q1.name().has_value());
+  // shared-bytes was never set: resetting it is a no-op, not an error.
+  EXPECT_FALSE(q1.sharedBytes().has_value());
+  // Required fields and the AQM list are untouched.
+  EXPECT_EQ(*q1.weight(), 2);
+  ASSERT_TRUE(q1.aqms().has_value());
+  EXPECT_EQ(q1.aqms()->size(), 2);
 }
 
 // ---------------------------------------------------------------------------

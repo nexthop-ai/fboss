@@ -105,6 +105,11 @@ class QueueIdAndAttributes : public BaseObjectArgType<std::string> {
   std::vector<std::string> aqmAttributes_;
 };
 
+// Parses a congestion-behavior token (ECN / EARLY_DROP, case-insensitive) or
+// throws invalid_argument naming the valid values. The AQM list is keyed by
+// behavior, so every command that targets one entry parses it through here.
+cfg::QueueCongestionBehavior parseCongestionBehavior(const std::string& value);
+
 // Human-readable list of the supported queue attributes. Shared by the CLI help
 // text and the parser's error messages so the two cannot drift.
 const std::string& validQueueAttrs();

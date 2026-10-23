@@ -10,12 +10,10 @@
 
 #pragma once
 
-#include <fmt/format.h>
-#include <folly/Conv.h>
 #include <cstdint>
-#include <stdexcept>
 #include <string>
 #include <vector>
+#include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.h"
 #include "fboss/cli/fboss2/commands/config/QueueConfigUtils.h"
 #include "fboss/cli/fboss2/commands/delete/qos/queue_config/CmdDeleteQosQueueConfig.h"
@@ -24,50 +22,64 @@
 
 namespace facebook::fboss {
 
+/**
+ * Parses the positional tokens of
+ *   delete qos queue-config <name> queue-id <id> [<attr> ...]
+ *
+ * With no attribute the whole queue entry is removed. With attributes only the
+ * named optional fields are reset on the queue, which otherwise stays:
+ *   name, weight, reserved-bytes, shared-bytes, scaling-factor, rate-limit
+ *   active-queue-management <ECN|EARLY_DROP>  - drop that AQM entry
+ *
+ * active-queue-management takes the behavior because aqms is a list keyed by
+ * it (a queue may carry an ECN and an EARLY_DROP entry side by side), the same
+ * key `config qos queue-config` uses to pick the entry it edits.
+ *
+ * scheduling and stream-type are required thrift fields, so "delete" has no
+ * meaning for them: use `config qos queue-config` to change them.
+ */
 class DeleteQueueId : public utils::BaseObjectArgType<std::string> {
  public:
   // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ DeleteQueueId(std::vector<std::string> v) {
-    if (v.empty()) {
-      throw std::invalid_argument("queue-id is required");
-    }
-    if (v.size() != 1) {
-      throw std::invalid_argument(
-          fmt::format("Expected exactly one queue-id, got {}", v.size()));
-    }
-    auto parsed = folly::tryTo<int16_t>(v[0]);
-    if (!parsed.hasValue()) {
-      throw std::invalid_argument(
-          fmt::format("Invalid queue-id: '{}'. Must be an integer", v[0]));
-    }
-    // Shared upper bound (utils::kMaxQueueId): the same limit the config
-    // command's queue-id parser enforces, kept in one place so they can't
-    // drift.
-    if (parsed.value() < 0 || parsed.value() > utils::kMaxQueueId) {
-      throw std::invalid_argument(
-          fmt::format(
-              "queue-id must be between 0 and {}, got: {}",
-              utils::kMaxQueueId,
-              v[0]));
-    }
-    queueId_ = parsed.value();
-    data_ = std::move(v);
-  }
+  /* implicit */ DeleteQueueId(std::vector<std::string> v);
 
   int16_t getQueueId() const {
     return queueId_;
   }
 
+  // Optional scalar fields to reset, in command-line order. Empty together
+  // with getAqmBehaviors() means "remove the whole queue".
+  const std::vector<std::string>& getAttributes() const {
+    return attributes_;
+  }
+
+  // AQM entries to drop, keyed by behavior.
+  const std::vector<cfg::QueueCongestionBehavior>& getAqmBehaviors() const {
+    return aqmBehaviors_;
+  }
+
+  bool wholeQueue() const {
+    return attributes_.empty() && aqmBehaviors_.empty();
+  }
+
  private:
   int16_t queueId_{0};
+  std::vector<std::string> attributes_;
+  std::vector<cfg::QueueCongestionBehavior> aqmBehaviors_;
 };
 
 struct CmdDeleteQosQueueConfigQueueIdTraits : public WriteCommandTraits {
   using ParentCmd = CmdDeleteQosQueueConfig;
   static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
-    cmd.add_option("queue_id", args, "ID of the queue entry to remove")
+    cmd.add_option(
+           "queue_id",
+           args,
+           "<id> [<attr> ...] - omit attributes to remove the whole queue, or "
+           "name the optional field(s) to reset: name, weight, "
+           "reserved-bytes, shared-bytes, scaling-factor, rate-limit, "
+           "active-queue-management <ECN|EARLY_DROP>")
         ->required()
-        ->expected(1);
+        ->expected(-1);
   }
   using ObjectArgType = DeleteQueueId;
   using RetType = std::string;

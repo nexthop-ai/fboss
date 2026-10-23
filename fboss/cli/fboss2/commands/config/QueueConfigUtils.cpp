@@ -288,8 +288,7 @@ std::optional<cfg::QueueCongestionBehavior> findCongestionBehavior(
         throw std::invalid_argument(
             "congestion-behavior may only be specified once");
       }
-      behavior = parseThriftEnum<cfg::QueueCongestionBehavior>(
-          aqmArgs[i], aqmArgs[i + 1]);
+      behavior = parseCongestionBehavior(aqmArgs[i + 1]);
     }
   }
   return behavior;
@@ -312,6 +311,11 @@ cfg::ActiveQueueManagement& selectOrCreateAqm(
 }
 
 } // namespace
+
+cfg::QueueCongestionBehavior parseCongestionBehavior(const std::string& value) {
+  return parseThriftEnum<cfg::QueueCongestionBehavior>(
+      "congestion-behavior", value);
+}
 
 const std::string& validQueueAttrs() {
   static const std::string kAttrs =
