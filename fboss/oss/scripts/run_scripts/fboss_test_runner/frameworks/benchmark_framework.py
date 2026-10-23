@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import threading
+import time
 from argparse import Namespace
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -20,6 +21,7 @@ from fboss_test_runner.runners.utils import (
     collect_rma_showtech,
     get_test_regexes_from_file,
     load_from_file,
+    RMA_SHOWTECH_SINCE_MARGIN_S,
     test_matches_any_regex,
 )
 
@@ -334,9 +336,13 @@ class BenchmarkFramework:
         stderr_thread.join(timeout=10)
         return returncode, timed_out
 
-    def _collect_rma_showtech(self, benchmark_name: str) -> None:
+    def _collect_rma_showtech(self, benchmark_name: str, start_wall: float) -> None:
         """Stream rma-showtech output to the benchmark log on failure."""
-        collect_rma_showtech(benchmark_name, self._capture_subprocess)
+        collect_rma_showtech(
+            benchmark_name,
+            self._capture_subprocess,
+            since=start_wall - RMA_SHOWTECH_SINCE_MARGIN_S,
+        )
 
     def _run_benchmark_binary(
         self, binary_name: str, args: Namespace, benchmark_name: str | None = None
@@ -582,6 +588,7 @@ class BenchmarkFramework:
             self.suite.setup(args)
             results = []
             for name in selection.benchmark_names:
+                start_wall = time.time()
                 result = self._run_benchmark_binary(
                     selection.binary_path, args, benchmark_name=name
                 )
@@ -593,7 +600,7 @@ class BenchmarkFramework:
                 # still in its failed state: before the next benchmark runs (and
                 # restarts the agent) and before the suite is torn down.
                 if result["test_status"] != "OK":
-                    self._collect_rma_showtech(name)
+                    self._collect_rma_showtech(name, start_wall)
                 results.append(result)
             self._write_results_and_summary(results, selection.skipped_count)
         finally:

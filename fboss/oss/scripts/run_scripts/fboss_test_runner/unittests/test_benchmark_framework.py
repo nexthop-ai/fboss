@@ -14,7 +14,7 @@ import io
 import json
 import os
 import subprocess
-from unittest.mock import Mock, patch
+from unittest.mock import ANY, Mock, patch
 
 import pytest
 
@@ -502,14 +502,15 @@ def _failed_result(name, status="FAILED"):
 
 def test_collect_rma_showtech_nondisruptive(framework):
     """rma-showtech runs with '--details all' and without '--disruptive' so
-    diagnostics don't further perturb the DUT."""
+    diagnostics don't further perturb the DUT, windowed to the benchmark's start
+    minus the margin."""
     with patch.object(
         framework, "_capture_subprocess", return_value=(0, False)
     ) as mock_capture:
-        framework._collect_rma_showtech("HwRouteBench")
+        framework._collect_rma_showtech("HwRouteBench", 1000.0)
     mock_capture.assert_called_once()
     cmd = mock_capture.call_args.args[0]
-    assert cmd == ["rma-showtech", "--details", "all"]
+    assert cmd == ["rma-showtech", "--details", "all", "--since", "940"]
     assert "--disruptive" not in cmd
 
 
@@ -518,7 +519,7 @@ def test_collect_rma_showtech_missing_binary_does_not_raise(framework):
     failure."""
     with patch.object(framework, "_capture_subprocess", side_effect=FileNotFoundError):
         # Must not raise.
-        framework._collect_rma_showtech("HwRouteBench")
+        framework._collect_rma_showtech("HwRouteBench", 1000.0)
 
 
 @patch("subprocess.Popen")
@@ -547,7 +548,7 @@ def test_run_collects_on_failure(
     mock_run.return_value = _failed_result("A", status)
     with patch.object(framework, "_collect_rma_showtech") as mock_collect:
         framework.run(bench_args)
-    mock_collect.assert_called_once_with("A")
+    mock_collect.assert_called_once_with("A", ANY)
 
 
 @patch.object(BenchmarkFramework, "_write_results_and_summary")
@@ -586,7 +587,7 @@ def test_run_collects_before_next_benchmark_and_teardown(
         patch.object(
             framework,
             "_collect_rma_showtech",
-            side_effect=lambda name: order.append(f"showtech:{name}"),
+            side_effect=lambda name, _start: order.append(f"showtech:{name}"),
         ),
         patch.object(
             suite, "teardown", side_effect=lambda _args: order.append("teardown")
