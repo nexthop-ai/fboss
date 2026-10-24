@@ -400,9 +400,12 @@ class ImageBuilder:
             "/image_builder/bin/build_image_in_container.sh",
         ]
 
-        # Add flags for PXE/USB if either is requested
-        if "usb" in dist_formats or "pxe" in dist_formats:
-            command.append("--build-pxe-usb")
+        # One kiwi build makes both PXE and USB media; request only the listed
+        # ones so a PXE-only manifest does not also build and discard the ISO.
+        if "pxe" in dist_formats:
+            command.append("--build-pxe")
+        if "usb" in dist_formats:
+            command.append("--build-usb")
 
         # Add flag for ONIE if requested
         if "onie" in dist_formats:

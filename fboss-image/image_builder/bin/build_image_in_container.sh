@@ -27,6 +27,7 @@ ORIGINAL_ARGS=("$0" "$@")
 DESCRIPTION_DIR="${WSROOT}/templates/centos-09.0"
 TARGET_DIR="${WSROOT}/output"
 BUILD_PXE=""
+BUILD_USB=""
 BUILD_ONIE=""
 BUILD_CONTAINER=""
 KIWI_DEBUG=""
@@ -59,6 +60,8 @@ help() {
   echo "  -a|--after-pkgs-install     JSON File (in templates/centos-09.0 directory) containing additional packages to install to the image"
   echo "  -e|--after-pkgs-execute     JSON File (in templates/centos-09.0 directory) containing list of commands to execute after packages are installed"
   echo "  -p|--build-pxe-usb          Build PXE and USB installers image (default: no)"
+  echo "     --build-pxe              Build PXE installer image only (default: no)"
+  echo "     --build-usb              Build USB installer image only (default: no)"
   echo "  -o|--build-onie             Build ONIE installer image (default: no)"
   echo "     --container-build        Build cFBOSS docker container image (default: no)"
   echo ""
@@ -256,6 +259,17 @@ while [[ $# -gt 0 ]]; do
 
   -p | --build-pxe-usb)
     BUILD_PXE="yes"
+    BUILD_USB="yes"
+    shift 1
+    ;;
+
+  --build-pxe)
+    BUILD_PXE="yes"
+    shift 1
+    ;;
+
+  --build-usb)
+    BUILD_USB="yes"
     shift 1
     ;;
 
@@ -296,8 +310,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [ -n "${BUILD_CONTAINER}" ] && { [ -n "${BUILD_PXE}" ] || [ -n "${BUILD_ONIE}" ]; }; then
-  echo "ERROR: --container-build is mutually exclusive with --build-pxe-usb and --build-onie" >&2
+# The PXE archive and the USB ISO both come out of one kiwi oem build.
+BUILD_OEM=""
+if [ -n "${BUILD_PXE}" ] || [ -n "${BUILD_USB}" ]; then
+  BUILD_OEM="yes"
+fi
+
+if [ -n "${BUILD_CONTAINER}" ] && { [ -n "${BUILD_OEM}" ] || [ -n "${BUILD_ONIE}" ]; }; then
+  echo "ERROR: --container-build is mutually exclusive with --build-pxe-usb, --build-pxe, --build-usb and --build-onie" >&2
   exit 1
 fi
 
@@ -464,9 +484,14 @@ fi
 PXE_RC=0
 ONIE_RC=0
 
-if [ -n "${BUILD_PXE}" ]; then
-  dprint "Generating PXE and USB installer, this will take few minutes..."
+if [ -n "${BUILD_OEM}" ]; then
+  dprint "Generating ${BUILD_PXE:+PXE }${BUILD_USB:+USB }installer, this will take few minutes..."
   rm -rf ${TARGET_DIR}/btrfs
+  # kiwi 11.0.1 hands a --set-type-attr value back as a string, so "false" stays
+  # truthy; only an empty value switches an installer off.
+  OEM_TYPE_ATTRS=()
+  [ -n "${BUILD_PXE}" ] || OEM_TYPE_ATTRS+=(--set-type-attr installpxe=)
+  [ -n "${BUILD_USB}" ] || OEM_TYPE_ATTRS+=(--set-type-attr installiso=)
   (
     set -e -o pipefail
     kiwi-ng-3 \
@@ -474,6 +499,7 @@ if [ -n "${BUILD_PXE}" ]; then
       --profile FBOSS \
       --type oem \
       ${KIWI_DEBUG} system build \
+      "${OEM_TYPE_ATTRS[@]}" \
       --description ${DESCRIPTION_DIR} \
       --target-dir ${TARGET_DIR}/btrfs |&
       stdbuf -oL tee -a ${LOG_FILE} | stdbuf -oL awk '{print "PXE/USB Installer| " $0}'
@@ -544,7 +570,7 @@ if [ -n "${BUILD_ONIE}" ]; then
   ONIE_PID=$!
 fi
 
-if [ -n "${BUILD_PXE}" ]; then
+if [ -n "${BUILD_OEM}" ]; then
   wait ${PXE_PID}
   PXE_RC=$?
 fi
