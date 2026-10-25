@@ -119,6 +119,19 @@ target_link_libraries(mpls_handler_test
 
 gtest_discover_tests(mpls_handler_test)
 
+add_executable(lldp_manager_test
+  fboss/util/oss/TestMain.cpp
+  fboss/agent/test/LldpManagerTest.cpp
+)
+
+target_link_libraries(lldp_manager_test
+  agent_test_utils
+  ${GTEST}
+  ${LIBGMOCK_LIBRARIES}
+)
+
+gtest_discover_tests(lldp_manager_test)
+
 add_executable(sw_switch_test
   fboss/util/oss/TestMain.cpp
   fboss/agent/test/SwSwitchTest.cpp

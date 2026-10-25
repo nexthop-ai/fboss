@@ -27,6 +27,8 @@
 #include "fboss/agent/test/TestUtils.h"
 
 #include <gtest/gtest.h>
+#include <algorithm>
+#include <set>
 #include "gmock/gmock.h"
 
 using ::testing::AtLeast;
@@ -168,6 +170,166 @@ TEST(LldpManagerTest, LldpSendPeriodic) {
   LldpManager lldpManager(sw);
   lldpManager.start();
   lldpManager.stop();
+}
+
+// testStateA has 20 up interface ports.
+constexpr size_t kNumUpPorts = 20;
+constexpr int64_t kIntervalMs = LldpManager::LLDP_INTERVAL;
+
+// Records the port of every LLDP frame sent.
+void recordLldpSends(SwSwitch* sw, std::vector<PortID>& sent) {
+  EXPECT_HW_CALL(
+      sw,
+      sendPacketOutOfPortAsync_(
+          TxPacketMatcher::createMatcher("Lldp PDU", checkLldpPDU()),
+          _,
+          std::optional<uint8_t>(kNCStrictPriorityQueue)))
+      .WillRepeatedly(
+          testing::Invoke(
+              [&sent](TxPacket* pkt, PortID port, std::optional<uint8_t>) {
+                delete pkt;
+                sent.push_back(port);
+                return true;
+              }));
+}
+
+void setPortOperState(SwSwitch* sw, PortID id, bool up) {
+  sw->updateState(
+      "set port oper state", [id, up](const std::shared_ptr<SwitchState>& in) {
+        auto state = in->clone();
+        state->getPorts()->getNodeIf(id)->modify(&state)->setOperState(up);
+        return state;
+      });
+  waitForStateUpdates(sw);
+}
+
+size_t numUnique(const std::vector<PortID>& ports) {
+  return std::set<PortID>(ports.begin(), ports.end()).size();
+}
+
+// One port per slot: N slots, one frame each, delays summing to the interval.
+TEST(LldpManagerTest, LldpSendPacedOnePortPerSlot) {
+  gflags::FlagSaver flagSaver;
+  FLAGS_lldp_tx_ports_per_slot = 1;
+  auto handle = setupTestHandle();
+  auto sw = handle->getSw();
+  std::vector<PortID> sent;
+  recordLldpSends(sw, sent);
+  LldpManager lldpManager(sw);
+
+  auto delay = lldpManager.sendNextLldpSlot();
+  EXPECT_EQ(sent.size(), 1);
+  EXPECT_EQ(delay.count(), kIntervalMs / kNumUpPorts);
+  int64_t totalMs = delay.count();
+  for (size_t slot = 1; slot < kNumUpPorts; ++slot) {
+    totalMs += lldpManager.sendNextLldpSlot().count();
+    EXPECT_EQ(sent.size(), slot + 1);
+  }
+  EXPECT_EQ(totalMs, kIntervalMs);
+  EXPECT_EQ(numUnique(sent), kNumUpPorts);
+}
+
+// 0 and negative values keep the old burst: all ports, then a full interval.
+TEST(LldpManagerTest, LldpSendBurstWhenPacingOff) {
+  for (int perSlot : {0, -1}) {
+    gflags::FlagSaver flagSaver;
+    FLAGS_lldp_tx_ports_per_slot = perSlot;
+    auto handle = setupTestHandle();
+    auto sw = handle->getSw();
+    std::vector<PortID> sent;
+    recordLldpSends(sw, sent);
+    LldpManager lldpManager(sw);
+
+    EXPECT_EQ(lldpManager.sendNextLldpSlot().count(), kIntervalMs);
+    EXPECT_EQ(sent.size(), kNumUpPorts);
+    EXPECT_EQ(numUnique(sent), kNumUpPorts);
+  }
+}
+
+// k ports per slot: ceil(N/k) slots of at most k frames each.
+TEST(LldpManagerTest, LldpSendPacedSeveralPortsPerSlot) {
+  for (size_t perSlot : {2, 3}) {
+    gflags::FlagSaver flagSaver;
+    FLAGS_lldp_tx_ports_per_slot = perSlot;
+    auto handle = setupTestHandle();
+    auto sw = handle->getSw();
+    std::vector<PortID> sent;
+    recordLldpSends(sw, sent);
+    LldpManager lldpManager(sw);
+
+    const size_t numSlots = (kNumUpPorts + perSlot - 1) / perSlot;
+    int64_t totalMs = 0;
+    for (size_t slot = 0; slot < numSlots; ++slot) {
+      const auto before = sent.size();
+      totalMs += lldpManager.sendNextLldpSlot().count();
+      EXPECT_GE(sent.size() - before, 1);
+      EXPECT_LE(sent.size() - before, perSlot);
+    }
+    EXPECT_EQ(sent.size(), kNumUpPorts);
+    EXPECT_EQ(numUnique(sent), kNumUpPorts);
+    EXPECT_EQ(totalMs, kIntervalMs);
+  }
+}
+
+// A port that goes down mid-cycle sends nothing in its slot, and no port
+// sends twice.
+TEST(LldpManagerTest, LldpSendPacedSkipsDownPorts) {
+  gflags::FlagSaver flagSaver;
+  FLAGS_lldp_tx_ports_per_slot = 1;
+  auto handle = setupTestHandle();
+  auto sw = handle->getSw();
+  std::vector<PortID> sent;
+  recordLldpSends(sw, sent);
+  LldpManager lldpManager(sw);
+
+  lldpManager.sendNextLldpSlot();
+  ASSERT_EQ(sent.size(), 1);
+  const PortID downPort(sent[0] == PortID(1) ? 2 : 1);
+  setPortOperState(sw, downPort, false);
+
+  size_t emptySlots = 0;
+  for (size_t slot = 1; slot < kNumUpPorts; ++slot) {
+    const auto before = sent.size();
+    lldpManager.sendNextLldpSlot();
+    emptySlots += sent.size() == before ? 1 : 0;
+  }
+  EXPECT_EQ(emptySlots, 1);
+  EXPECT_EQ(sent.size(), kNumUpPorts - 1);
+  EXPECT_EQ(numUnique(sent), kNumUpPorts - 1);
+  EXPECT_EQ(std::count(sent.begin(), sent.end(), downPort), 0);
+}
+
+// The next cycle snapshots the ports again: a port that went down is gone,
+// and the remaining ports fill the whole interval.
+TEST(LldpManagerTest, LldpSendPacedResnapshotsEachCycle) {
+  gflags::FlagSaver flagSaver;
+  FLAGS_lldp_tx_ports_per_slot = 1;
+  auto handle = setupTestHandle();
+  auto sw = handle->getSw();
+  std::vector<PortID> sent;
+  recordLldpSends(sw, sent);
+  LldpManager lldpManager(sw);
+
+  for (size_t slot = 0; slot < kNumUpPorts; ++slot) {
+    lldpManager.sendNextLldpSlot();
+  }
+  ASSERT_EQ(sent.size(), kNumUpPorts);
+  const PortID downPort = sent[0];
+  setPortOperState(sw, downPort, false);
+  sent.clear();
+
+  const size_t numUp = kNumUpPorts - 1;
+  auto delay = lldpManager.sendNextLldpSlot();
+  EXPECT_EQ(sent.size(), 1);
+  EXPECT_EQ(delay.count(), kIntervalMs / numUp);
+  int64_t totalMs = delay.count();
+  for (size_t slot = 1; slot < numUp; ++slot) {
+    totalMs += lldpManager.sendNextLldpSlot().count();
+  }
+  EXPECT_EQ(totalMs, kIntervalMs);
+  EXPECT_EQ(sent.size(), numUp);
+  EXPECT_EQ(numUnique(sent), numUp);
+  EXPECT_EQ(std::count(sent.begin(), sent.end(), downPort), 0);
 }
 
 TEST(LldpManagerTest, NoLldpPktsIfSwitchConfigured) {

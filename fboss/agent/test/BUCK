@@ -1260,6 +1260,24 @@ cpp_unittest(
     ],
 )
 
+cpp_unittest(
+    name = "lldp_manager_test",
+    srcs = [
+        "LldpManagerTest.cpp",
+    ],
+    network_access = network_access_utils.none(),
+    test_main = "//fboss/agent/test:fboss_test_main",
+    deps = [
+        ":hw_test_handle",
+        ":utils",
+        "//fb303:service_data",
+        "//fboss/agent/packet:pktutil",
+        "//folly:memory",
+        "//folly/io:iobuf",
+        "//folly/logging:logging",
+    ],
+)
+
 # bazelify: exclude
 cpp_unittest(
     name = "ecmp_resource_manager_test",
