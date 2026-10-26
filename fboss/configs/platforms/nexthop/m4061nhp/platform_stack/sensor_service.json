@@ -503,7 +503,7 @@
           "compute": "@/1000.0"
         },
         {
-          "name": "DPM_2_POS1V5_PB",
+          "name": "DPM_2_POS1V5_VH3",
           "sysfsPath": "/run/devmap/sensors/DPM_2/in3_input",
           "type": 1,
           "thresholds": {
