@@ -68,6 +68,12 @@
           "address": "0x43",
           "kernelDeviceName": "adm1266",
           "pmUnitScopedName": "DPM_2"
+        },
+        {
+          "busName": "SCM_IOB_I2C_4",
+          "address": "0x60",
+          "kernelDeviceName": "raa229004",
+          "pmUnitScopedName": "SVI_VR"
         }
       ],
       "embeddedSensorConfigs": [
@@ -439,6 +445,12 @@
           "pmUnitScopedName": "SWITCH_CARD_TEMP_SENSOR"
         },
         {
+          "busName": "SMB1_IOB_I2C_0",
+          "address": "0x70",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "DCDC0"
+        },
+        {
           "busName": "SMB0_IOB_I2C_0",
           "address": "0x71",
           "kernelDeviceName": "fpga-mux",
@@ -509,6 +521,7 @@
     "/run/devmap/sensors/DPM": "/[DPM]",
     "/run/devmap/sensors/DPM_1": "/[DPM_1]",
     "/run/devmap/sensors/DPM_2": "/[DPM_2]",
+    "/run/devmap/sensors/SVI_VR": "/[SVI_VR]",
     "/run/devmap/sensors/DIMM1_TEMP": "/[DIMM1_TEMP]",
     "/run/devmap/sensors/DIMM2_TEMP": "/[DIMM2_TEMP]",
     "/run/devmap/sensors/CPU_TEMP": "/[CPU_TEMP]",
@@ -541,6 +554,22 @@
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_1": "/SMB_SLOT@0/[SMB1_IOB_I2C_1]",
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_2": "/SMB_SLOT@0/[SMB1_IOB_I2C_2]",
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_3": "/SMB_SLOT@0/[SMB1_IOB_I2C_3]",
+<<<<<<< HEAD
+=======
+    "/run/devmap/i2c-busses/SMB1_DCDC_I2C_4": "/SMB_SLOT@0/[SMB1_DCDC_I2C_4]",
+    "/run/devmap/i2c-busses/SMB1_DCDC_I2C_5": "/SMB_SLOT@0/[SMB1_DCDC_I2C_5]",
+    "/run/devmap/sensors/DCDC0": "/SMB_SLOT@0/[DCDC0]",
+    "/run/devmap/sensors/DCDC1": "/SMB_SLOT@0/[DCDC1]",
+    "/run/devmap/sensors/DCDC2": "/SMB_SLOT@0/[DCDC2]",
+    "/run/devmap/sensors/DCDC3": "/SMB_SLOT@0/[DCDC3]",
+    "/run/devmap/sensors/DCDC4": "/SMB_SLOT@0/[DCDC4]",
+    "/run/devmap/sensors/DCDC5": "/SMB_SLOT@0/[DCDC5]",
+    "/run/devmap/sensors/DCDC6": "/SMB_SLOT@0/[DCDC6]",
+    "/run/devmap/sensors/DCDC7": "/SMB_SLOT@0/[DCDC7]",
+    "/run/devmap/sensors/DCDC8": "/SMB_SLOT@0/[DCDC8]",
+    "/run/devmap/sensors/DCDC9": "/SMB_SLOT@0/[DCDC9]",
+    "/run/devmap/sensors/DCDC10": "/SMB_SLOT@0/[DCDC10]",
+>>>>>>> 8828435edc (NOS-13276: [m4062nhp] Add SVI_VR and DCDC0 PMBus sensors to platform_manager (#2603))
     "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]",
     "/run/devmap/sensors/PSU1": "/SMB_SLOT@0/[PSU1]",
     "/run/devmap/sensors/PSU2": "/SMB_SLOT@0/[PSU2]",
@@ -1118,6 +1147,12 @@
               "address": "0x48",
               "kernelDeviceName": "tmp464",
               "pmUnitScopedName": "SWITCH_CARD_TEMP_SENSOR"
+            },
+            {
+              "busName": "SMB1_IOB_I2C_0",
+              "address": "0x70",
+              "kernelDeviceName": "pmbus",
+              "pmUnitScopedName": "DCDC0"
             },
             {
               "busName": "SMB0_IOB_I2C_0",
