@@ -1876,11 +1876,18 @@ bool SwSwitch::updateState(unique_ptr<StateUpdate> update) {
     pendingUpdates_.push_back(*update.release());
   }
 
-  // Signal the update thread that updates are pending.
-  // We call runInFbossEventBaseThread() with a static function pointer since
-  // this is more efficient than having to allocate a new bound function object.
-  updateEventBase_.runInFbossEventBaseThread(handlePendingUpdatesHelper, this);
+  scheduleHandlePendingUpdates();
   return true;
+}
+
+void SwSwitch::scheduleHandlePendingUpdates() {
+  if (handlePendingUpdatesScheduled_.exchange(true)) {
+    return;
+  }
+  // Bypasses the FbossEventBase queue limit: the flag bounds this to one queued
+  // callback, and dropping it would strand every pending update.
+  updateEventBase_.runInEventBaseThread(
+      [this] { handlePendingUpdatesHelper(this); });
 }
 
 bool SwSwitch::updateState(StringPiece name, StateUpdateFn fn) {
@@ -1935,12 +1942,13 @@ void SwSwitch::handlePendingUpdatesHelper(SwSwitch* sw) {
 }
 
 void SwSwitch::handlePendingUpdates() {
-  // Get the list of updates to run.
-  //
-  // We might pull multiple updates off the list at once if several updates
-  // were scheduled before we had a chance to process them.  In some cases we
-  // might also end up finding 0 updates to process if a previous
-  // handlePendingUpdates() call processed multiple updates.
+  // Clear before taking the list so an update queued after the splice below
+  // schedules another run.
+  handlePendingUpdatesScheduled_.store(false);
+
+  // Get the list of updates to run. We might pull multiple updates off the
+  // list at once if several updates were scheduled before we had a chance to
+  // process them.
   StateUpdateList updates;
   auto pendingUpdateQueueLength = 0;
   {
@@ -1970,10 +1978,18 @@ void SwSwitch::handlePendingUpdates() {
     pendingUpdateQueueLength = pendingUpdates_.size();
   }
   stats()->pendingStateUpdateCount(pendingUpdateQueueLength);
+  XLOG_EVERY_MS(INFO, 1000)
+      << "pendingUpdates_ queue length: " << pendingUpdateQueueLength;
 
-  // handlePendingUpdates() is invoked once for each update, but a previous
-  // call might have already processed everything.  If we don't have anything
-  // to do just return early.
+  // A non-coalescing update ends the batch, so come back for the rest. Keep
+  // draining while exiting so blocked callers are released before the joins.
+  // The post-join drain in stopThreads() must not reschedule onto the stopped
+  // loop, and isInEventBaseThread() returns true once the loop has stopped.
+  if (pendingUpdateQueueLength > 0 &&
+      updateEventBase_.inRunningEventBaseThread()) {
+    scheduleHandlePendingUpdates();
+  }
+
   if (updates.empty()) {
     return;
   }
@@ -3330,16 +3346,19 @@ void SwSwitch::stopThreads() {
   //
   // Alternatively, it would be nicer to update EventBase so it can notify
   // callbacks when the event loop is being stopped.
+  //
+  // These go through runInEventBaseThread() so a saturated queue cannot drop
+  // the terminate request and leave the join below waiting forever.
   if (backgroundThread_) {
-    backgroundEventBase_.runInFbossEventBaseThread(
+    backgroundEventBase_.runInEventBaseThread(
         [this] { backgroundEventBase_.terminateLoopSoon(); });
   }
   if (updateThread_) {
-    updateEventBase_.runInFbossEventBaseThread(
+    updateEventBase_.runInEventBaseThread(
         [this] { updateEventBase_.terminateLoopSoon(); });
   }
   if (packetTxThread_) {
-    packetTxEventBase_.runInFbossEventBaseThread(
+    packetTxEventBase_.runInEventBaseThread(
         [this] { packetTxEventBase_.terminateLoopSoon(); });
   }
   if (packetRxThread_) {
@@ -3348,15 +3367,15 @@ void SwSwitch::stopThreads() {
         [this] { packetRxEventBase_.terminateLoopSoon(); });
   }
   if (pcapDistributionThread_) {
-    pcapDistributionEventBase_.runInFbossEventBaseThread(
+    pcapDistributionEventBase_.runInEventBaseThread(
         [this] { pcapDistributionEventBase_.terminateLoopSoon(); });
   }
   if (lacpThread_) {
-    lacpEventBase_.runInFbossEventBaseThread(
+    lacpEventBase_.runInEventBaseThread(
         [this] { lacpEventBase_.terminateLoopSoon(); });
   }
   if (neighborCacheThread_) {
-    neighborCacheEventBase_.runInFbossEventBaseThread(
+    neighborCacheEventBase_.runInEventBaseThread(
         [this] { neighborCacheEventBase_.terminateLoopSoon(); });
   }
   if (backgroundThread_) {

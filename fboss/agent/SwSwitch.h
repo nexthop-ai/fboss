@@ -32,10 +32,8 @@
 #include "fboss/agent/single/MonolithicHwSwitchHandler.h"
 #include "fboss/agent/state/StateUpdate.h"
 #include "fboss/agent/types.h"
-#include "fboss/lib/HwWriteBehavior.h"
 #include "fboss/lib/ThreadHeartbeat.h"
 #include "fboss/lib/phy/gen-cpp2/phy_types.h"
-#include "fboss/lib/restart_tracker/RestartTimeTracker.h"
 
 #include <folly/IntrusiveList.h>
 #include <folly/Range.h>
@@ -1120,6 +1118,7 @@ class SwSwitch : public HwSwitchCallback {
 
   void updatePtpTcCounter();
   static void handlePendingUpdatesHelper(SwSwitch* sw);
+  void scheduleHandlePendingUpdates();
   void handlePendingUpdates();
   std::pair<std::shared_ptr<SwitchState>, std::shared_ptr<SwitchState>>
   applyUpdate(
@@ -1293,6 +1292,8 @@ class SwSwitch : public HwSwitchCallback {
    */
   folly::SpinLock pendingUpdatesLock_;
   StateUpdateList pendingUpdates_;
+  // At most one handlePendingUpdates() is queued on updateEventBase_ at a time.
+  std::atomic<bool> handlePendingUpdatesScheduled_{false};
 
   /*
    * The current switch state represented as :  appliedState,

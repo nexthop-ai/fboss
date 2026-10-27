@@ -602,6 +602,83 @@ TEST_F(SwSwitchTest, overlappingUpdatesWithExit) {
   blockingUpdates.join();
 }
 
+<<<<<<< HEAD
+=======
+TEST_F(SwSwitchTest, nonCoalescingUpdatesShareOneWakeup) {
+  gflags::FlagSaver flagSaver;
+  FLAGS_fboss_event_base_queue_limit = 10;
+
+  folly::Baton<> blocked;
+  folly::Baton<> release;
+  sw->getUpdateEvb()->runInEventBaseThread([&] {
+    blocked.post();
+    release.wait();
+  });
+  blocked.wait();
+
+  // Each non-coalescing update needs its own drain, so this is more updates
+  // than the event base queue would hold if each one queued a wake-up.
+  const int numUpdates = 2 * FLAGS_fboss_event_base_queue_limit;
+  std::atomic<int> applied{0};
+  for (int i = 0; i < numUpdates; ++i) {
+    sw->updateStateNoCoalescing(
+        "count", [&applied](const std::shared_ptr<SwitchState>& /*state*/) {
+          ++applied;
+          return std::shared_ptr<SwitchState>();
+        });
+  }
+  EXPECT_LE(sw->getUpdateEvb()->getNotificationQueueSize(), 1);
+
+  release.post();
+  waitForStateUpdates(sw);
+  EXPECT_EQ(applied, numUpdates);
+}
+
+TEST_F(SwSwitchTest, exitWithSaturatedUpdateEvb) {
+  gflags::FlagSaver flagSaver;
+  FLAGS_fboss_event_base_queue_limit = 1;
+
+  // Hold the update thread until stop() has queued the terminate request
+  // behind the filler callback; give up after a bound so a dropped request
+  // fails the test by hanging in stop() rather than here.
+  folly::Baton<> blocked;
+  auto* evb = sw->getUpdateEvb();
+  evb->runInEventBaseThread([&blocked, evb] {
+    blocked.post();
+    auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    while (evb->getNotificationQueueSize() < 2 &&
+           std::chrono::steady_clock::now() < deadline) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+  });
+  blocked.wait();
+  evb->runInEventBaseThread([] {});
+  ASSERT_GE(
+      evb->getNotificationQueueSize(), FLAGS_fboss_event_base_queue_limit);
+
+  sw->stop(false /* isGracefulStop */);
+}
+
+// Split-agent exit stops SwSwitch before the thrift server, so a syncFib can
+// still be running; its ScopeGuard calls stopLoggingRouteUpdates() after
+// stop() destroyed the RouteUpdateLogger.
+TEST_F(SwSwitchTest, routeUpdateLoggingDuringExit) {
+  const std::string kIdentifier{"fboss-agent-warmboot-BGPD"};
+  std::atomic<bool> done{false};
+  std::thread syncFibLogging([this, &done, &kIdentifier] {
+    while (!done) {
+      sw->logRouteUpdates("::", 0, kIdentifier);
+      sw->stopLoggingRouteUpdates(kIdentifier);
+    }
+  });
+  sw->gracefulExit();
+  done = true;
+  syncFibLogging.join();
+  sw->logRouteUpdates("0.0.0.0", 0, kIdentifier);
+  sw->stopLoggingRouteUpdates(kIdentifier);
+}
+
+>>>>>>> 62c9b1517e (NOS-13707: Bound SwSwitch update-thread wake-ups and make thread stop undroppable (#2256))
 TEST_F(SwSwitchTest, multiSwitchFb303Stats) {
   std::map<SwitchID, const HwAsic*> asicMap;
   CounterCache counters(sw);

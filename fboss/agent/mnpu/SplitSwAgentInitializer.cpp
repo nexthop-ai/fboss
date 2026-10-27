@@ -6,6 +6,7 @@
 #include "fboss/agent/TunManager.h"
 #include "fboss/agent/mnpu/MultiSwitchHwSwitchHandler.h"
 #include "fboss/lib/CommonFileUtils.h"
+#include "fboss/lib/restart_tracker/RestartTimeTracker.h"
 
 #include <thread>
 
