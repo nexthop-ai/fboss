@@ -486,6 +486,19 @@ thrift_add_library(
     hardware_stats_cpp2
 )
 
+add_library(show_interface_counters_queue)
+thrift_generate(
+  show_interface_counters_queue
+  fboss/cli/fboss2/commands/show/interface/counters/queue/model.thrift
+  LANGUAGE cpp2
+  OPTIONS
+    json
+  INCLUDE_DIRECTORIES
+    ${PROJECT_SOURCE_DIR}
+    ${THRIFT_INCLUDE_DIR}
+)
+target_include_directories(show_interface_counters_queue PUBLIC ${PROJECT_BINARY_DIR})
+
 add_library(show_interface_status)
 thrift_generate(
   show_interface_status
@@ -916,6 +929,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/interface/counters/fec/histogram/CmdShowInterfaceCountersFecHistogram.cpp
   fboss/cli/fboss2/commands/show/interface/counters/mka/CmdShowInterfaceCountersMKA.h
   fboss/cli/fboss2/commands/show/interface/counters/mka/CmdShowInterfaceCountersMKA.cpp
+  fboss/cli/fboss2/commands/show/interface/counters/queue/CmdShowInterfaceCountersQueue.h
+  fboss/cli/fboss2/commands/show/interface/counters/queue/CmdShowInterfaceCountersQueue.cpp
   fboss/cli/fboss2/commands/show/interface/transceiver/CmdShowInterfaceTransceiver.h
   fboss/cli/fboss2/commands/show/interface/transceiver/CmdShowInterfaceTransceiver.cpp
   fboss/cli/fboss2/commands/show/interface/transceiver/eeprom/CmdShowInterfaceTransceiverEeprom.h
@@ -1131,6 +1146,7 @@ target_link_libraries(fboss2_lib
   show_interface_errors
   show_interface_counters
   show_interface_counters_mka
+  show_interface_counters_queue
   show_interface_traffic
   show_interface_status
   show_interface_phy
