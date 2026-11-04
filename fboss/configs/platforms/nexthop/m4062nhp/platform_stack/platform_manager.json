@@ -68,6 +68,29 @@
           "address": "0x43",
           "kernelDeviceName": "adm1266",
           "pmUnitScopedName": "DPM_2"
+<<<<<<< HEAD
+=======
+        },
+        {
+          "busName": "SCM_IOB_I2C_4",
+          "address": "0x60",
+          "kernelDeviceName": "raa229004",
+          "pmUnitScopedName": "SVI_VR"
+        },
+        {
+          "busName": "SCM_IOB_I2C_4",
+          "address": "0x0c",
+          "kernelDeviceName": "dummy",
+          "pmUnitScopedName": "SCM_IOB_I2C_4_ARA_RSVD",
+          "__comment__": "Reserves the SMBus Alert Response Address so i2cdetect skips it. A write here latches STATUS_CML in the Renesas CPU VR on this bus."
+        },
+        {
+          "busName": "SCM_IOB_I2C_4",
+          "address": "0x37",
+          "kernelDeviceName": "dummy",
+          "pmUnitScopedName": "SCM_IOB_I2C_4_ZONE_WRITE_RSVD",
+          "__comment__": "Reserves the PMBus ZONE_WRITE address so i2cdetect skips it. A read here latches STATUS_CML in the Renesas CPU VR on this bus."
+>>>>>>> e370333f23 (NOS-21185: [m4062nhp] Reserve SMBus ARA and PMBus ZONE_WRITE addresses on Renesas VR buses (#2829))
         }
       ],
       "embeddedSensorConfigs": [
@@ -458,7 +481,158 @@
           "pmUnitScopedName": "PSU2_EEPROM"
         },
         {
+<<<<<<< HEAD
           "busName": "SMB0_PSU_MUX@2",
+=======
+          "busName": "SMB1_DCDC_I2C_4",
+          "address": "0x60",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC1"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_4",
+          "address": "0x61",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC3"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_4",
+          "address": "0x62",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC4"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_4",
+          "address": "0x63",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC7"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_4",
+          "address": "0x72",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC9"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_4",
+          "address": "0x0c",
+          "kernelDeviceName": "dummy",
+          "pmUnitScopedName": "SMB1_DCDC_I2C_4_ARA_RSVD",
+          "__comment__": "Reserves the SMBus Alert Response Address so i2cdetect skips it. A write here latches STATUS_CML in every Renesas VR on this bus."
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_4",
+          "address": "0x37",
+          "kernelDeviceName": "dummy",
+          "pmUnitScopedName": "SMB1_DCDC_I2C_4_ZONE_WRITE_RSVD",
+          "__comment__": "Reserves the PMBus ZONE_WRITE address so i2cdetect skips it. A read here latches STATUS_CML in every Renesas VR on this bus."
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_5",
+          "address": "0x60",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC2"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_5",
+          "address": "0x61",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC5"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_5",
+          "address": "0x62",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC6"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_5",
+          "address": "0x63",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC8"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_5",
+          "address": "0x72",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC10"
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_5",
+          "address": "0x0c",
+          "kernelDeviceName": "dummy",
+          "pmUnitScopedName": "SMB1_DCDC_I2C_5_ARA_RSVD",
+          "__comment__": "Reserves the SMBus Alert Response Address so i2cdetect skips it. A write here latches STATUS_CML in every Renesas VR on this bus."
+        },
+        {
+          "busName": "SMB1_DCDC_I2C_5",
+          "address": "0x37",
+          "kernelDeviceName": "dummy",
+          "pmUnitScopedName": "SMB1_DCDC_I2C_5_ZONE_WRITE_RSVD",
+          "__comment__": "Reserves the PMBus ZONE_WRITE address so i2cdetect skips it. A read here latches STATUS_CML in every Renesas VR on this bus."
+        }
+      ],
+      "outgoingSlotConfigs": {
+        "PSU_SLOT@0": {
+          "slotType": "PSU_SLOT",
+          "presenceDetection": {
+            "sysfsFileHandle": {
+              "devicePath": "/SMB_SLOT@0/[SMB_IOB_PSU_PRESENT]",
+              "presenceFileName": "psu1_present",
+              "desiredValue": 1
+            }
+          },
+          "outgoingI2cBusNames": [
+            "SMB0_PSU_MUX@0"
+          ]
+        },
+        "PSU_SLOT@1": {
+          "slotType": "PSU_SLOT",
+          "presenceDetection": {
+            "sysfsFileHandle": {
+              "devicePath": "/SMB_SLOT@0/[SMB_IOB_PSU_PRESENT]",
+              "presenceFileName": "psu2_present",
+              "desiredValue": 1
+            }
+          },
+          "outgoingI2cBusNames": [
+            "SMB0_PSU_MUX@1"
+          ]
+        },
+        "PSU_SLOT@2": {
+          "slotType": "PSU_SLOT",
+          "presenceDetection": {
+            "sysfsFileHandle": {
+              "devicePath": "/SMB_SLOT@0/[SMB_IOB_PSU_PRESENT]",
+              "presenceFileName": "psu3_present",
+              "desiredValue": 1
+            }
+          },
+          "outgoingI2cBusNames": [
+            "SMB0_PSU_MUX@2"
+          ]
+        },
+        "PSU_SLOT@3": {
+          "slotType": "PSU_SLOT",
+          "presenceDetection": {
+            "sysfsFileHandle": {
+              "devicePath": "/SMB_SLOT@0/[SMB_IOB_PSU_PRESENT]",
+              "presenceFileName": "psu4_present",
+              "desiredValue": 1
+            }
+          },
+          "outgoingI2cBusNames": [
+            "SMB0_PSU_MUX@3"
+          ]
+        }
+      }
+    },
+    "PSU": {
+      "pluggedInSlotType": "PSU_SLOT",
+      "i2cDeviceConfigs": [
+        {
+          "busName": "INCOMING@0",
+>>>>>>> e370333f23 (NOS-21185: [m4062nhp] Reserve SMBus ARA and PMBus ZONE_WRITE addresses on Renesas VR buses (#2829))
           "address": "0x50",
           "kernelDeviceName": "24c64",
           "pmUnitScopedName": "PSU3_EEPROM"
@@ -1169,10 +1343,69 @@
               "pmUnitScopedName": "PSU3"
             },
             {
+<<<<<<< HEAD
               "busName": "SMB0_PSU_MUX@3",
               "address": "0x58",
               "kernelDeviceName": "pmbus",
               "pmUnitScopedName": "PSU4"
+=======
+              "busName": "SMB1_DCDC_I2C_4",
+              "address": "0x0c",
+              "kernelDeviceName": "dummy",
+              "pmUnitScopedName": "SMB1_DCDC_I2C_4_ARA_RSVD",
+              "__comment__": "Reserves the SMBus Alert Response Address so i2cdetect skips it. A write here latches STATUS_CML in every Renesas VR on this bus."
+            },
+            {
+              "busName": "SMB1_DCDC_I2C_4",
+              "address": "0x37",
+              "kernelDeviceName": "dummy",
+              "pmUnitScopedName": "SMB1_DCDC_I2C_4_ZONE_WRITE_RSVD",
+              "__comment__": "Reserves the PMBus ZONE_WRITE address so i2cdetect skips it. A read here latches STATUS_CML in every Renesas VR on this bus."
+            },
+            {
+              "busName": "SMB1_DCDC_I2C_5",
+              "address": "0x60",
+              "kernelDeviceName": "raa228228",
+              "pmUnitScopedName": "DCDC2"
+            },
+            {
+              "busName": "SMB1_DCDC_I2C_5",
+              "address": "0x61",
+              "kernelDeviceName": "raa228228",
+              "pmUnitScopedName": "DCDC5"
+            },
+            {
+              "busName": "SMB1_DCDC_I2C_5",
+              "address": "0x62",
+              "kernelDeviceName": "raa228228",
+              "pmUnitScopedName": "DCDC6"
+            },
+            {
+              "busName": "SMB1_DCDC_I2C_5",
+              "address": "0x63",
+              "kernelDeviceName": "raa228228",
+              "pmUnitScopedName": "DCDC8"
+            },
+            {
+              "busName": "SMB1_DCDC_I2C_5",
+              "address": "0x72",
+              "kernelDeviceName": "raa228228",
+              "pmUnitScopedName": "DCDC10"
+            },
+            {
+              "busName": "SMB1_DCDC_I2C_5",
+              "address": "0x0c",
+              "kernelDeviceName": "dummy",
+              "pmUnitScopedName": "SMB1_DCDC_I2C_5_ARA_RSVD",
+              "__comment__": "Reserves the SMBus Alert Response Address so i2cdetect skips it. A write here latches STATUS_CML in every Renesas VR on this bus."
+            },
+            {
+              "busName": "SMB1_DCDC_I2C_5",
+              "address": "0x37",
+              "kernelDeviceName": "dummy",
+              "pmUnitScopedName": "SMB1_DCDC_I2C_5_ZONE_WRITE_RSVD",
+              "__comment__": "Reserves the PMBus ZONE_WRITE address so i2cdetect skips it. A read here latches STATUS_CML in every Renesas VR on this bus."
+>>>>>>> e370333f23 (NOS-21185: [m4062nhp] Reserve SMBus ARA and PMBus ZONE_WRITE addresses on Renesas VR buses (#2829))
             }
           ]
         },
