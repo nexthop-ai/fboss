@@ -23,6 +23,7 @@ OUT_DIR="${2:?output dir required}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KERNEL_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONTAINER_DIST_DIR="$KERNEL_ROOT/dist"
+CONTAINER_BUILD_ROOT="$KERNEL_ROOT/.build"
 CONTAINER_SPECS_DIR="$KERNEL_ROOT/specs"
 CONTAINER_CONFIGS_DIR="$KERNEL_ROOT/configs"
 CONTAINER_SCRIPTS_DIR="$KERNEL_ROOT/scripts"
@@ -37,8 +38,8 @@ python3 "$COMMON_SCRIPTS_DIR/component_version.py" kernel --prepare \
 # Install kernel build dependencies
 bash "$CONTAINER_SCRIPTS_DIR/setup_kernel_build_deps.sh"
 
-# Use a separate build directory to avoid cluttering dist/
-BUILD_DIR="$CONTAINER_DIST_DIR/build-$KERNEL_VERSION"
+# Build outside dist/ because the kernel version capture reads every RPM under it, so the rpmbuild tree with duplicate RPMS/ causes failure
+BUILD_DIR="$CONTAINER_BUILD_ROOT/build-$KERNEL_VERSION"
 
 mkdir -p "$BUILD_DIR/SOURCES"
 cd "$BUILD_DIR"
@@ -116,8 +117,12 @@ tar -cf $OUT_DIR/kernel-$KERNEL_VERSION.rpms.tar \
   --transform 's|^\(kernel-[^-]\+\)-.*\.\(x86_64\)\.rpm$|\1-\2.rpm|' \
   $(find RPMS -name "*.rpm")
 
+<<<<<<< HEAD
 tar -rf "$OUT_DIR/kernel-$KERNEL_VERSION.rpms.tar" \
   -C "$OUT_DIR" share/kernel-version.json
+=======
+rm -rf "$BUILD_DIR"
+>>>>>>> af2db406fa (NO-NOS: Build the kernel outside dist/ (#2841))
 
 echo 'Kernel RPM build complete!'
 echo 'Output files:'

@@ -4,6 +4,11 @@ distro_infra/parts/ipxe/ipxev6.efi
 image_builder/logs
 image_builder/output
 kernel/dist
+<<<<<<< HEAD
+=======
+kernel/.build
+.cache
+>>>>>>> af2db406fa (NO-NOS: Build the kernel outside dist/ (#2841))
 distro_cli/.artifacts
 image_builder/templates/centos-09.0/root
 *.iso
