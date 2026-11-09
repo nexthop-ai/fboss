@@ -1,0 +1,845 @@
+load("@rules_python//python:defs.bzl", "py_test")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("@rules_shell//shell:sh_library.bzl", "sh_library")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//fboss:bootstrap_agent_configs.bzl", "register_bootstrap_agent_config_tests")
+load("//fboss:descriptor_asic_configs.bzl", "register_descriptor_asic_config_tests")
+load("//fboss:fboss_build_types.bzl", "FREE_UP_DISK", "LOAD_FBOSS_BUILDER_CMD", "SELECT_REGION_CMD", "distro_build", "fboss_unit_test")
+load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
+load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact", "upload_build_artifact_set")
+
+exports_files(
+    ["fboss/oss/stable_commits/latest_stable_hashes.tar.gz"],
+    visibility = ["//BGP:__pkg__"],
+)
+
+# distro_cli bind-mounts the scripts into the fboss builder container
+# (component.py) and requires the Dockerfile before using the builder image (image.py).
+filegroup(
+    name = "distro_cli_oss_files",
+    srcs = glob(["fboss/oss/scripts/**"]) + ["fboss/oss/docker/Dockerfile"],
+    visibility = ["//fboss/fboss-image/distro_cli:__pkg__"],
+)
+
+filegroup(
+    name = "nh-fboss-manifests",
+    srcs = [
+        "fboss-image/cfboss.json",
+        "fboss-image/nexthop-extra-pkgs.json",
+        "fboss-image/nh-fboss-broadcom-dnx.json",
+        "fboss-image/nh-fboss-broadcom-th6.json",
+        "fboss-image/nh-fboss-broadcom-xgs.json",
+        "fboss-image/nh-fboss-cisco-s1.json",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# C++ sources whose TEST/TEST_F/... names the runner filters in tests/ select
+# over. Must stay in sync with SUITES in fboss/oss/scripts/check_test_filter_overlap.py;
+# that script fails if a configured suite scrapes zero test names.
+filegroup(
+    name = "hw_test_gtest_srcs",
+    visibility = ["//fboss/tests:__pkg__"],
+    srcs = glob([
+        "fboss/agent/test/agent_hw_tests/**/*.cpp",
+        "fboss/agent/test/agent_hw_tests/**/*.h",
+        "fboss/agent/test/link_tests/**/*.cpp",
+        "fboss/agent/test/link_tests/**/*.h",
+        "fboss/led_service/hw_test/**/*.cpp",
+        "fboss/led_service/hw_test/**/*.h",
+        "fboss/platform/**/*hw_test/**/*.cpp",
+        "fboss/platform/**/*hw_test/**/*.h",
+        "fboss/qsfp_service/test/hw_test/**/*.cpp",
+        "fboss/qsfp_service/test/hw_test/**/*.h",
+    ]),
+)
+
+# Build-time lint over the tests/ runner filters against hw_test_gtest_srcs.
+# Lives in this package because fboss/oss/scripts must not become its own
+# Bazel package: the genrules below reference its files by label directly.
+py_test(
+    name = "filter_overlap_test",
+    srcs = ["fboss/oss/scripts/check_test_filter_overlap.py"],
+    args = ["--repo-root=fboss"],
+    data = [
+        ":hw_test_gtest_srcs",
+        "//fboss/tests:runner_py_srcs",
+    ],
+    main = "fboss/oss/scripts/check_test_filter_overlap.py",
+)
+
+py_test(
+    name = "cisco_asic_config_test",
+    srcs = ["fboss/oss/scripts/check_cisco_asic_config.py"],
+    args = [
+        "$(location fboss/oss/hw_test_configs/wedge800cact.agent.materialized_JSON)",
+        "$(location fboss/oss/hw_bench_configs/wedge800cact.agent.materialized_JSON)",
+    ],
+    data = [
+        "fboss/oss/hw_test_configs/wedge800cact.agent.materialized_JSON",
+        "fboss/oss/hw_bench_configs/wedge800cact.agent.materialized_JSON",
+    ],
+    main = "fboss/oss/scripts/check_cisco_asic_config.py",
+)
+
+py_test(
+    name = "supported_kernel_version_test",
+    srcs = ["fboss/oss/scripts/check_supported_kernel_version.py"],
+    args = [
+        "$(location BUILD.bazel)",
+        "$(location fboss/platform/platform_checks/checks/KernelVersionCheck.cpp)",
+    ],
+    data = [
+        "BUILD.bazel",
+        "fboss/platform/platform_checks/checks/KernelVersionCheck.cpp",
+    ],
+    main = "fboss/oss/scripts/check_supported_kernel_version.py",
+)
+
+filegroup(
+    name = "run_scripts_py",
+    visibility = ["//fboss/tests:__subpackages__"],
+    srcs = glob(["fboss/oss/scripts/run_scripts/**/*.py"]),
+)
+
+# fboss_init.sh composes the hardware-revision variant gflag that platform
+# descriptors declare; test_variant_flags pins the two together, so it needs
+# both trees in runfiles.
+filegroup(
+    name = "variant_flag_inputs",
+    visibility = ["//fboss/tests:__subpackages__"],
+    srcs = glob([
+        "fboss-image/image_builder/templates/centos-09.0/root_files/usr/local/bin/fboss_init.sh",
+        "fboss/configs/platforms/**/platform_mapping/generated/platform_descriptor.json",
+    ]),
+)
+
+# The test runner's platform_mapping helpers read port maps and the switch config
+# schema from these trees; tests that load a mapping need them in runfiles.
+filegroup(
+    name = "platform_mapping_inputs",
+    visibility = ["//fboss/tests:__subpackages__"],
+    srcs = glob([
+        "fboss/agent/switch_config.thrift",
+        "fboss/configs/platforms/**/platform_mapping/generated/platform_mapping.json",
+    ]),
+)
+
+# nhtools' x86fw registry keys on fw_util component names; its test checks they
+# still resolve against each platform's fw_util.json.
+filegroup(
+    name = "fw_util_configs",
+    visibility = ["//nhtools/switch/tests:__pkg__"],
+    srcs = glob(
+        ["fboss/configs/platforms/*/*/platform_stack/fw_util.json"],
+        allow_empty = True,
+    ),
+)
+
+filegroup(
+    name = "qsfp_test_configs",
+    visibility = ["//fboss/tests:__subpackages__"],
+    srcs = glob(["fboss/oss/qsfp_test_configs/*"]),
+)
+
+filegroup(
+    name = "hw_bench_configs",
+    visibility = ["//fboss/tests:__subpackages__"],
+    srcs = glob(["fboss/oss/hw_bench_configs/*"]),
+)
+
+filegroup(
+    name = "link_known_bad_tests",
+    visibility = ["//fboss/tests:__subpackages__"],
+    srcs = glob(["fboss/oss/link_known_bad_tests/*"]),
+)
+
+# We explicitly place the intermediate build products into the
+# source tree to help incremental rebuild speed. This is both to make
+# incremental rebuild calculations faster, but also to avoid
+# unnecessary rebuilds when, say, an intermediate file is deleted.
+genrule(
+    name = "fboss_builder_docker",
+    visibility = ["//visibility:public"],
+    srcs = [
+        "//fboss/fboss-image/distro_cli:scripts/build_and_tag_docker.sh",
+        "fboss/oss/scripts/build_docker.sh",
+        "fboss/oss/docker/Dockerfile",
+        ".dockerignore",
+    ] + glob(["build/**"],
+        exclude=["build/**/*.pyc"]),
+    outs = ["fboss_builder.tar"],
+    cmd = SELECT_REGION_CMD + """
+        $(location //fboss/fboss-image/distro_cli:scripts/build_and_tag_docker.sh)
+        docker save -o fboss_builder.tar fboss_builder:latest
+        mv fboss_builder.tar $(RULEDIR)
+    """,
+    tags = ["no-sandbox"]
+)
+
+sh_library(
+    name = "run_in_builder",
+    visibility = ["//visibility:public"],
+    srcs = ["fboss/oss/scripts/run_in_builder.sh"],
+    # Written by set-region.sh; absent until a region is selected.
+    data = glob(
+        [
+            "fboss/oss/scripts/region.env",
+            "fboss/oss/scripts/region.repo",
+        ],
+        allow_empty = True,
+    ),
+)
+
+# The per-region config files, plus the two links when a region is already
+# selected (absent otherwise). Input of the sandboxed image compositions.
+filegroup(
+    name = "region_config",
+    visibility = ["//visibility:public"],
+    srcs = glob(["fboss/oss/scripts/regions/*"]) + glob(
+        [
+            "fboss/oss/scripts/region.env",
+            "fboss/oss/scripts/region.repo",
+        ],
+        allow_empty = True,
+    ),
+)
+
+# bazel run //fboss:set_region -- <region>
+sh_binary(
+    name = "set_region",
+    srcs = ["fboss/oss/scripts/set-region.sh"],
+    data = glob(["fboss/oss/scripts/regions/*"]),
+)
+
+heavy_genrule(
+    name = "fboss-fake-sai",
+    srcs = [
+        "//bazel_lib:ln_or_cp",
+        "//fboss:fboss_builder.tar",
+        ".buckconfig",
+        "CMakeLists.txt",
+        "buck2",
+        "functions.cmake",
+        "getdeps.sh",
+        "sdk_dependencies.txt",
+    ] + glob(["build/**", # Avoid dot files, especially .sccache to which bazel doesn't have permission
+              "cmake/**",
+              "common/**",
+              "docs/**",
+              "fboss/**",
+    ]) + [
+        # See fboss_forwarding_stack_srcs.
+        "//fboss/fboss/agent/hw/sai:stack_srcs",
+    ],
+    outs = [
+        "fboss-fake-sai.tar.zst",
+        "api_test",
+        "async_logger_test",
+        "fboss2_cmd_test",
+        "fsdb_client_test",
+        "platform_config_lib_config_lib_test",
+        "platform_data_corral_sw_test",
+        "platform_helpers_platform_name_lib_test",
+        "platform_manager_config_validator_test",
+        "platform_manager_data_store_test",
+        "platform_manager_exploration_errors_test",
+        "platform_manager_i2c_explorer_test",
+        "platform_manager_platform_explorer_test",
+        "platform_manager_presence_checker_test",
+        "platform_manager_utils_test",
+        "rackmon_test",
+        "sensor_service_sw_test",
+        "sensor_service_utils_test",
+        "store_test",
+        "switch_test",
+        "thrift_node_tests",
+        "weutil_crc16_ccitt_test",
+        "weutil_fboss_eeprom_interface_test",
+    ],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        pushd fboss
+        mkdir -p .build_dir/sai .sccache
+        tar -C .build_dir/sai -xf ./fboss/oss/scripts/fake-sai-devel.tar
+
+        ./fboss/oss/scripts/run_in_builder.sh ./fboss/oss/scripts/build.sh
+        popd
+
+        for out in $(OUTS); do
+            filename=$$(basename $$out)
+            if [ $$filename = "fboss-fake-sai.tar.zst" ]; then
+                $(execpath //bazel_lib:ln_or_cp) fboss/fboss_bins.tar.zst $(location fboss-fake-sai.tar.zst)
+            else
+                $(execpath //bazel_lib:ln_or_cp) fboss/.build_dir/sai-fake/build/fboss/$$filename $(RULEDIR)/$$filename
+            fi
+        done
+    """,
+    tags = [
+        "no-sandbox",
+        "not-for-ci",
+    ],
+)
+
+fboss_unit_test(name = "api_test", tags = ["disabled", "not-for-ci"]) # Fails
+fboss_unit_test(name = "async_logger_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "fboss2_cmd_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "fsdb_client_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_config_lib_config_lib_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_data_corral_sw_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_helpers_platform_name_lib_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_config_validator_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_data_store_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_exploration_errors_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_i2c_explorer_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_platform_explorer_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_presence_checker_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_utils_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "rackmon_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "sensor_service_sw_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "sensor_service_utils_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "store_test", tags = ["disabled", "not-for-ci"]) # fails
+fboss_unit_test(name = "switch_test", tags = ["disabled", "not-for-ci"]) # Fails
+fboss_unit_test(name = "thrift_node_tests", tags = ["not-for-ci"])
+fboss_unit_test(name = "weutil_crc16_ccitt_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "weutil_fboss_eeprom_interface_test", tags = ["not-for-ci"])
+
+# Checks committed agent.conf files against the generator. See bootstrap_agent_configs.bzl.
+register_bootstrap_agent_config_tests()
+
+# Checks the asic_config.yaml copies shipped beside platform descriptors, which package.py
+# deploys to hardware but no generator test covers. See descriptor_asic_configs.bzl.
+register_descriptor_asic_config_tests()
+
+distro_build(
+    name = "distro_kernel_6.11",
+    component = "kernel",
+    execute = ["kernel/scripts/build_kernel.sh", "6.11.11", "/output"],
+    manifest = "nh-fboss-broadcom-xgs.json",
+    needs = "all_cpus",
+    outs_map = {"distro_kernel_6.11.tar": "fboss/fboss-image/kernel/dist/kernel-6.11.11.rpms.tar"},
+    srcs = glob([
+        "fboss-image/kernel/configs/**",
+        "fboss-image/kernel/env/**",
+        "fboss-image/kernel/patches/**",
+        "fboss-image/kernel/scripts/**",
+        "fboss-image/kernel/specs/**",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "fboss_platform_stack_srcs",
+    srcs = glob([
+        "build/**",
+        "cmake/**",
+        "common/**",
+        "fboss/configs/**",
+        # fboss code needed for platform stack
+        "fboss/fsdb/**",
+        "fboss/lib/**",
+        "fboss/oss/**",
+        "fboss/platform/**",
+        "fboss/py/**",
+        "fboss/qsfp_service/**",
+        "fboss/scripts/**",
+        "fboss/thrift_cow/**",
+        "fboss/thrift_visitors/**",
+        "fboss/thriftpath_plugin/**",
+        "fboss/util/**",
+    ], exclude = [
+        "build/buck2/**",
+        # exclude generated distro artifacts dir inside fboss/oss
+        "fboss/oss/scripts/dist/**",
+        "**/*.swp",
+        "**/*.swo",
+        "**/*~",
+        "**/__pycache__/**",
+        "**/*.pyc",
+        # docs are not build inputs; don't invalidate the stack cache on doc edits
+        "**/*.md",
+        "**/*.rst",
+        "**/README*",
+    ]),
+)
+
+distro_build(
+    name = "fboss_platform_stack",
+    cleanup = ["fboss/fboss/oss/scripts/.build/platform-stack"],
+    component = "fboss-platform-stack",
+    execute = ["../fboss/oss/scripts/build_fboss_stack.sh", FREE_UP_DISK, "platform"],
+    manifest = "nh-fboss-broadcom-xgs.json",
+    outs_map = {
+        "fboss_platform_stack.tar": "fboss/fboss/oss/scripts/dist/platform-stack.tar",
+        "fboss_platform_stack_tests.tar.zst": "fboss/platform-stack-tests.tar",
+    },
+    srcs = [
+        ":fboss_platform_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "fboss_forwarding_stack_srcs",
+    srcs = glob([
+        "build/**", # Avoid dot files, especially .sccache to which bazel doesn't have permission
+        "cmake/**",
+        "common/**",
+        "fboss/configs/**",
+        # fboss code needed for forwarding stack
+        "fboss/agent/**",
+        "fboss/cli/**",
+        "fboss/fsdb/**",
+        "fboss/led_service/**",
+        "fboss/lib/**",
+        "fboss/mdio/**",
+        "fboss/mka_service/**",
+        "fboss/oss/**",
+        "fboss/py/**",
+        "fboss/qsfp_service/**",
+        "fboss/scripts/**",
+        "fboss/thrift_cow/**",
+        "fboss/thrift_visitors/**",
+        "fboss/thriftpath_plugin/**",
+        "fboss/util/**",
+    ], exclude = [
+        "build/buck2/**",
+        # exclude generated distro artifacts dir inside fboss/oss
+        "fboss/oss/scripts/dist/**",
+        "**/*.swp",
+        "**/*.swo",
+        "**/*~",
+        "**/__pycache__/**",
+        "**/*.pyc",
+        # docs are not build inputs; don't invalidate the stack cache on doc edits
+        "**/*.md",
+        "**/*.rst",
+        "**/README*",
+    ]) + [
+        # glob() stops at package boundaries; pull in the hw/sai subpackage
+        # explicitly (monorepo-absolute label; this file only loads there).
+        "//fboss/fboss/agent/hw/sai:stack_srcs",
+    ],
+)
+
+# Committed image_builder sources (scripts, kiwi configs, rootfs templates)
+# consumed by the final image assembly step.
+filegroup(
+    name = "image_builder",
+    srcs = glob(
+        ["fboss-image/image_builder/**"],
+        exclude = [
+            "fboss-image/image_builder/templates/centos-09.0/root/**",
+            "fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info",
+            "fboss-image/image_builder/templates/centos-09.0/after_pkgs_install_file.json",
+            "fboss-image/image_builder/output/**",
+            "fboss-image/image_builder/logs/**",
+            "fboss-image/image_builder/deps_staging/**",
+        ],
+    ),
+)
+
+distro_build(
+    name = "fboss_forwarding_stack_broadcom_xgs",
+    cleanup = ["fboss/fboss/oss/scripts/.build/forwarding-stack"],
+    component = "fboss-forwarding-stack",
+    deps = [
+        "distro_kernel_6.11.tar",
+        "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
+    ],
+    execute = ["../fboss/oss/scripts/build_fboss_stack.sh", FREE_UP_DISK, "forwarding"],
+    manifest = "nh-fboss-broadcom-xgs.json",
+    outs_map = {
+        "fboss_forwarding_stack_broadcom_xgs.tar": "fboss/fboss/oss/scripts/dist/forwarding-stack.tar",
+        "fboss_forwarding_stack_tests_broadcom_xgs.tar.zst": "fboss/forwarding-stack-tests.tar",
+    },
+    srcs = [
+        ":fboss_forwarding_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+_NH_FBOSS_BROADCOM_XGS_DEPS = [
+    "distro_kernel_6.11.tar",
+    "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
+    "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
+    "//fboss_extras/lab_distro:distro_lab_distro.rpm",
+    "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
+    "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
+    "fboss_platform_stack.tar",
+    "//BGP:distro_bgpd.rpm",
+    "//openr:distro_openr.rpm",
+    "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
+    "fboss_forwarding_stack_broadcom_xgs.tar",
+]
+
+_NH_FBOSS_BROADCOM_XGS_BUILD_INFO = {
+    "image_type": "broadcom_xgs",
+    "keys": [
+        "GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS",
+        "GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS",
+        "GIT_COMMIT_NHBROADCOMSAI_FBOSS_XGS",
+    ],
+}
+
+distro_build(
+    name = "nh-fboss-broadcom-xgs",
+    needs = "fboss_image",
+    nexthop_build_info = _NH_FBOSS_BROADCOM_XGS_BUILD_INFO,
+    deps = _NH_FBOSS_BROADCOM_XGS_DEPS,
+    manifest = "nh-fboss-broadcom-xgs.json",
+    manifest_edits = "del(.distribution_formats.usb)",
+    outs_map = {
+        "nh-fboss-broadcom-xgs.bin": "fboss/fboss-image/nh-fboss-broadcom-xgs.bin",
+        "nh-fboss-broadcom-xgs.tar": "fboss/fboss-image/nh-fboss-broadcom-xgs.tar",
+    },
+)
+
+# USB iso for the nightly only. Repeats the image build, but saves ~5G of bazel cache
+# space per PR build.
+distro_build(
+    name = "nh-fboss-broadcom-xgs-iso",
+    nexthop_build_info = _NH_FBOSS_BROADCOM_XGS_BUILD_INFO,
+    deps = _NH_FBOSS_BROADCOM_XGS_DEPS,
+    manifest = "nh-fboss-broadcom-xgs.json",
+    manifest_edits = ".distribution_formats |= {usb}",
+    outs_map = {"nh-fboss-broadcom-xgs.iso": "fboss/fboss-image/nh-fboss-broadcom-xgs.iso"},
+    tags = ["only-for-nightly"],
+)
+
+distro_build(
+    name = "fboss_forwarding_stack_broadcom_th6",
+    cleanup = ["fboss/fboss/oss/scripts/.build/forwarding-stack"],
+    component = "fboss-forwarding-stack",
+    deps = [
+        "distro_kernel_6.11.tar",
+        "//nhbroadcomsai/fboss-th6:distro_sai.tar",
+    ],
+    execute = ["../fboss/oss/scripts/build_fboss_stack.sh", FREE_UP_DISK, "forwarding"],
+    manifest = "nh-fboss-broadcom-th6.json",
+    outs_map = {
+        "fboss_forwarding_stack_broadcom_th6.tar": "fboss/fboss/oss/scripts/dist/forwarding-stack.tar",
+        "fboss_forwarding_stack_tests_broadcom_th6.tar.zst": "fboss/forwarding-stack-tests.tar",
+    },
+    srcs = [
+        ":fboss_forwarding_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# TH6 forwarding stack linked against the BCMSIM simulator SAI, for agent hw tests on bcmsim.
+distro_build(
+    name = "fboss_forwarding_stack_broadcom_th6_bcmsim",
+    cleanup = ["fboss/fboss/oss/scripts/.build/forwarding-stack"],
+    component = "fboss-forwarding-stack",
+    deps = [
+        "distro_kernel_6.11.tar",
+        "//nhbroadcomsai/fboss-th6:distro_sai_bcmsim.tar",
+    ],
+    execute = ["../fboss/oss/scripts/build_fboss_stack.sh", FREE_UP_DISK, "forwarding"],
+    manifest = "nh-fboss-broadcom-th6.json",
+    # The manifest names distro_sai.tar, so staging alone would not pick up the sim SAI.
+    manifest_edits = '.npu_sai.download = "file:" + $stage + "/distro_sai_bcmsim.tar"',
+    outs_map = {
+        "fboss_forwarding_stack_broadcom_th6_bcmsim.tar": "fboss/fboss/oss/scripts/dist/forwarding-stack.tar",
+        "fboss_forwarding_stack_tests_broadcom_th6_bcmsim.tar.zst": "fboss/forwarding-stack-tests.tar",
+    },
+    srcs = [
+        ":fboss_forwarding_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+_NH_FBOSS_BROADCOM_TH6_DEPS = [
+    "distro_kernel_6.11.tar",
+    "//nhbroadcomsai/fboss-th6:distro_sai.tar",
+    "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
+    "//fboss_extras/lab_distro:distro_lab_distro.rpm",
+    "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
+    "fboss_platform_stack.tar",
+    "//BGP:distro_bgpd.rpm",
+    "//openr:distro_openr.rpm",
+    "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
+    "fboss_forwarding_stack_broadcom_th6.tar",
+]
+
+_NH_FBOSS_BROADCOM_TH6_BUILD_INFO = {
+    "image_type": "broadcom_th6",
+    "keys": [
+        "GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS",
+        "GIT_COMMIT_NHBROADCOMSAI_FBOSS_TH6",
+    ],
+}
+
+distro_build(
+    name = "nh-fboss-broadcom-th6",
+    needs = "fboss_image",
+    nexthop_build_info = _NH_FBOSS_BROADCOM_TH6_BUILD_INFO,
+    deps = _NH_FBOSS_BROADCOM_TH6_DEPS,
+    manifest = "nh-fboss-broadcom-th6.json",
+    manifest_edits = "del(.distribution_formats.usb)",
+    outs_map = {
+        "nh-fboss-broadcom-th6.bin": "fboss/fboss-image/nh-fboss-broadcom-th6.bin",
+        "nh-fboss-broadcom-th6.tar": "fboss/fboss-image/nh-fboss-broadcom-th6.tar",
+    },
+)
+
+# USB iso for the nightly only. Repeats the image build, but saves ~5G of bazel cache
+# space per PR build.
+distro_build(
+    name = "nh-fboss-broadcom-th6-iso",
+    nexthop_build_info = _NH_FBOSS_BROADCOM_TH6_BUILD_INFO,
+    deps = _NH_FBOSS_BROADCOM_TH6_DEPS,
+    manifest = "nh-fboss-broadcom-th6.json",
+    manifest_edits = ".distribution_formats |= {usb}",
+    outs_map = {"nh-fboss-broadcom-th6.iso": "fboss/fboss-image/nh-fboss-broadcom-th6.iso"},
+    tags = ["only-for-nightly"],
+)
+
+distro_build(
+    name = "fboss_forwarding_stack_broadcom_dnx",
+    cleanup = ["fboss/fboss/oss/scripts/.build/forwarding-stack"],
+    component = "fboss-forwarding-stack",
+    deps = [
+        "distro_kernel_6.11.tar",
+        "//nhbroadcomsai/fboss-dnx:distro_sai_dnx.tar",
+    ],
+    execute = ["../fboss/oss/scripts/build_fboss_stack.sh", FREE_UP_DISK, "forwarding"],
+    manifest = "nh-fboss-broadcom-dnx.json",
+    outs_map = {
+        "fboss_forwarding_stack_broadcom_dnx.tar": "fboss/fboss/oss/scripts/dist/forwarding-stack.tar",
+        "fboss_forwarding_stack_tests_broadcom_dnx.tar.zst": "fboss/forwarding-stack-tests.tar",
+    },
+    srcs = [
+        ":fboss_forwarding_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+_NH_FBOSS_BROADCOM_DNX_DEPS = [
+    "distro_kernel_6.11.tar",
+    "//nhbroadcomsai/fboss-dnx:distro_sai_dnx.tar",
+    "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
+    "//fboss_extras/lab_distro:distro_lab_distro.rpm",
+    "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
+    "fboss_platform_stack.tar",
+    "//BGP:distro_bgpd.rpm",
+    "//openr:distro_openr.rpm",
+    "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
+    "fboss_forwarding_stack_broadcom_dnx.tar",
+]
+
+_NH_FBOSS_BROADCOM_DNX_BUILD_INFO = {
+    "image_type": "broadcom_dnx",
+    "keys": [
+        "GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS",
+        "GIT_COMMIT_NHBROADCOMSAI_FBOSS_DNX",
+    ],
+}
+
+distro_build(
+    name = "nh-fboss-broadcom-dnx",
+    needs = "fboss_image",
+    nexthop_build_info = _NH_FBOSS_BROADCOM_DNX_BUILD_INFO,
+    deps = _NH_FBOSS_BROADCOM_DNX_DEPS,
+    manifest = "nh-fboss-broadcom-dnx.json",
+    manifest_edits = "del(.distribution_formats.usb)",
+    outs_map = {
+        "nh-fboss-broadcom-dnx.bin": "fboss/fboss-image/nh-fboss-broadcom-dnx.bin",
+        "nh-fboss-broadcom-dnx.tar": "fboss/fboss-image/nh-fboss-broadcom-dnx.tar",
+    },
+)
+
+# USB iso for the nightly only. Repeats the image build, but saves ~5G of bazel cache
+# space per PR build.
+distro_build(
+    name = "nh-fboss-broadcom-dnx-iso",
+    nexthop_build_info = _NH_FBOSS_BROADCOM_DNX_BUILD_INFO,
+    deps = _NH_FBOSS_BROADCOM_DNX_DEPS,
+    manifest = "nh-fboss-broadcom-dnx.json",
+    manifest_edits = ".distribution_formats |= {usb}",
+    outs_map = {"nh-fboss-broadcom-dnx.iso": "fboss/fboss-image/nh-fboss-broadcom-dnx.iso"},
+    tags = ["only-for-nightly"],
+)
+
+distro_build(
+    name = "fboss_forwarding_stack_cisco_s1",
+    cleanup = ["fboss/fboss/oss/scripts/.build/forwarding-stack"],
+    component = "fboss-forwarding-stack",
+    deps = [
+        "distro_kernel_6.11.tar",
+        "//nhciscosai/fboss-s1:distro_sai.tar",
+    ],
+    execute = ["../fboss/oss/scripts/build_fboss_stack.sh", FREE_UP_DISK, "forwarding"],
+    manifest = "nh-fboss-cisco-s1.json",
+    outs_map = {
+        "fboss_forwarding_stack_cisco_s1.tar": "fboss/fboss/oss/scripts/dist/forwarding-stack.tar",
+        "fboss_forwarding_stack_tests_cisco_s1.tar.zst": "fboss/forwarding-stack-tests.tar",
+    },
+    srcs = [
+        ":fboss_forwarding_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+_NH_FBOSS_CISCO_S1_DEPS = [
+    "distro_kernel_6.11.tar",
+    "//nhciscosai/fboss-s1:distro_sai.tar",
+    "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
+    "fboss_platform_stack.tar",
+    "//BGP:distro_bgpd.rpm",
+    "//openr:distro_openr.rpm",
+    "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
+    "fboss_forwarding_stack_cisco_s1.tar",
+]
+
+_NH_FBOSS_CISCO_S1_BUILD_INFO = {
+    "image_type": "cisco_s1",
+    "keys": [
+        "GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS",
+    ],
+}
+
+distro_build(
+    name = "nh-fboss-cisco-s1",
+    needs = "fboss_image",
+    nexthop_build_info = _NH_FBOSS_CISCO_S1_BUILD_INFO,
+    deps = _NH_FBOSS_CISCO_S1_DEPS,
+    manifest = "nh-fboss-cisco-s1.json",
+    manifest_edits = "del(.distribution_formats.usb)",
+    outs_map = {
+        "nh-fboss-cisco-s1.tar": "fboss/fboss-image/nh-fboss-cisco-s1.tar",
+    },
+)
+
+# USB iso for the nightly only. Repeats the image build, but saves ~5G of bazel cache
+# space per PR build.
+distro_build(
+    name = "nh-fboss-cisco-s1-iso",
+    nexthop_build_info = _NH_FBOSS_CISCO_S1_BUILD_INFO,
+    deps = _NH_FBOSS_CISCO_S1_DEPS,
+    manifest = "nh-fboss-cisco-s1.json",
+    manifest_edits = ".distribution_formats |= {usb}",
+    outs_map = {"nh-fboss-cisco-s1.iso": "fboss/fboss-image/nh-fboss-cisco-s1.iso"},
+    tags = ["only-for-nightly"],
+)
+
+distro_build(
+    name = "cfboss-platform",
+    cleanup = ["fboss/fboss/oss/scripts/.build/platform-stack"],
+    component = "fboss-platform-stack",
+    manifest = "cfboss.json",
+    outs_map = {"cfboss-platform-stack.tar": "fboss/fboss/oss/scripts/dist/platform-stack.tar"},
+    srcs = [
+        ":fboss_platform_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ] + glob(["cfboss/**"]),
+    visibility = ["//visibility:public"],
+)
+
+distro_build(
+    name = "cfboss-forwarding",
+    cleanup = ["fboss/fboss/oss/scripts/.build/forwarding-stack"],
+    component = "fboss-forwarding-stack",
+    manifest = "cfboss.json",
+    outs_map = {"cfboss-forwarding-stack.tar": "fboss/fboss/oss/scripts/dist/forwarding-stack.tar"},
+    srcs = [
+        ":fboss_forwarding_stack_srcs",
+        ":fboss_platform_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ] + glob(["cfboss/**"]),
+    visibility = ["//visibility:public"],
+)
+
+distro_build(
+    name = "nh-fboss-cfboss",
+    needs = "fboss_image",
+    deps = [
+        "cfboss-platform-stack.tar",
+        "cfboss-forwarding-stack.tar",
+        "//BGP:distro_bgpd.rpm",
+        "//openr:distro_openr.rpm",
+    ],
+    manifest = "cfboss.json",
+    manifest_edits = " | ".join([
+        '."fboss-platform-stack" = {"download": ("file:" + $stage + "/cfboss-platform-stack.tar")}',
+        '."fboss-forwarding-stack" = {"download": ("file:" + $stage + "/cfboss-forwarding-stack.tar")}',
+    ]),
+    outs_map = {"nh-fboss-cfboss.tar.xz": "fboss/fboss-image/nh-fboss-cfboss.tar.xz"},
+    srcs = ["fboss/oss/scripts/fake-sai-devel.tar.zstd"],
+    visibility = ["//visibility:public"],
+)
+
+sh_test(
+    name = "cfboss_dataplane_test",
+    srcs = ["cfboss/tests/run_cfboss_dataplane_test.sh"],
+    data = [
+        ":nh-fboss-cfboss.tar.xz",
+        "cfboss/scripts/run_cfboss.sh",
+        "cfboss/tests/validate_dataplane.sh",
+    ],
+    size = "enormous",
+    # exclusive: the test claims a fixed-name container and mutates that
+    # container's netns, so it must not run concurrently with other tests.
+    # No spawn-strategy tag (local/no-sandbox): the CI's allowed test
+    # strategies are remote/worker/linux-sandbox/processwrapper-sandbox only,
+    # so a strategy-forcing tag leaves the spawn unrunnable — and none is
+    # needed, since the host docker daemon is reachable from linux-sandbox
+    # (the unittest-* targets drive docker the same way).
+    tags = [
+        "exclusive",
+        "resources:docker_clients:1",
+        "requires-network",
+    ],
+)
+
+upload_build_artifact("nh-fboss-broadcom-xgs.iso", extra_tags = ["only-for-nightly"])
+upload_build_artifact_set([
+    "nh-fboss-broadcom-xgs.bin",
+    "nh-fboss-broadcom-xgs.tar",
+    "fboss_forwarding_stack_tests_broadcom_xgs.tar.zst",
+])
+
+upload_build_artifact("nh-fboss-broadcom-th6.iso", extra_tags = ["only-for-nightly"])
+upload_build_artifact_set([
+    "nh-fboss-broadcom-th6.bin",
+    "nh-fboss-broadcom-th6.tar",
+    "fboss_forwarding_stack_tests_broadcom_th6.tar.zst",
+])
+
+upload_build_artifact("nh-fboss-broadcom-dnx.iso", extra_tags = ["only-for-nightly"])
+upload_build_artifact("nh-fboss-broadcom-dnx.bin", extra_tags = ["only-for-nightly"])
+upload_build_artifact_set([
+    "nh-fboss-broadcom-dnx.tar",
+    "fboss_forwarding_stack_tests_broadcom_dnx.tar.zst",
+])
+
+upload_build_artifact("nh-fboss-cisco-s1.iso", extra_tags = ["only-for-nightly"])
+upload_build_artifact_set([
+    "nh-fboss-cisco-s1.tar",
+    "fboss_forwarding_stack_tests_cisco_s1.tar.zst",
+])
+
+upload_build_artifact("fboss_platform_stack_tests.tar.zst")
+upload_build_artifact("nh-fboss-cfboss.tar.xz")
