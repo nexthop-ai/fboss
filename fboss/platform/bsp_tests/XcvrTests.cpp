@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <fmt/format.h>
+#include <folly/String.h>
 #include <gtest/gtest.h>
 
 #include "fboss/platform/bsp_tests/BspTest.h"
