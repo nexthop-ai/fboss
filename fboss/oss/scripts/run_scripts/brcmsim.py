@@ -21,6 +21,7 @@ ASIC_BCMNAMES = {
     "th4": "BCM56990",
     "th4_b0": "BCM56990_B0",
     "th5": "BCM78900",
+    "th6p": "BCM78910",
 }
 ASIC_BCMFILES = {
     "th3": "wedge400_alpm.bcm.conf",
@@ -158,14 +159,14 @@ def main(argv):
             argv, "hsa:p:", ["asic=", "skip-setup", "bcmsim-path="]
         )
     except getopt.GetoptError:
-        print("brcmsim -a <th3|th4|th4_b0|th5> <-s> <-p path_of_bcmsim>")
+        print("brcmsim -a <th3|th4|th4_b0|th5|th6p> <-s> <-p path_of_bcmsim>")
         sys.exit(2)
     skip_setup = False
     bcmsim_path = BCM_BASE_DIR
     for opt, arg in opts:
         if opt == "-h":
             print(
-                "brcmsim --asic <th3|th4|th4_b0|th5> <--skip-setup> <--bcmsim-path path_of_bcmsim>"
+                "brcmsim --asic <th3|th4|th4_b0|th5|th6p> <--skip-setup> <--bcmsim-path path_of_bcmsim>"
             )
             sys.exit()
         elif opt in ("-a", "--asic"):
@@ -174,8 +175,8 @@ def main(argv):
             skip_setup = True
         elif opt in ("-p", "--bcmsim-path"):
             bcmsim_path = arg
-    if asic is None or asic not in ["th3", "th4", "th4_b0", "th5"]:
-        print("missing asic type, please specify -a <th3|th4|th4_b0|th5>")
+    if asic is None or asic not in ["th3", "th4", "th4_b0", "th5", "th6p"]:
+        print("missing asic type, please specify -a <th3|th4|th4_b0|th5|th6p>")
         sys.exit()
 
     if skip_setup or setup(asic, bcmsim_path):

@@ -289,6 +289,7 @@ class SaiAgentTestRunner(TestRunner):
                     args, "sai_replayer_sdk_log_level", None
                 ),
                 is_warm_boot=False,
+                extra_env=self.simulator_env,
             )
 
     def _setup_warmboot_test(self, sai_replayer_log_path: str | None = None) -> None:
@@ -305,6 +306,7 @@ class SaiAgentTestRunner(TestRunner):
                     args, "sai_replayer_sdk_log_level", None
                 ),
                 is_warm_boot=True,
+                extra_env=self.simulator_env,
             )
 
     def _end_run(self) -> None:

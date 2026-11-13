@@ -140,6 +140,7 @@ def _setup_hw_agent_service(
     hw_agent_service_name: str = _HW_AGENT_SERVICE_OSS,
     hw_agent_for_testing: bool = True,
     additional_args: list[str] | None = None,
+    extra_env: dict[str, str] | None = None,
 ) -> None:
     if not hw_agent_service_bin_path:
         hw_agent_service_bin_path = _DEFAULT_OSS_HW_AGENT_SERVICE_BINARY
@@ -208,6 +209,11 @@ def _setup_hw_agent_service(
                 description="FBOSS HW Agent Service",
                 exec_start_cmd=hw_agent_service_cmd,
                 syslog_identifier=f"{hw_agent_service_name}{switch_index}",
+<<<<<<< HEAD
+=======
+                memory_max=_AGENT_MEMORY_MAX,
+                extra_env=extra_env,
+>>>>>>> 584b52a502 (NO-NOS: [th6] Run TH6 agent hw tests on BCMSIM via run_test.py --simulator (#2812))
             ),
         )
         service_utils.write_rsyslog_conf(service_full_name)
@@ -231,6 +237,7 @@ def setup_and_start_hw_agent_service(
     hw_agent_service_name: str = _HW_AGENT_SERVICE_OSS,
     hw_agent_for_testing: bool = True,
     additional_args: list[str] | None = None,
+    extra_env: dict[str, str] | None = None,
 ) -> None:
     _setup_hw_agent_service(
         switch_indexes,
@@ -243,6 +250,7 @@ def setup_and_start_hw_agent_service(
         hw_agent_service_name=hw_agent_service_name,
         hw_agent_for_testing=hw_agent_for_testing,
         additional_args=additional_args,
+        extra_env=extra_env,
     )
 
     return_codes = (

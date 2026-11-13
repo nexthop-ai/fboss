@@ -8,7 +8,11 @@ by _get_tests_to_run via args.filter_file."""
 
 import json
 import os
+<<<<<<< HEAD
 import subprocess
+=======
+import socket
+>>>>>>> 584b52a502 (NO-NOS: [th6] Run TH6 agent hw tests on BCMSIM via run_test.py --simulator (#2812))
 import tempfile
 from argparse import Namespace
 from unittest.mock import MagicMock, patch
@@ -507,6 +511,13 @@ class TestSimulatorEnv:
         assert runner.env_var["SOC_TARGET_SERVER"] == "localhost"
         assert runner.env_var["SAI_BOOT_FLAGS"] == "0x1020000"
 
+    def test_simulator_env_kept_for_services(self, runner):
+        # The hw agent runs as a systemd unit, which does not inherit env_var,
+        # so the runner keeps the simulator vars to pass on to it.
+        runner._apply_simulator_env("th6p")
+        assert runner.simulator_env["BCM_SIM_PATH"] == "1"
+        assert runner.simulator_env["SOC_TARGET_PORT"] == "22222"
+
     def test_no_simulator_leaves_env_unchanged(self, runner):
         before = dict(runner.env_var)
         runner._apply_simulator_env(None)
@@ -520,6 +531,14 @@ class TestSimulatorEnv:
         runner._apply_simulator_env("th4")
         assert "SOC_TARGET_PORT" in runner.env_var
         assert "SOC_TARGET_PORT" not in other.env_var
+
+    def test_wait_for_listen(self, runner):
+        with socket.socket() as s:
+            s.bind(("127.0.0.1", 0))
+            port = s.getsockname()[1]
+            assert not runner._wait_for_listen(port, 0)
+            s.listen()
+            assert runner._wait_for_listen(port, 0)
 
 
 class TestPrepareConfigForRun:

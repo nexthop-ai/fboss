@@ -133,6 +133,7 @@ def build_unit_file_content(
     syslog_identifier: str,
     memory_max: str = "3.75G",
     tsan_options: str = "die_after_fork=0",
+    extra_env: dict[str, str] | None = None,
 ) -> str:
     library_path = os.environ.get("LD_LIBRARY_PATH") or "/opt/fboss/lib"
     environment = [
@@ -145,6 +146,8 @@ def build_unit_file_content(
     # when set, so it is a no-op for SDKs that don't use it.
     if base_output_dir := os.environ.get("BASE_OUTPUT_DIR"):
         environment.append(f"Environment=BASE_OUTPUT_DIR={base_output_dir}")
+    for name, value in sorted((extra_env or {}).items()):
+        environment.append(f"Environment={name}={value}")
     environment_lines = "\n".join(environment)
 
     return f"""

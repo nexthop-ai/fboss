@@ -83,6 +83,14 @@ _YELLOW = "\033[1;33m"
 _RED = "\033[1;31m"
 _RESET = "\033[0m"
 
+<<<<<<< HEAD
+=======
+# Strip [cold_boot]/[warm_boot*] so phases of one logical test share a name.
+_BOOT_SUBSCRIPT_RE = re.compile(r"\[(?:cold|warm)_boot[^\]]*\]$")
+_STATUS_RANK = {"skipped": 0, "passed": 1, "error": 2, "failure": 3}
+BCMSIM_START_TIMEOUT_S = 300
+
+>>>>>>> 584b52a502 (NO-NOS: [th6] Run TH6 agent hw tests on BCMSIM via run_test.py --simulator (#2812))
 
 def _print_deprecation_banner(lines: list[str]) -> None:
     """Print a highly visible warning banner with color and box formatting."""
@@ -110,6 +118,8 @@ class TestRunner(abc.ABC):
         self._known_bad_test_regexes: list[str] = []
         self._unsupported_test_regexes: list[str] = []
         self.env_var: dict[str, str] = dict(os.environ)
+        # Set by --simulator; services such as the hw agent need it too.
+        self.simulator_env: dict[str, str] = {}
         # Populated by run_test() before any per-run method runs. Defaults to an
         # empty Namespace so attribute access is typed (Namespace.__getattr__ ->
         # Any) rather than Optional; a method reached before run_test() fails
@@ -585,6 +595,24 @@ class TestRunner(abc.ABC):
             return []
         return self._list_tests_to_run(test_filter)
 
+    @staticmethod
+    def _wait_for_listen(port: int, timeout_s: float) -> bool:
+        """Wait until a local TCP socket listens on port. Reads /proc instead
+        of connecting, since a connect to the BCMSIM model kills it."""
+        suffix = f":{port:04X}"
+        deadline = time.monotonic() + timeout_s
+        while True:
+            for path in ("/proc/net/tcp", "/proc/net/tcp6"):
+                with suppress(OSError), open(path) as f:
+                    for line in f.readlines()[1:]:
+                        fields = line.split()
+                        # fields[3] is the socket state; 0A is LISTEN
+                        if fields[1].endswith(suffix) and fields[3] == "0A":
+                            return True
+            if time.monotonic() >= deadline:
+                return False
+            time.sleep(1)
+
     def _restart_bcmsim(self, asic: str) -> None:
         try:
             subprocess.Popen(
@@ -597,6 +625,12 @@ class TestRunner(abc.ABC):
                 ["./runner.sh", "restart", "python3", "brcmsim.py", "-a", asic, "-s"]
             )
             time.sleep(60)
+            if asic in XGS_SIMULATOR_ASICS:
+                # Model start time varies (BCM78910: 60-75 s), and the hw agent
+                # aborts if the port is not up when it connects.
+                port = int(XGS_SIMULATOR_ENV["SOC_TARGET_PORT"])
+                if not self._wait_for_listen(port, BCMSIM_START_TIMEOUT_S):
+                    print(f"bcmsim not listening on {port}", flush=True)
             print("Restarted bcmsim service", flush=True)
         except subprocess.CalledProcessError:
             print("Failed to restart bcmsim service", flush=True)
@@ -845,9 +879,10 @@ class TestRunner(abc.ABC):
     def _apply_simulator_env(self, simulator: str | None) -> None:
         """Overlay simulator-specific env vars onto this run's environment."""
         if simulator in XGS_SIMULATOR_ASICS:
-            self.env_var.update(XGS_SIMULATOR_ENV)
+            self.simulator_env = dict(XGS_SIMULATOR_ENV)
         elif simulator in DNX_SIMULATOR_ASICS:
-            self.env_var.update(DNX_SIMULATOR_ENV)
+            self.simulator_env = dict(DNX_SIMULATOR_ENV)
+        self.env_var.update(self.simulator_env)
 
     def _run_tests(  # noqa: PLR0912, PLR0915
         self, tests_to_run: list[str], conf_file: str, args: Namespace

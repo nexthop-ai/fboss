@@ -63,6 +63,15 @@ class TestServiceUnitEnvironment:
         assert "BASE_OUTPUT_DIR" not in unit
         assert "ExecStart=true" in unit.splitlines()
 
+    def test_extra_env_forwarded_into_unit(self):
+        unit = service_utils.build_unit_file_content(
+            "test", "true", "test", extra_env={"BCM_SIM_PATH": "1"}
+        )
+
+        lines = unit.splitlines()
+        assert "Environment=BCM_SIM_PATH=1" in lines
+        assert "ExecStart=true" in lines
+
 
 class TestCleanupHwAgentService:
     def test_stops_all_three_service_variants_and_pkills(self):
