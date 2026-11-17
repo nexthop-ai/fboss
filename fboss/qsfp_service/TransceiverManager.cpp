@@ -3787,6 +3787,9 @@ void TransceiverManager::getSymbolErrorHistogram(
  */
 std::map<uint32_t, phy::PhyIDInfo> TransceiverManager::getAllPortPhyInfo() {
   std::map<uint32_t, phy::PhyIDInfo> resultMap;
+  if (!phyManager_) {
+    return resultMap;
+  }
 
   const auto& allPlatformPortsIt = platformMapping_->getPlatformPorts();
   for (const auto& platformPortIt : allPlatformPortsIt) {
@@ -3810,6 +3813,9 @@ std::map<uint32_t, phy::PhyIDInfo> TransceiverManager::getAllPortPhyInfo() {
  * Returns the phy line params for a port
  */
 phy::PhyInfo TransceiverManager::getPhyInfo(const std::string& portName) {
+  if (!getPhyManager()) {
+    return {};
+  }
   auto swPort = getPortIDByPortName(portName);
   if (!swPort.has_value()) {
     throw FbossError(fmt::format("getPhyInfo: Invalid port {}", portName));
@@ -3818,6 +3824,9 @@ phy::PhyInfo TransceiverManager::getPhyInfo(const std::string& portName) {
 }
 
 std::string TransceiverManager::getPortInfo(std::string portName) {
+  if (!getPhyManager()) {
+    return "";
+  }
   auto swPort = getPortIDByPortName(portName);
   if (!swPort.has_value()) {
     throw FbossError(fmt::format("getPortInfo: Invalid port {}", portName));
