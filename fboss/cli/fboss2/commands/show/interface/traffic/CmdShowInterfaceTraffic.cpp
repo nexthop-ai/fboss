@@ -149,9 +149,54 @@ CmdShowInterfaceTraffic::RetType CmdShowInterfaceTraffic::createModel(
         ret.error_counters()->push_back(errorCounters);
       }
 
+<<<<<<< HEAD
       if (isInterestingTraffic(trafficCounters)) {
         ret.traffic_counters()->push_back(trafficCounters);
       }
+=======
+    long inSpeedBps = rate("in_bytes") * 8;
+
+    double inSpeedMbps = (double)inSpeedBps / 1000000;
+
+    // Unicast + multicast + broadcast = PPS
+    int64_t inPPS = rate("in_unicast_pkts") + rate("in_multicast_pkts") +
+        rate("in_broadcast_pkts");
+
+    long outSpeedBps = rate("out_bytes") * 8;
+
+    double outSpeedMbps = (double)outSpeedBps / 1000000;
+
+    // Unicast + multicast + broadcast = PPS
+    int64_t outPPS = rate("out_unicast_pkts") + rate("out_multicast_pkts") +
+        rate("out_broadcast_pkts");
+
+    trafficCounters.interfaceName() = pname;
+    trafficCounters.peerIf() =
+        extractExpectedPort(portInfo.description().value());
+    trafficCounters.inMbps() = inSpeedMbps;
+    trafficCounters.inPct() =
+        calculateUtilizationPercent(inSpeedMbps, portSpeed);
+    // Divide as double: integer division drops each port's fractional Kpps,
+    // and across ECMP-spread egress ports the Total then undercounts.
+    trafficCounters.inKpps() = static_cast<double>(inPPS) / 1000;
+    trafficCounters.outMbps() = outSpeedMbps;
+    trafficCounters.outPct() =
+        calculateUtilizationPercent(outSpeedMbps, portSpeed);
+    trafficCounters.outKpps() = static_cast<double>(outPPS) / 1000;
+    trafficCounters.portSpeed() = portSpeed;
+    trafficCounters.countersAvailable() = countersAvailable;
+
+    // As in fb_toolkit, only interfaces with errors make the error table;
+    // there is no "show zero" option to turn that off yet.
+    if (isNonZeroErrors(errorCounters)) {
+      ret.error_counters()->push_back(errorCounters);
+    }
+
+    // Ports named on the command line are always shown.
+    if (operState == facebook::fboss::PortOperState::UP ||
+        !queriedIfs.empty() || isInterestingTraffic(trafficCounters)) {
+      ret.traffic_counters()->push_back(trafficCounters);
+>>>>>>> ca23cb9dd4 (NOS-23318: [fboss2] Keep fractional Kpps in show interface traffic (#3074))
     }
   }
   std::sort(

@@ -247,6 +247,32 @@ TEST_F(CmdShowInterfaceTrafficTestFixture, printOutputNoInterestingTraffic) {
   EXPECT_NE(output.find("0.00%"), std::string::npos);
 }
 
+// Traffic entering one port and ECMP-spread across the others leaves each
+// egress port with a fractional Kpps rate. Per-port Kpps must keep that
+// fraction so the Out Kpps total matches the In Kpps total.
+TEST_F(CmdShowInterfaceTrafficTestFixture, kppsKeepsFractionalRate) {
+  std::map<std::string, int64_t> counters{
+      {"eth1/1/1.in_unicast_pkts.rate.60", 4000},
+      {"eth1/1/1.out_unicast_pkts.rate.60", 1334},
+      {"eth2/1/1.out_unicast_pkts.rate.60", 1333},
+      {"eth3/1/1.out_unicast_pkts.rate.60", 1333},
+  };
+
+  auto cmd = CmdShowInterfaceTraffic();
+  auto model = cmd.createModel(portInfo, counters, queriedIfs);
+  const auto trafficCounters = model.traffic_counters().value();
+  ASSERT_EQ(trafficCounters.size(), 3);
+
+  EXPECT_DOUBLE_EQ(trafficCounters[0].inKpps().value(), 4.0);
+  EXPECT_DOUBLE_EQ(trafficCounters[0].outKpps().value(), 1.334);
+  EXPECT_DOUBLE_EQ(trafficCounters[1].outKpps().value(), 1.333);
+  EXPECT_DOUBLE_EQ(trafficCounters[2].outKpps().value(), 1.333);
+
+  const auto totals = cmd.getTrafficTotals(trafficCounters);
+  EXPECT_DOUBLE_EQ(totals[2], 4.0); // InKpps
+  EXPECT_DOUBLE_EQ(totals[5], 4.0); // OutKpps
+}
+
 // CLI reference wiki hooks: a human description and a non-empty sample model.
 // Property checks only (no golden text).
 TEST_F(CmdShowInterfaceTrafficTestFixture, wikiDocHooks) {
