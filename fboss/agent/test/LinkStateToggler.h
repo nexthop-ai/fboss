@@ -54,6 +54,7 @@ class LinkStateToggler {
   void bringUpPorts(const cfg::SwitchConfig& initCfg);
   void portStateChangeImpl(const std::vector<PortID>& ports, bool up);
   virtual void invokeLinkScanIfNeeded(PortID port, bool isUp);
+  void injectLinkEventIfSim(PortID port, bool isUp);
   void waitForPortDown(PortID port);
   void setPortIDsAndStateToWaitFor(
       const std::set<PortID>& ports,

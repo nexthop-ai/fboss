@@ -259,12 +259,24 @@ bool LinkStateToggler::waitForPortEventsOrSkipIfAlreadyInState(
 
   for (const auto& portId : ports) {
     WITH_RETRIES_N_TIMED(60, std::chrono::milliseconds(1000), {
+<<<<<<< HEAD
       EXPECT_EVENTUALLY_EQ(
           ensemble_->getProgrammedState()
               ->getPorts()
               ->getNodeIf(portId)
               ->getOperState(),
           (up ? PortFields::OperState::UP : PortFields::OperState::DOWN));
+=======
+      auto operState = ensemble_->getProgrammedState()
+                           ->getPorts()
+                           ->getNodeIf(portId)
+                           ->getOperState();
+      if (operState != desiredOperState) {
+        // The simulator's flap can land after the injected event; re-assert.
+        injectLinkEventIfSim(portId, up);
+      }
+      EXPECT_EVENTUALLY_EQ(operState, desiredOperState);
+>>>>>>> 276782689c (NO-NOS: Deliver link events through LinkStateToggler on simulated ASICs (#3100))
     });
   }
   return true;
@@ -272,12 +284,14 @@ bool LinkStateToggler::waitForPortEventsOrSkipIfAlreadyInState(
 
 void LinkStateToggler::waitForPortDown(PortID port) {
   WITH_RETRIES({
-    EXPECT_EVENTUALLY_EQ(
-        ensemble_->getProgrammedState()
-            ->getPorts()
-            ->getNodeIf(port)
-            ->getOperState(),
-        PortFields::OperState::DOWN);
+    auto operState = ensemble_->getProgrammedState()
+                         ->getPorts()
+                         ->getNodeIf(port)
+                         ->getOperState();
+    if (operState != PortFields::OperState::DOWN) {
+      injectLinkEventIfSim(port, false);
+    }
+    EXPECT_EVENTUALLY_EQ(operState, PortFields::OperState::DOWN);
   });
 }
 
@@ -385,8 +399,27 @@ void LinkStateToggler::bringUpPorts(const cfg::SwitchConfig& initCfg) {
   bringUpPorts(portsToBringUp);
 }
 
-void LinkStateToggler::invokeLinkScanIfNeeded(
-    PortID /* port */,
-    bool /* isUp */) {}
+void LinkStateToggler::invokeLinkScanIfNeeded(PortID port, bool isUp) {
+  injectLinkEventIfSim(port, isUp);
+}
+
+void LinkStateToggler::injectLinkEventIfSim(PortID port, bool isUp) {
+  // A simulated ASIC reports link up for every port regardless of loopback or
+  // admin state: a loopback change only flaps the port (DOWN then UP), so the
+  // event the test waits for never arrives. Deliver it through the same
+  // callback the hardware would use.
+  const auto asics = ensemble_->getHwAsicTable()->getHwAsics();
+  if (std::none_of(asics.begin(), asics.end(), [](const auto& switchAsic) {
+        return switchAsic.second->getAsicMode() ==
+            HwAsic::AsicMode::ASIC_MODE_SIM;
+      })) {
+    return;
+  }
+  auto swPort = ensemble_->getProgrammedState()->getPorts()->getNodeIf(port);
+  if (!swPort) {
+    return;
+  }
+  ensemble_->linkStateChanged(port, isUp, swPort->getPortType());
+}
 
 } // namespace facebook::fboss
