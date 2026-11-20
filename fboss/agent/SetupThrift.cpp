@@ -30,6 +30,12 @@ DEFINE_int32(
     thrift_task_expire_timeout,
     30,
     "Thrift task expire timeout in seconds.");
+// Drop clients that stop reading so unsent responses don't pile up in memory
+// and stall the shutdown drain (thrift default is 60s).
+DEFINE_int32(
+    thrift_socket_write_timeout_s,
+    10,
+    "Seconds a client may stop reading before its connection is dropped.");
 
 // TODO: remove after netcastle changes are in place
 DEFINE_bool(
@@ -120,6 +126,11 @@ std::unique_ptr<apache::thrift::ThriftServer> setupThriftServer(
 
   server->setQueueTimeout(kThriftServerQueueTimeout);
   server->setSocketQueueTimeout(kThriftServerQueueTimeout);
+<<<<<<< HEAD
+=======
+  server->setSocketWriteTimeout(
+      std::chrono::seconds(FLAGS_thrift_socket_write_timeout_s));
+>>>>>>> 800537c8ec (NO-NOS: Make the thrift socket write timeout a flag and raise it on the TH6 sim (#3102))
 
   // Furthermore, if a request is already being processed, thrift expects
   // that to complete within JOIN_TIMEOUT as well or else Thrift server

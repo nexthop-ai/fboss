@@ -1,0 +1,666 @@
+{
+  "defaultCommandLineArgs": {
+    "check_wb_handles": "true",
+    "cleanup_probed_kernel_data": "true",
+    "counter_refresh_interval": "0",
+    "disable_neighbor_updates": "false",
+    "ecmp_width": "128",
+    "enable_1to1_intf_route_table_mapping": "true",
+    "enable_acl_table_group": "true",
+    "enable_replayer": "true",
+    "log_variable_name": "true",
+    "multi_switch": "true",
+    "platform_descriptor_config_path": "/opt/bcmsim/m4062nhp/platform_descriptors",
+    "transceiver_vendor_override_map_path": "/opt/fboss/share/transceiver_vendor_overrides/nexthop.json",
+    "publish_state_to_fsdb": "true",
+    "publish_stats_to_fsdb": "true",
+    "sai_configure_six_tap": "true",
+    "thrift_socket_write_timeout_s": "300",
+    "use_full_dlb_scale": "true",
+    "update_phy_info_interval_s": "86400"
+  },
+  "platform": {
+    "chip": {
+      "asicConfig": {
+        "common": {
+          "yamlConfig": "---\ndevice:\n  0:\n    PC_PORT_PHYS_MAP:\n      ?\n        PORT_ID: 108\n      :\n        PC_PHYS_PORT_ID: 193\n      ?\n        PORT_ID: 109\n      :\n        PC_PHYS_PORT_ID: 201\n      ?\n        PORT_ID: 117\n      :\n        PC_PHYS_PORT_ID: 209\n      ?\n        PORT_ID: 118\n      :\n        PC_PHYS_PORT_ID: 217\n      ?\n        PORT_ID: 126\n      :\n        PC_PHYS_PORT_ID: 225\n      ?\n        PORT_ID: 127\n      :\n        PC_PHYS_PORT_ID: 233\n      ?\n        PORT_ID: 135\n      :\n        PC_PHYS_PORT_ID: 241\n      ?\n        PORT_ID: 136\n      :\n        PC_PHYS_PORT_ID: 249\n      ?\n        PORT_ID: 0\n      :\n        PC_PHYS_PORT_ID: 0\n      ?\n        PORT_ID: 268\n      :\n        PC_PHYS_PORT_ID: 1026\n...\n---\ndevice:\n  0:\n    PC_PORT:\n      ?\n        PORT_ID: 0\n      :\n        ENABLE: 1\n        SPEED: 10000\n        NUM_LANES: 1\n      ?\n        PORT_ID: [[108, 108], [109, 109], [117, 117], [118, 118], [126, 126], [127, 127], [135, 135], [136, 136]]\n      :\n        ENABLE: 0\n        SPEED: 800000\n        NUM_LANES: 8\n        FEC_MODE: PC_FEC_RS544_2XN_ETC\n        MAX_FRAME_SIZE: 9416\n      ?\n        PORT_ID: 268\n      :\n        ENABLE: 0\n        SPEED: 100000\n        NUM_LANES: 4\n        FEC_MODE: PC_FEC_RS528\n        MAX_FRAME_SIZE: 9416\n...\n---\ndevice:\n  0:\n    PORT_CONFIG:\n      PORT_SYSTEM_PROFILE_OPERMODE_PIPEUNIQUE: 1\n...\n---\nbcm_device:\n  0:\n    global:\n      pktio_mode: 0\n      l3_alpm_template: 1\n      l3_alpm_hit_mode: 1\n      ipv6_lpm_128b_enable: 1\n      pktio_driver_type: 1\n      qos_map_multi_get_mode: 1\n      rx_cosq_mapping_management_mode: 0\n      l3_iif_reservation_skip: 0\n      pcie_host_intf_timeout_purge_enable: 0\n      macro_flow_hash_shuffle_random_seed: 34345645\n      bcm_linkscan_interval: 25000\n      sai_common_hash_crc: 0x1\n      sai_disable_srcmacqedstmac_ctrl: 0x1\n      sai_acl_qset_optimization: 0x1\n      sai_optimized_mmu: 0x1\n      sai_pkt_rx_custom_cfg: 1\n      sai_pkt_rx_pkt_size: 16512\n      sai_pkt_rx_cfg_ppc: 16\n      sai_async_fdb_nbr_enable: 0x1\n      sai_pfc_defaults_disable: 0x1\n      sai_ifp_enable_on_cpu_tx: 0x1\n      sai_vfp_smac_drop_filter_disable: 1\n      sai_macro_flow_based_hash: 1\n      sai_mmu_qgroups_default: 1\n      sai_dis_ctr_incr_on_port_ln_dn: 0\n      custom_feature_mesh_topology_sync_mode: 1\n      sai_ecmp_group_members_increment: 1\n      sai_field_group_auto_prioritize: 1\n      bcm_tunnel_term_compatible_mode: 1\n      sai_l2_cpu_fdb_event_suppress: 1\n      sai_port_phy_time_sync_en: 1\n      sai_stats_support_mask: 0\n      sai_disable_internal_port_serdes: 1\n      stat_custom_receive0_management_mode: 1\n      sai_eapol_trap_use_bcast_mac: 1\n      sai_stats_disable_mask: 0x800\n      sai_tunnel_support: 0x12\n      sai_uncached_port_stats: 0\n      global_flexctr_ing_action_num_reserved: 20\n      global_flexctr_ing_pool_num_reserved: 8\n      global_flexctr_ing_op_profile_num_reserved: 20\n      global_flexctr_ing_group_num_reserved: 2\n      global_flexctr_egr_action_num_reserved: 8\n      global_flexctr_egr_pool_num_reserved: 5\n      global_flexctr_egr_op_profile_num_reserved: 10\n      global_flexctr_egr_group_num_reserved: 1\n      l3_ecmp_member_secondary_mem_size: 24576\n      l3_ecmp_member_first_lkup_mem_size: 8192\n      dlb_quality_adjustment_default_value_select: 1\n...\n---\ndevice:\n  0:\n    TM_THD_CONFIG:\n      MIRROR_ON_DROP_RESERVATION: 0\n      SKIP_BUFFER_RESERVATION: 1\n      THRESHOLD_MODE: LOSSY\n...\n---\ndevice:\n  0:\n    PORT:\n      ?\n        PORT_ID: [[108, 108], [109, 109], [117, 117], [118, 118], [126, 126], [127, 127], [135, 135], [136, 136]]\n      :\n        MTU: 9416\n        MTU_CHECK: 1\n...\n---\ndevice:\n  0:\n    DEVICE_CONFIG:\n      AUTOLOAD_BOARD_SETTINGS: 0\n...\n---\ndevice:\n  0:\n    FP_CONFIG:\n      FP_ING_OPERMODE: GLOBAL_PIPE_AWARE\n...\n---\ndevice:\n  0:\n    CTR_EFLEX_CONFIG:\n      CTR_ING_EFLEX_OPERMODE_PIPEUNIQUE: 1\n      CTR_ING_EFLEX_OPERMODE_PIPE_INSTANCE_UNIQUE: 1\n      CTR_EGR_EFLEX_OPERMODE_PIPEUNIQUE: 1\n      CTR_EGR_EFLEX_OPERMODE_PIPE_INSTANCE_UNIQUE: 1\n...\n---\ndevice:\n  0:\n    DLB_ECMP_CONFIG:\n      PATH_QUALITY_PROFILE_MODE: WIDE\n...\n---\ndevice:\n  0:\n    CTR_CONTROL:\n      MULTIPLIER_IPIPE: 10\n      MULTIPLIER_EPIPE: 10\n      MULTIPLIER_TM: 10\n      MULTIPLIER_EVICT: 10\n...\n---\ndevice:\n  0:\n    PC_SERDES_CONFIG:\n      SIMULATE_LINK_EVENTS: 1\n...\n"
+        }
+      }
+    }
+  },
+  "sw": {
+    "aclTableGroups": [
+      {
+        "aclTables": [
+          {
+            "aclEntries": [],
+            "actionTypes": [],
+            "name": "AclTable1",
+            "priority": 0,
+            "qualifiers": [],
+            "udfGroups": []
+          }
+        ],
+        "name": "acl-table-group-ingress",
+        "stage": 0
+      }
+    ],
+    "acls": [],
+    "aggregatePorts": [],
+    "arpAgerInterval": 5,
+    "arpRefreshSeconds": 20,
+    "arpTimeoutSeconds": 60,
+    "cpuQueues": [
+      {
+        "id": 9,
+        "name": "cpuQueue-high",
+        "scheduling": 1,
+        "streamType": 1
+      },
+      {
+        "id": 2,
+        "name": "cpuQueue-mid",
+        "scheduling": 1,
+        "streamType": 1
+      },
+      {
+        "id": 1,
+        "name": "cpuQueue-default",
+        "portQueueRate": {
+          "pktsPerSec": {
+            "maximum": 1000,
+            "minimum": 0
+          }
+        },
+        "scheduling": 1,
+        "streamType": 1
+      },
+      {
+        "id": 0,
+        "name": "cpuQueue-low",
+        "portQueueRate": {
+          "pktsPerSec": {
+            "maximum": 500,
+            "minimum": 0
+          }
+        },
+        "scheduling": 1,
+        "streamType": 1
+      }
+    ],
+    "cpuTrafficPolicy": {
+      "rxReasonToQueueOrderedList": [
+        {
+          "queueId": 9,
+          "rxReason": 8
+        },
+        {
+          "queueId": 9,
+          "rxReason": 1
+        },
+        {
+          "queueId": 9,
+          "rxReason": 10
+        },
+        {
+          "queueId": 9,
+          "rxReason": 11
+        },
+        {
+          "queueId": 9,
+          "rxReason": 12
+        },
+        {
+          "queueId": 9,
+          "rxReason": 13
+        },
+        {
+          "queueId": 2,
+          "rxReason": 9
+        },
+        {
+          "queueId": 2,
+          "rxReason": 7
+        },
+        {
+          "queueId": 2,
+          "rxReason": 2
+        },
+        {
+          "queueId": 2,
+          "rxReason": 17
+        },
+        {
+          "queueId": 0,
+          "rxReason": 6
+        },
+        {
+          "queueId": 0,
+          "rxReason": 14
+        },
+        {
+          "queueId": 1,
+          "rxReason": 0
+        }
+      ]
+    },
+    "defaultPortQueues": [],
+    "defaultVlan": 4094,
+    "defaultVoqConfig": [],
+    "sdkVersion": {
+      "asicSdk": "sdk",
+      "saiSdk": "sai"
+    },
+    "dsfNodes": {},
+    "interfaces": [
+      {
+        "intfID": 10,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": true,
+        "mtu": 9412,
+        "routerID": 0,
+        "scope": 0,
+        "type": 1,
+        "vlanID": 10
+      },
+      {
+        "intfID": 2007,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": false,
+        "mtu": 9412,
+        "portID": 3,
+        "routerID": 0,
+        "scope": 0,
+        "type": 3
+      },
+      {
+        "intfID": 2008,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": false,
+        "mtu": 9412,
+        "portID": 4,
+        "routerID": 0,
+        "scope": 0,
+        "type": 3
+      },
+      {
+        "intfID": 2015,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": false,
+        "mtu": 9412,
+        "portID": 2,
+        "routerID": 0,
+        "scope": 0,
+        "type": 3
+      },
+      {
+        "intfID": 2016,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": false,
+        "mtu": 9412,
+        "portID": 1,
+        "routerID": 0,
+        "scope": 0,
+        "type": 3
+      },
+      {
+        "intfID": 2023,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": false,
+        "mtu": 9412,
+        "portID": 18,
+        "routerID": 0,
+        "scope": 0,
+        "type": 3
+      },
+      {
+        "intfID": 2024,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": false,
+        "mtu": 9412,
+        "portID": 19,
+        "routerID": 0,
+        "scope": 0,
+        "type": 3
+      },
+      {
+        "intfID": 2031,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": false,
+        "mtu": 9412,
+        "portID": 20,
+        "routerID": 0,
+        "scope": 0,
+        "type": 3
+      },
+      {
+        "intfID": 2032,
+        "ipAddresses": [],
+        "isStateSyncDisabled": false,
+        "isVirtual": false,
+        "mtu": 9412,
+        "portID": 21,
+        "routerID": 0,
+        "scope": 0,
+        "type": 3
+      }
+    ],
+    "loadBalancers": [
+      {
+        "algorithm": 1,
+        "fieldSelection": {
+          "ipv4Fields": [
+            1,
+            2
+          ],
+          "ipv6Fields": [
+            1,
+            2
+          ],
+          "mplsFields": [],
+          "transportFields": [
+            1,
+            2
+          ],
+          "udfGroups": []
+        },
+        "id": 1
+      },
+      {
+        "algorithm": 1,
+        "fieldSelection": {
+          "ipv4Fields": [
+            1,
+            2
+          ],
+          "ipv6Fields": [
+            1,
+            2
+          ],
+          "mplsFields": [],
+          "transportFields": [],
+          "udfGroups": []
+        },
+        "id": 2
+      }
+    ],
+    "maxNeighborProbes": 300,
+    "mirrorOnDropReports": [],
+    "mirrors": [],
+    "portQueueConfigs": {},
+    "ports": [
+      {
+        "conditionalEntropyRehash": false,
+        "drainState": 0,
+        "ingressVlan": 4094,
+        "logicalID": 3,
+        "loopbackMode": 0,
+        "maxFrameSize": 9412,
+        "minFrameSize": 64,
+        "name": "eth1/16/1",
+        "parserType": 1,
+        "pause": {
+          "rx": false,
+          "tx": false
+        },
+        "portType": 0,
+        "profileID": 39,
+        "routable": true,
+        "sFlowEgressRate": 0,
+        "sFlowIngressRate": 0,
+        "scope": 0,
+        "speed": 800000,
+        "state": 2
+      },
+      {
+        "conditionalEntropyRehash": false,
+        "drainState": 0,
+        "ingressVlan": 4094,
+        "logicalID": 4,
+        "loopbackMode": 0,
+        "maxFrameSize": 9412,
+        "minFrameSize": 64,
+        "name": "eth1/23/1",
+        "parserType": 1,
+        "pause": {
+          "rx": false,
+          "tx": false
+        },
+        "portType": 0,
+        "profileID": 39,
+        "routable": true,
+        "sFlowEgressRate": 0,
+        "sFlowIngressRate": 0,
+        "scope": 0,
+        "speed": 800000,
+        "state": 2
+      },
+      {
+        "conditionalEntropyRehash": false,
+        "drainState": 0,
+        "ingressVlan": 4094,
+        "logicalID": 2,
+        "loopbackMode": 0,
+        "maxFrameSize": 9412,
+        "minFrameSize": 64,
+        "name": "eth1/15/1",
+        "parserType": 1,
+        "pause": {
+          "rx": false,
+          "tx": false
+        },
+        "portType": 0,
+        "profileID": 39,
+        "routable": true,
+        "sFlowEgressRate": 0,
+        "sFlowIngressRate": 0,
+        "scope": 0,
+        "speed": 800000,
+        "state": 2
+      },
+      {
+        "conditionalEntropyRehash": false,
+        "drainState": 0,
+        "ingressVlan": 4094,
+        "logicalID": 1,
+        "loopbackMode": 0,
+        "maxFrameSize": 9412,
+        "minFrameSize": 64,
+        "name": "eth1/7/1",
+        "parserType": 1,
+        "pause": {
+          "rx": false,
+          "tx": false
+        },
+        "portType": 0,
+        "profileID": 39,
+        "routable": true,
+        "sFlowEgressRate": 0,
+        "sFlowIngressRate": 0,
+        "scope": 0,
+        "speed": 800000,
+        "state": 2
+      },
+      {
+        "conditionalEntropyRehash": false,
+        "drainState": 0,
+        "ingressVlan": 4094,
+        "logicalID": 18,
+        "loopbackMode": 0,
+        "maxFrameSize": 9412,
+        "minFrameSize": 64,
+        "name": "eth1/8/1",
+        "parserType": 1,
+        "pause": {
+          "rx": false,
+          "tx": false
+        },
+        "portType": 0,
+        "profileID": 39,
+        "routable": true,
+        "sFlowEgressRate": 0,
+        "sFlowIngressRate": 0,
+        "scope": 0,
+        "speed": 800000,
+        "state": 2
+      },
+      {
+        "conditionalEntropyRehash": false,
+        "drainState": 0,
+        "ingressVlan": 4094,
+        "logicalID": 19,
+        "loopbackMode": 0,
+        "maxFrameSize": 9412,
+        "minFrameSize": 64,
+        "name": "eth1/24/1",
+        "parserType": 1,
+        "pause": {
+          "rx": false,
+          "tx": false
+        },
+        "portType": 0,
+        "profileID": 39,
+        "routable": true,
+        "sFlowEgressRate": 0,
+        "sFlowIngressRate": 0,
+        "scope": 0,
+        "speed": 800000,
+        "state": 2
+      },
+      {
+        "conditionalEntropyRehash": false,
+        "drainState": 0,
+        "ingressVlan": 4094,
+        "logicalID": 20,
+        "loopbackMode": 0,
+        "maxFrameSize": 9412,
+        "minFrameSize": 64,
+        "name": "eth1/31/1",
+        "parserType": 1,
+        "pause": {
+          "rx": false,
+          "tx": false
+        },
+        "portType": 0,
+        "profileID": 39,
+        "routable": true,
+        "sFlowEgressRate": 0,
+        "sFlowIngressRate": 0,
+        "scope": 0,
+        "speed": 800000,
+        "state": 2
+      },
+      {
+        "conditionalEntropyRehash": false,
+        "drainState": 0,
+        "ingressVlan": 4094,
+        "logicalID": 21,
+        "loopbackMode": 0,
+        "maxFrameSize": 9412,
+        "minFrameSize": 64,
+        "name": "eth1/32/1",
+        "parserType": 1,
+        "pause": {
+          "rx": false,
+          "tx": false
+        },
+        "portType": 0,
+        "profileID": 39,
+        "routable": true,
+        "sFlowEgressRate": 0,
+        "sFlowIngressRate": 0,
+        "scope": 0,
+        "speed": 800000,
+        "state": 2
+      }
+    ],
+    "proactiveArp": false,
+    "qosPolicies": [
+      {
+        "name": "default",
+        "qosMap": {
+          "dscpMaps": [
+            {
+              "fromDscpToTrafficClass": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "internalTrafficClass": 0
+            },
+            {
+              "fromDscpToTrafficClass": [
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+              ],
+              "internalTrafficClass": 1
+            },
+            {
+              "fromDscpToTrafficClass": [
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23
+              ],
+              "internalTrafficClass": 2
+            },
+            {
+              "fromDscpToTrafficClass": [
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31
+              ],
+              "internalTrafficClass": 3
+            },
+            {
+              "fromDscpToTrafficClass": [
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39
+              ],
+              "internalTrafficClass": 4
+            },
+            {
+              "fromDscpToTrafficClass": [
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47
+              ],
+              "internalTrafficClass": 5
+            },
+            {
+              "fromDscpToTrafficClass": [
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55
+              ],
+              "internalTrafficClass": 6
+            },
+            {
+              "fromDscpToTrafficClass": [
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                63
+              ],
+              "internalTrafficClass": 7
+            }
+          ],
+          "expMaps": [],
+          "trafficClassToQueueId": {
+            "0": 0,
+            "1": 1,
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7
+          }
+        }
+      }
+    ],
+    "sFlowCollectors": [],
+    "staleEntryInterval": 10,
+    "staticIp2MplsRoutes": [],
+    "staticMplsRoutesToCPU": [],
+    "staticMplsRoutesToNull": [],
+    "staticMplsRoutesWithNhops": [],
+    "staticRoutesToCPU": [],
+    "staticRoutesToNull": [],
+    "staticRoutesWithNhops": [],
+    "switchSettings": {
+      "blockNeighbors": [],
+      "exactMatchTableConfigs": [],
+      "l2AgeTimerSeconds": 300,
+      "l2LearningMode": 0,
+      "macAddrsToBlock": [],
+      "maxRouteCounterIDs": 0,
+      "metaMacOuis": [],
+      "needL2EntryForNeighbor": true,
+      "ptpTcEnable": false,
+      "qcmEnable": false,
+      "switchDrainState": 0,
+      "switchIdToSwitchInfo": {
+        "0": {
+          "asicType": 18,
+          "firmwareNameToFirmwareInfo": {},
+          "portIdRange": {
+            "maximum": 2047,
+            "minimum": 0
+          },
+          "switchIndex": 0,
+          "switchType": 0
+        }
+      },
+      "switchType": 0,
+      "vendorMacOuis": []
+    },
+    "trafficCounters": [],
+    "version": 0,
+    "vlanPorts": [],
+    "vlans": [
+      {
+        "id": 10,
+        "ipAddresses": [],
+        "name": "fbossLoopback0",
+        "recordStats": true,
+        "routable": true
+      },
+      {
+        "id": 4094,
+        "ipAddresses": [],
+        "name": "default",
+        "recordStats": true,
+        "routable": false
+      }
+    ]
+  }
+}
