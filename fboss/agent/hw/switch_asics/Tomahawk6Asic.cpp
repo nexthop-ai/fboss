@@ -15,6 +15,12 @@ bool Tomahawk6Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::SFLOWv6:
     case HwAsic::Feature::HASH_FIELDS_CUSTOMIZATION:
     case HwAsic::Feature::ECN:
+<<<<<<< HEAD
+=======
+    case HwAsic::Feature::MIRROR_PACKET_TRUNCATION:
+    case HwAsic::Feature::SWITCH_DROP_REASON_LIST_SUPPORT:
+    case HwAsic::Feature::SCHEDULER_PPS:
+>>>>>>> 7a7c5b6be4 (NO-NOS: [th6] Enable mirror truncation and drop-reason list on BCMSIM (#3099))
     case HwAsic::Feature::NEXTHOP_TTL_DECREMENT_DISABLE:
     case HwAsic::Feature::BLACKHOLE_ROUTE_DROP_COUNTER:
     case HwAsic::Feature::RESOURCE_USAGE_STATS:
@@ -155,14 +161,18 @@ bool Tomahawk6Asic::isSupported(Feature feature) const {
       // reporting unsupported so those runs skip via SDK gating.
       return saiSdkAtLeast("16.0_ea_odp");
     // features not working well with bcmsim
-    case HwAsic::Feature::MIRROR_PACKET_TRUNCATION:
     case HwAsic::Feature::SFLOW_SAMPLING:
     case HwAsic::Feature::PFC:
     case HwAsic::Feature::PFC_XON_TO_XOFF_COUNTER:
     case HwAsic::Feature::L3_QOS:
     case HwAsic::Feature::SCHEDULER_PPS:
     case HwAsic::Feature::MEDIA_TYPE:
+<<<<<<< HEAD
     case HwAsic::Feature::SWITCH_DROP_REASON_LIST_SUPPORT:
+=======
+    // bcmsim has no SerDes, so SAI rejects TX FIR writes
+    case HwAsic::Feature::SAI_PORT_SERDES_PROGRAMMING:
+>>>>>>> 7a7c5b6be4 (NO-NOS: [th6] Enable mirror truncation and drop-reason list on BCMSIM (#3099))
       return getAsicMode() != AsicMode::ASIC_MODE_SIM;
     case HwAsic::Feature::ARS_ALTERNATE_MEMBERS:
     case HwAsic::Feature::QCM:
