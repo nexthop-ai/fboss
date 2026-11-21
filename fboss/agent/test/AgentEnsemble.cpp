@@ -2,6 +2,7 @@
 
 #include "fboss/agent/test/AgentEnsemble.h"
 
+#include <algorithm>
 #include <chrono>
 #include <map>
 #include <vector>
@@ -698,10 +699,23 @@ bool AgentEnsemble::waitForRateOnPort(
     return false;
   }
 
+  // The simulator forwards only a few hundred packets per second, so on the
+  // simulator a rate wait only checks that traffic flows.
+  const auto asics = getHwAsicTable()->getHwAsics();
+  const bool isSim =
+      std::any_of(asics.begin(), asics.end(), [](const auto& switchAsic) {
+        return switchAsic.second->getAsicMode() ==
+            HwAsic::AsicMode::ASIC_MODE_SIM;
+      });
+  const uint64_t targetBps =
+      isSim ? std::min<uint64_t>(desiredBps, 1) : desiredBps;
+
   // The first iteration in the below loop will not be successful
   // given the prev/curr stats collections are back to back!
   auto prevPortStats = getLatestPortStats(port);
-  XLOG(DBG0) << "PortID: " << port << ", Desired rate " << desiredBps;
+  XLOG(DBG0) << "PortID: " << port << ", Desired rate " << desiredBps
+             << (isSim ? fmt::format(" (sim: checking rate >= {})", targetBps)
+                       : "");
   bool metDesiredRate = false;
   WITH_RETRIES_N_TIMED(
       10, std::chrono::milliseconds(1000 * secondsToWaitPerIteration), {
@@ -710,10 +724,10 @@ bool AgentEnsemble::waitForRateOnPort(
             prevPortStats, curPortStats, secondsToWaitPerIteration);
         // Update prev stats for the next iteration if needed!
         prevPortStats = curPortStats;
-        if (desiredBps == 0) {
-          metDesiredRate = rate == desiredBps;
+        if (targetBps == 0) {
+          metDesiredRate = rate == targetBps;
         } else {
-          metDesiredRate = rate >= desiredBps;
+          metDesiredRate = rate >= targetBps;
         }
         EXPECT_EVENTUALLY_TRUE(metDesiredRate);
       });
