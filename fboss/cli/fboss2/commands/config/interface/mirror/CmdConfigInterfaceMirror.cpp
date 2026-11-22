@@ -12,7 +12,13 @@
 #include <optional>
 #include <set>
 #include <unordered_set>
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
+<<<<<<< HEAD
+=======
+#include "fboss/cli/fboss2/commands/config/interface/MirrorSamplingUtils.h"
+#include "fboss/cli/fboss2/session/AgentConfigDomain.h"
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -79,7 +85,7 @@ CmdConfigInterfaceMirrorTraits::RetType CmdConfigInterfaceMirror::queryClient(
   }
 
   auto& session = ConfigSession::getInstance();
-  auto& swConfig = *session.getAgentConfig().sw();
+  auto& swConfig = *session.config<AgentConfigDomain>().sw();
 
   // The agent rejects a port bound to a mirror that sw.mirrors doesn't define.
   std::set<std::string> configuredMirrors;

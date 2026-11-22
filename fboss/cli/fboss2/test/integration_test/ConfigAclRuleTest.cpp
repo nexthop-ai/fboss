@@ -39,6 +39,13 @@
 #include <optional>
 #include <string>
 #include <vector>
+<<<<<<< HEAD
+=======
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
+#include "fboss/agent/gen-cpp2/switch_config_types.h"
+#include "fboss/cli/fboss2/session/AgentConfigDomain.h"
+#include "fboss/cli/fboss2/session/ConfigSession.h"
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 #include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
 
 using namespace facebook::fboss;
@@ -201,6 +208,144 @@ class ConfigAclRuleTest : public Fboss2IntegrationTest {
     EXPECT_THAT(result.stdout, HasSubstr(rule));
   }
 
+<<<<<<< HEAD
+=======
+  // `prefix` followed by the current epoch in milliseconds, so a name never
+  // collides with one left behind by an earlier run.
+  static std::string uniqueName(const std::string& prefix) {
+    const auto now = std::chrono::system_clock::now().time_since_epoch();
+    return fmt::format(
+        "{}{}",
+        prefix,
+        std::chrono::duration_cast<std::chrono::milliseconds>(now).count());
+  }
+
+  // aclTableGroupMaps: SwitchIdList -> AclStage -> AclTableGroupFields.
+  // Returns the rule's switch-state entry on every switch that has it.
+  std::vector<folly::dynamic> getStateEntries(
+      const std::string& tableName,
+      const std::string& ruleName) const {
+    std::vector<folly::dynamic> entries;
+    auto groupMaps = getSwitchState("aclTableGroupMaps");
+    for (const auto& [switchIds, stages] : groupMaps.items()) {
+      for (const auto& [stage, group] : stages.items()) {
+        const auto* tables = group.get_ptr("aclTableMap");
+        const auto* table = tables ? tables->get_ptr(tableName) : nullptr;
+        const auto* acls = table ? table->get_ptr("aclMap") : nullptr;
+        const auto* entry = acls ? acls->get_ptr(ruleName) : nullptr;
+        if (entry != nullptr) {
+          entries.push_back(*entry);
+        }
+      }
+    }
+    return entries;
+  }
+
+  // Number of dataPlaneTrafficPolicy.matchToAction entries for the rule.
+  int countMatchToActions(const std::string& ruleName) const {
+    auto config = getRunningConfig();
+    const auto* policy = config["sw"].get_ptr("dataPlaneTrafficPolicy");
+    const auto* mtas = policy ? policy->get_ptr("matchToAction") : nullptr;
+    if (mtas == nullptr) {
+      return 0;
+    }
+    int count = 0;
+    for (const auto& mta : *mtas) {
+      if (mta["matcher"].asString() == ruleName) {
+        ++count;
+      }
+    }
+    return count;
+  }
+
+  // Deletes the test rule's only traffic-policy action with
+  //   delete data-plane traffic-policy match <rule> action <keyword>
+  // and commits. The rule must stay, its matchToAction must be gone, and its
+  // switch-state aclAction must no longer carry `stateField`.
+  void deleteActionAndVerify(
+      const std::string& tableName,
+      const std::string& keyword,
+      const std::string& stateField) {
+    auto del = runCli(
+        {"delete",
+         "data-plane",
+         "traffic-policy",
+         "match",
+         kTestRuleName,
+         "action",
+         keyword});
+    ASSERT_EQ(del.exitCode, 0)
+        << "stdout=" << del.stdout << " stderr=" << del.stderr;
+    commitConfig();
+
+    EXPECT_FALSE(getMatchAction(kTestRuleName).has_value())
+        << "matchToAction still present after deleting its only action";
+    EXPECT_TRUE(getRule(tableName, kTestRuleName).has_value())
+        << "rule removed along with its action";
+    auto remaining = getStateEntries(tableName, kTestRuleName);
+    ASSERT_FALSE(remaining.empty())
+        << "rule not found in switch state after deleting its action";
+    for (const auto& entry : remaining) {
+      const auto* aclAction = entry.get_ptr("aclAction");
+      EXPECT_TRUE(aclAction == nullptr || !aclAction->count(stateField))
+          << stateField << " still in switch state after delete";
+    }
+  }
+
+  // The agent rejects an ACL whose mirror is undefined and fboss2 has no
+  // command that creates a mirror, so mirror tests add one to the session
+  // config directly: a SPAN mirror to the first enabled port that is not
+  // already mirrored. Saved to the session, not committed. Returns false if
+  // there is no such port.
+  bool stageSpanMirror(const std::string& mirrorName) {
+    auto& session = ConfigSession::getInstance();
+    auto& sw = *session.config<AgentConfigDomain>().sw();
+    for (const auto& port : *sw.ports()) {
+      if (port.name().has_value() && *port.state() == cfg::PortState::ENABLED &&
+          !port.ingressMirror().has_value() &&
+          !port.egressMirror().has_value()) {
+        cfg::Mirror mirror;
+        mirror.name() = mirrorName;
+        mirror.destination()->egressPort().emplace().name() = *port.name();
+        sw.mirrors()->push_back(mirror);
+        session.save<AgentConfigDomain>();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Cleanup for a mirror test: removes the test rule (which also drops its
+  // matchToAction) and the mirror in one commit. Never throws, so it is safe
+  // in a scope guard.
+  void deleteRuleAndMirror(
+      const std::string& tableName,
+      const std::string& mirrorName) {
+    try {
+      discardSession();
+      auto del = runCli({"delete", "acl", "rule", tableName, kTestRuleName});
+      auto& session = ConfigSession::getInstance();
+      auto& mirrors = *session.config<AgentConfigDomain>().sw()->mirrors();
+      auto before = mirrors.size();
+      std::erase_if(mirrors, [&mirrorName](const cfg::Mirror& m) {
+        return *m.name() == mirrorName;
+      });
+      bool mirrorRemoved = mirrors.size() != before;
+      if (mirrorRemoved) {
+        session.save<AgentConfigDomain>();
+      }
+      if (del.exitCode != 0 && !mirrorRemoved) {
+        return; // nothing was committed, nothing to undo
+      }
+      auto commit = runCli({"config", "session", "commit"});
+      EXPECT_EQ(commit.exitCode, 0)
+          << "cleanup commit failed: " << commit.stderr;
+    } catch (const std::exception& e) {
+      ADD_FAILURE() << "cleanup failed: " << e.what();
+    }
+  }
+
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
   // A single (attribute, values) baseline pair the test sets up before
   // exercising the attribute under test. Some attributes are only valid
   // alongside a matching `protocol` (e.g. icmp-type requires

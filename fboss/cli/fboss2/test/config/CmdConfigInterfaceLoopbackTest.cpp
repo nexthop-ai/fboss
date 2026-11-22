@@ -8,9 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
+#include "fboss/cli/fboss2/session/AgentConfigDomain.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/InterfaceList.h"
@@ -88,8 +90,10 @@ class CmdConfigInterfaceLoopbackTestFixture : public CmdConfigTestBase {
   const std::string cmdPrefix_ = "config interface";
 
   static const cfg::Interface* findIntf(int32_t intfId) {
-    const auto& intfs =
-        *ConfigSession::getInstance().getAgentConfig().sw()->interfaces();
+    const auto& intfs = *ConfigSession::getInstance()
+                             .config<AgentConfigDomain>()
+                             .sw()
+                             ->interfaces();
     for (const auto& intf : intfs) {
       if (*intf.intfID() == intfId) {
         return &intf;
@@ -100,7 +104,7 @@ class CmdConfigInterfaceLoopbackTestFixture : public CmdConfigTestBase {
 
   static const cfg::Vlan* findVlan(int32_t vlanId) {
     const auto& vlans =
-        *ConfigSession::getInstance().getAgentConfig().sw()->vlans();
+        *ConfigSession::getInstance().config<AgentConfigDomain>().sw()->vlans();
     for (const auto& vlan : vlans) {
       if (*vlan.id() == vlanId) {
         return &vlan;
@@ -264,6 +268,70 @@ TEST_F(CmdConfigInterfaceLoopbackTestFixture, dataVlanCollisionThrows) {
   }
 }
 
+<<<<<<< HEAD
+=======
+// The conventional VLAN id exists with no member ports but is a port's
+// untagged ingress VLAN: `delete interface loopback4` would refuse to remove
+// it, so create refuses to take it over.
+TEST_F(CmdConfigInterfaceLoopbackTestFixture, ingressVlanCollisionThrows) {
+  setupTestableConfigSession(cmdPrefix_, "loopback4 ip-address 10.0.4.1/32");
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"loopback4", "ip-address", "10.0.4.1/32"});
+
+  try {
+    cmd.queryClient(localhost(), config);
+    FAIL() << "expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("Cannot create loopback4"));
+    EXPECT_THAT(e.what(), HasSubstr("ingress VLAN for port(s): eth1/1/2"));
+  }
+  EXPECT_EQ(findIntf(14), nullptr);
+}
+
+// The conventional VLAN id is the global default VLAN, which delete refuses
+// to remove, so create refuses it too.
+TEST_F(CmdConfigInterfaceLoopbackTestFixture, defaultVlanCollisionThrows) {
+  setupTestableConfigSession(cmdPrefix_, "loopback8 ip-address 10.0.8.1/32");
+  ConfigSession::getInstance().config<AgentConfigDomain>().sw()->defaultVlan() =
+      18;
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"loopback8", "ip-address", "10.0.8.1/32"});
+
+  try {
+    cmd.queryClient(localhost(), config);
+    FAIL() << "expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("Cannot create loopback8"));
+    EXPECT_THAT(e.what(), HasSubstr("global default VLAN"));
+  }
+  EXPECT_EQ(findIntf(18), nullptr);
+}
+
+// A bare pre-existing VLAN with nothing bound to it is reused as the backing
+// VLAN rather than duplicated.
+TEST_F(CmdConfigInterfaceLoopbackTestFixture, reusesBareExistingVlan) {
+  setupTestableConfigSession(cmdPrefix_, "loopback8 ip-address 10.0.8.1/32");
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"loopback8", "ip-address", "10.0.8.1/32"});
+
+  cmd.queryClient(localhost(), config);
+
+  const auto* intf = findIntf(18);
+  ASSERT_NE(intf, nullptr);
+  EXPECT_EQ(*intf->vlanID(), 18);
+  EXPECT_THAT(*intf->ipAddresses(), ElementsAre("10.0.8.1/32"));
+  int vlan18Count = 0;
+  for (const auto& vlan : *ConfigSession::getInstance()
+                               .config<AgentConfigDomain>()
+                               .sw()
+                               ->vlans()) {
+    vlan18Count += (*vlan.id() == 18);
+  }
+  EXPECT_EQ(vlan18Count, 1);
+  EXPECT_EQ(*findVlan(18)->name(), "Vlan18");
+}
+
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 // Tokens above the loopback index bound are ordinary unknown names
 TEST_F(CmdConfigInterfaceLoopbackTestFixture, outOfRangeIndexNotFound) {
   setupTestableConfigSession(cmdPrefix_, "loopback100 ip-address 10.0.0.1/32");
@@ -339,8 +407,15 @@ TEST_F(CmdConfigInterfaceLoopbackTestFixture, deletePortAndLoopbackTogether) {
 
   EXPECT_THAT(result, HasSubstr("eth1/1/1"));
   EXPECT_THAT(result, HasSubstr("loopback1"));
+<<<<<<< HEAD
   EXPECT_TRUE(
       ConfigSession::getInstance().getAgentConfig().sw()->ports()->empty());
+=======
+  const auto& ports =
+      *ConfigSession::getInstance().config<AgentConfigDomain>().sw()->ports();
+  ASSERT_EQ(ports.size(), 1);
+  EXPECT_EQ(*ports[0].name(), "eth1/1/2");
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
   EXPECT_EQ(findIntf(11), nullptr);
   EXPECT_EQ(findVlan(11), nullptr);
 }

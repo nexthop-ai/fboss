@@ -20,7 +20,15 @@
 #include <cctype>
 #include <iostream>
 #include <optional>
+<<<<<<< HEAD
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
+=======
+#include <unordered_set>
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
+#include "fboss/agent/gen-cpp2/switch_config_types.h"
+#include "fboss/cli/fboss2/commands/config/interface/MirrorSamplingUtils.h"
+#include "fboss/cli/fboss2/session/AgentConfigDomain.h"
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -137,6 +145,25 @@ CmdConfigInterfaceSflowTraits::RetType CmdConfigInterfaceSflow::queryClient(
 
   auto& session = ConfigSession::getInstance();
 
+<<<<<<< HEAD
+=======
+  // Binding the mirror first and turning on sampling second must not stage a
+  // config the agent rejects.
+  if (newDest == cfg::SampleDestination::MIRROR) {
+    std::unordered_set<const cfg::Port*> targets;
+    for (const utils::Intf& intf : interfaces) {
+      if (const cfg::Port* port = intf.getPort()) {
+        targets.insert(port);
+      }
+    }
+    checkSingleSamplingMirror(
+        *session.config<AgentConfigDomain>().sw(),
+        targets,
+        /*targetsSample=*/true,
+        std::nullopt);
+  }
+
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
   std::vector<std::string> updatedNames;
   std::vector<std::string> skippedNames;
   for (const utils::Intf& intf : interfaces) {

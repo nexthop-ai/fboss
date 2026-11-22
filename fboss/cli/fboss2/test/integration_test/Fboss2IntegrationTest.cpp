@@ -38,6 +38,11 @@
 
 #include <folly/IPAddressV6.h>
 #include <thrift/lib/cpp/util/EnumUtils.h>
+<<<<<<< HEAD
+=======
+#include <thrift/lib/cpp2/protocol/Serializer.h>
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 #include "fboss/agent/gen-cpp2/platform_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
@@ -49,6 +54,7 @@
 #include "fboss/cli/fboss2/CmdGlobalOptions.h"
 #include "fboss/cli/fboss2/CmdLocalOptions.h"
 #include "fboss/cli/fboss2/commands/config/vlan/VlanManager.h"
+#include "fboss/cli/fboss2/session/AgentConfigDomain.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/CmdInitUtils.h"
@@ -162,6 +168,289 @@ Fboss2IntegrationTest::Result Fboss2IntegrationTest::executeCliCommand(
   return Result{exitCode, capturedStdout.str(), capturedStderr.str()};
 }
 
+<<<<<<< HEAD
+=======
+Result shellCommand(const std::vector<std::string>& args) {
+  XLOG(INFO) << "Running command: " << folly::join(" ", args);
+
+  folly::Subprocess::Options options;
+  options.pipeStdout();
+  options.pipeStderr();
+
+  folly::Subprocess proc(args, options);
+  auto [stdout, stderr] = proc.communicate();
+  auto exitStatus = proc.wait().exitStatus();
+
+  return Result{exitStatus, stdout, stderr};
+}
+
+void discardSessionImpl() {
+  // NOLINTNEXTLINE(concurrency-mt-unsafe): HOME is read-only in practice
+  const char* home = std::getenv("HOME");
+  if (home == nullptr) {
+    XLOG(WARN) << "HOME environment variable not set, cannot discard session";
+    return;
+  }
+  fs::path sessionDir = fs::path(home) / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+  fs::path sessionMetadata = sessionDir / "cli_metadata.json";
+
+  std::error_code ec;
+  if (fs::exists(sessionConfig, ec)) {
+    XLOG(INFO) << "Discarding session config: " << sessionConfig.string();
+    fs::remove(sessionConfig, ec);
+    if (ec) {
+      XLOG(WARN) << "Failed to remove session config: " << ec.message();
+    }
+  }
+  if (fs::exists(sessionMetadata, ec)) {
+    XLOG(INFO) << "Discarding session metadata: " << sessionMetadata.string();
+    fs::remove(sessionMetadata, ec);
+    if (ec) {
+      XLOG(WARN) << "Failed to remove session metadata: " << ec.message();
+    }
+  }
+
+  // Reset the in-memory singleton so the next CLI command starts a fresh
+  // session from the current system config, not stale in-process state.
+  ConfigSession::resetInstance();
+}
+
+constexpr auto kAgentReadyTimeout = std::chrono::seconds(180);
+
+// Like Fboss2IntegrationTest::waitForAgentReady() but returns false on
+// timeout instead of failing the test, so the suite teardown can pick a
+// recovery strategy instead of failing outright.
+bool agentResponsive(std::chrono::seconds timeout = kAgentReadyTimeout) {
+  // Poll-first: a responsive agent answers on the first iteration with no
+  // sleep at all. When it isn't responsive (typically mid-restart after a
+  // commit), retry every 2s until the deadline. Two expected failure modes
+  // while restarting:
+  // 1. "Connection refused"  — process not yet listening
+  // 2. "switch is still initializing" — process up, HW init in progress
+  // Both resolve naturally once the agent finishes warmboot/coldboot (~50s).
+  constexpr auto kPollInterval = std::chrono::seconds(2);
+  auto deadline = std::chrono::steady_clock::now() + timeout;
+  while (true) {
+    auto result = cliCommand({"show", "interface"});
+    if (result.exitCode == 0) {
+      XLOG(DBG1) << "Agent is ready";
+      return true;
+    }
+    if (std::chrono::steady_clock::now() >= deadline) {
+      return false;
+    }
+    XLOG(DBG1) << "Agent not ready: " << result.stderr;
+    XLOG_EVERY_MS(INFO, 10000) << "Agent not ready yet, retrying every "
+                               << kPollInterval.count() << "s...";
+    // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
+    std::this_thread::sleep_for(kPollInterval);
+  }
+}
+
+// systemd NRestarts of each agent unit, keyed by unit name. NRestarts only
+// counts restarts triggered by the unit's Restart= policy, i.e. after the
+// process died. The warmboot/coldboot restarts the CLI itself performs on a
+// commit do not count, so an increase across a commit means an agent crashed.
+// Units that are not loaded (e.g. in mono mode) are omitted, which disables
+// the crash check for them.
+std::map<std::string, int64_t> agentUnitRestarts() {
+  auto result = shellCommand(
+      {"/usr/bin/systemctl",
+       "show",
+       "--property=Id,LoadState,NRestarts",
+       "fboss_sw_agent.service",
+       "fboss_hw_agent@*.service"});
+  std::map<std::string, int64_t> restarts;
+  if (result.exitCode != 0) {
+    XLOG(WARN) << "Failed to read agent restart counts: " << result.stderr;
+    return restarts;
+  }
+  // One block of KEY=VALUE lines per unit, blocks separated by a blank line.
+  std::string id;
+  std::string loadState;
+  std::optional<int64_t> nRestarts;
+  auto flush = [&]() {
+    if (!id.empty() && loadState == "loaded" && nRestarts.has_value()) {
+      restarts[id] = *nRestarts;
+    }
+    id.clear();
+    loadState.clear();
+    nRestarts.reset();
+  };
+  std::vector<std::string_view> lines;
+  folly::split('\n', result.stdout, lines);
+  for (auto line : lines) {
+    if (line.empty()) {
+      flush();
+      continue;
+    }
+    auto eq = line.find('=');
+    if (eq == std::string_view::npos) {
+      continue;
+    }
+    auto key = line.substr(0, eq);
+    auto value = line.substr(eq + 1);
+    if (key == "Id") {
+      id = std::string(value);
+    } else if (key == "LoadState") {
+      loadState = std::string(value);
+    } else if (key == "NRestarts") {
+      nRestarts = folly::tryTo<int64_t>(value).value_or(0);
+    }
+  }
+  flush();
+  return restarts;
+}
+
+// Agent units whose NRestarts grew between the two snapshots, formatted for
+// an error message, e.g. "fboss_hw_agent@0.service (NRestarts 3 -> 4)".
+std::vector<std::string> crashedAgentUnits(
+    const std::map<std::string, int64_t>& before,
+    const std::map<std::string, int64_t>& after) {
+  std::vector<std::string> crashed;
+  for (const auto& [unit, count] : after) {
+    auto it = before.find(unit);
+    if (it != before.end() && count > it->second) {
+      crashed.push_back(
+          fmt::format("{} (NRestarts {} -> {})", unit, it->second, count));
+    }
+  }
+  return crashed;
+}
+
+// The waitFor*() helpers poll for the effect of an earlier change. Once the
+// test has a fatal failure (typically the CLI command or commit making that
+// change already failed) the effect is never going to show up, so stop
+// polling right away instead of burning the full timeout. Returns true if
+// the caller should stop waiting.
+bool stopWaitingOnFatalFailure(std::string_view what) {
+  if (!::testing::Test::HasFatalFailure()) {
+    return false;
+  }
+  XLOG(WARN) << "Not waiting for " << what
+             << ": the test already has a fatal failure";
+  return true;
+}
+
+void dumpAgentDiagnostics() {
+  // Print to std::cerr (not XLOG) so the dump is unconditional and not
+  // reordered/buffered by folly's async logger relative to the FAIL() output.
+  std::cerr << "=== Agent diagnostics (agent not responsive) ===" << std::endl;
+
+  for (const auto* unit : {"fboss_sw_agent", "fboss_hw_agent@0"}) {
+    std::cerr << "--- systemctl status " << unit << " ---" << std::endl;
+    auto status = shellCommand(
+        {"/usr/bin/systemctl", "--no-pager", "-l", "status", unit});
+    if (!status.stdout.empty()) {
+      std::cerr << status.stdout;
+    }
+    if (!status.stderr.empty()) {
+      std::cerr << status.stderr;
+    }
+  }
+
+  // Both fboss_sw_agent and fboss_hw_agent@0 are configured to append to
+  // /var/facebook/logs/fboss/wedge_agent.log (see fboss_sw_agent.service /
+  // fboss_hw_agent@.service). Tail enough lines to capture the start of the
+  // most recent boot.
+  constexpr auto kAgentLogPath = "/var/facebook/logs/fboss/wedge_agent.log";
+  constexpr auto kTailLines = "500";
+  std::cerr << "--- tail -n " << kTailLines << " " << kAgentLogPath << " ---"
+            << std::endl;
+  auto tail = shellCommand({"/usr/bin/tail", "-n", kTailLines, kAgentLogPath});
+  if (!tail.stdout.empty()) {
+    std::cerr << tail.stdout;
+  }
+  if (tail.exitCode != 0 && !tail.stderr.empty()) {
+    std::cerr << "tail stderr: " << tail.stderr;
+  }
+  std::cerr << "=== End agent diagnostics ===" << std::endl;
+}
+
+} // namespace
+
+Fboss2IntegrationTest::Fboss2IntegrationTest() {
+  if (FLAGS_list_production_feature) {
+    // Skipping from the constructor keeps gtest from running SetUp() and
+    // TearDown(), so listing never touches the agent.
+    skipForProductionFeatureListing();
+  }
+}
+
+Fboss2IntegrationTest::~Fboss2IntegrationTest() {
+  if (FLAGS_list_production_feature) {
+    // Printed here so the features added by derived constructors are included.
+    std::vector<std::string> names;
+    names.reserve(productionFeatures_.size());
+    for (auto feature : productionFeatures_) {
+      names.push_back(apache::thrift::util::enumNameSafe(feature));
+    }
+    std::cout << "Feature List: " << folly::join(",", names) << std::endl;
+  }
+}
+
+void Fboss2IntegrationTest::skipForProductionFeatureListing() {
+  GTEST_SKIP();
+}
+
+void Fboss2IntegrationTest::addProductionFeatures(
+    std::initializer_list<ProductionFeature> features) {
+  productionFeatures_.insert(
+      productionFeatures_.end(), features.begin(), features.end());
+}
+
+void Fboss2IntegrationTest::SetUp() {
+  XLOG(INFO) << "Fboss2IntegrationTest::SetUp - starting CLI test";
+  // Discard any stale session from previous runs to ensure we start fresh
+  discardSession();
+  // Prior tests may have triggered a warm/coldboot; wait out any residual
+  // agent-initializing state before the test body starts talking to it.
+  waitForAgentReady();
+}
+
+void Fboss2IntegrationTest::TearDown() {
+  XLOG(INFO) << "Fboss2IntegrationTest::TearDown - cleaning up CLI test";
+}
+
+const Git& Fboss2IntegrationTest::getGit() const {
+  // Git passes -c safe.directory itself: /etc/coop is typically owned by
+  // another user (e.g. coop), which git otherwise rejects.
+  static const Git git("/etc/coop");
+  return git;
+}
+
+void Fboss2IntegrationTest::discardSession() const {
+  discardSessionImpl();
+}
+
+std::string Fboss2IntegrationTest::snapshotConfig() const {
+  discardSession();
+  auto snapshot = apache::thrift::SimpleJSONSerializer::serialize<std::string>(
+      ConfigSession::getInstance().config<AgentConfigDomain>());
+  discardSession();
+  return snapshot;
+}
+
+void Fboss2IntegrationTest::restoreConfig(
+    const std::string& configJson,
+    cli::ConfigActionLevel actionLevel) const {
+  if (configJson.empty()) {
+    return;
+  }
+  discardSession();
+
+  XLOG(INFO) << "Restoring config snapshot...";
+  auto& session = ConfigSession::getInstance();
+  auto& config = session.config<AgentConfigDomain>();
+  apache::thrift::SimpleJSONSerializer::deserialize(configJson, config);
+  session.saveConfig(cli::ServiceType::AGENT, actionLevel);
+  commitConfig();
+  waitForAgentReady();
+  XLOG(INFO) << "Config snapshot restored";
+}
+
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 Fboss2IntegrationTest::Result Fboss2IntegrationTest::runCli(
     const std::vector<std::string>& args) const {
   XLOG(INFO) << "Running CLI command: " << folly::join(" ", args);
@@ -827,7 +1116,7 @@ int Fboss2IntegrationTest::ensureUnderlayIntfId(
             kTestVlanMax));
   }
   auto& session = ConfigSession::getInstance();
-  auto& swConfig = *session.getAgentConfig().sw();
+  auto& swConfig = *session.config<AgentConfigDomain>().sw();
   auto [created, vlan] = VlanManager::createVlan(swConfig, VlanID(vid));
   // Pointer into swConfig.vlans() — do not hold across further mutations.
   (void)vlan;
@@ -839,7 +1128,7 @@ int Fboss2IntegrationTest::ensureUnderlayIntfId(
       if (created) {
         XLOG(INFO) << "Created VLAN " << vid << " with interface "
                    << *intf.intfID() << " for tunnel underlay";
-        session.saveConfig();
+        session.save<AgentConfigDomain>();
       }
       return *intf.intfID();
     }
@@ -851,7 +1140,7 @@ int Fboss2IntegrationTest::ensureUnderlayIntfId(
 
 std::string Fboss2IntegrationTest::findIpv6OnIntf(int intfId) const {
   auto& session = ConfigSession::getInstance();
-  auto& swConfig = *session.getAgentConfig().sw();
+  auto& swConfig = *session.config<AgentConfigDomain>().sw();
   for (const auto& intf : *swConfig.interfaces()) {
     if (*intf.intfID() != intfId) {
       continue;

@@ -11,7 +11,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/cli/fboss2/commands/config/traffic_counter/CmdConfigTrafficCounter.h"
+#include "fboss/cli/fboss2/session/AgentConfigDomain.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/PortMap.h" // NOLINT(misc-include-cleaner)
@@ -128,8 +130,10 @@ TEST_F(CmdConfigTrafficCounterTestFixture, createNewCounterSingleType) {
   EXPECT_THAT(result, HasSubstr("new_counter"));
   EXPECT_THAT(result, HasSubstr("PACKETS"));
 
-  auto& counters =
-      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  auto& counters = *ConfigSession::getInstance()
+                        .config<AgentConfigDomain>()
+                        .sw()
+                        ->trafficCounters();
   ASSERT_EQ(counters.size(), 2);
   EXPECT_EQ(*counters[1].name(), "new_counter");
   EXPECT_EQ(*counters[1].types(), std::vector{cfg::CounterType::PACKETS});
@@ -144,8 +148,10 @@ TEST_F(CmdConfigTrafficCounterTestFixture, createNewCounterBothTypes) {
   auto result = cmd.queryClient(hostInfo, arg);
   EXPECT_THAT(result, HasSubstr("PACKETS,BYTES"));
 
-  auto& counters =
-      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  auto& counters = *ConfigSession::getInstance()
+                        .config<AgentConfigDomain>()
+                        .sw()
+                        ->trafficCounters();
   ASSERT_EQ(counters.size(), 2);
   EXPECT_EQ(*counters[1].name(), "stat_both");
   EXPECT_EQ(
@@ -163,8 +169,10 @@ TEST_F(CmdConfigTrafficCounterTestFixture, updateExistingCounter) {
   EXPECT_THAT(result, HasSubstr("updated"));
   EXPECT_THAT(result, HasSubstr("BYTES"));
 
-  auto& counters =
-      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  auto& counters = *ConfigSession::getInstance()
+                        .config<AgentConfigDomain>()
+                        .sw()
+                        ->trafficCounters();
   ASSERT_EQ(counters.size(), 1);
   EXPECT_EQ(*counters[0].name(), "existing_counter");
   EXPECT_EQ(*counters[0].types(), std::vector{cfg::CounterType::BYTES});
@@ -180,9 +188,130 @@ TEST_F(CmdConfigTrafficCounterTestFixture, alreadyConfigured) {
   auto result = cmd.queryClient(hostInfo, arg);
   EXPECT_THAT(result, HasSubstr("already"));
 
-  auto& counters =
-      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  auto& counters = *ConfigSession::getInstance()
+                        .config<AgentConfigDomain>()
+                        .sw()
+                        ->trafficCounters();
   ASSERT_EQ(counters.size(), 1);
 }
 
+<<<<<<< HEAD
+=======
+TEST_F(CmdConfigTrafficCounterTestFixture, noAsicInConfigNoWarning) {
+  setupTestableConfigSession(cmdPrefix_, "stat_both PACKETS,BYTES");
+  CmdConfigTrafficCounter cmd;
+  HostInfo hostInfo("testhost");
+  TrafficCounterArg arg({"stat_both", "PACKETS,BYTES"});
+
+  auto result = cmd.queryClient(hostInfo, arg);
+  EXPECT_THAT(result, Not(HasSubstr("Warning")));
+}
+
+// Seed config with an ASIC whose ACL_BYTE_COUNTER support is given by asicType.
+class CmdConfigTrafficCounterAsicTestFixture : public CmdConfigTestBase {
+ public:
+  explicit CmdConfigTrafficCounterAsicTestFixture(int asicType)
+      : CmdConfigTestBase(
+            "fboss_traffic_counter_asic_test_%%%%-%%%%-%%%%-%%%%",
+            fmt::format(
+                R"({{
+  "sw": {{
+    "switchSettings": {{
+      "switchIdToSwitchInfo": {{
+        "0": {{
+          "switchType": 0,
+          "asicType": {},
+          "switchIndex": 0,
+          "portIdRange": {{"minimum": 0, "maximum": 2047}}
+        }}
+      }}
+    }},
+    "trafficCounters": [
+      {{"name": "existing_counter", "types": [0]}}
+    ]
+  }}
+}})",
+                asicType)) {}
+
+ protected:
+  const std::string cmdPrefix_ = "config traffic-counter";
+};
+
+// ASIC_TYPE_G202X does not support ACL byte counters.
+class CmdConfigTrafficCounterG202xTestFixture
+    : public CmdConfigTrafficCounterAsicTestFixture {
+ public:
+  CmdConfigTrafficCounterG202xTestFixture()
+      : CmdConfigTrafficCounterAsicTestFixture(
+            static_cast<int>(cfg::AsicType::ASIC_TYPE_G202X)) {}
+};
+
+// ASIC_TYPE_TOMAHAWK5 supports ACL byte counters.
+class CmdConfigTrafficCounterTomahawk5TestFixture
+    : public CmdConfigTrafficCounterAsicTestFixture {
+ public:
+  CmdConfigTrafficCounterTomahawk5TestFixture()
+      : CmdConfigTrafficCounterAsicTestFixture(
+            static_cast<int>(cfg::AsicType::ASIC_TYPE_TOMAHAWK5)) {}
+};
+
+TEST_F(CmdConfigTrafficCounterG202xTestFixture, createBytesWarns) {
+  setupTestableConfigSession(cmdPrefix_, "stat_both PACKETS,BYTES");
+  CmdConfigTrafficCounter cmd;
+  HostInfo hostInfo("testhost");
+  TrafficCounterArg arg({"stat_both", "PACKETS,BYTES"});
+
+  auto result = cmd.queryClient(hostInfo, arg);
+  EXPECT_THAT(result, HasSubstr("Successfully created"));
+  EXPECT_THAT(
+      result,
+      HasSubstr(
+          "Warning: ASIC G202X does not support ACL byte counters; "
+          "'stat_both.bytes' will always report 0"));
+
+  // The warning does not block the change.
+  auto& counters = *ConfigSession::getInstance()
+                        .config<AgentConfigDomain>()
+                        .sw()
+                        ->trafficCounters();
+  ASSERT_EQ(counters.size(), 2);
+  EXPECT_EQ(
+      *counters[1].types(),
+      (std::vector{cfg::CounterType::PACKETS, cfg::CounterType::BYTES}));
+}
+
+TEST_F(CmdConfigTrafficCounterG202xTestFixture, updateBytesWarns) {
+  setupTestableConfigSession(cmdPrefix_, "existing_counter PACKETS,BYTES");
+  CmdConfigTrafficCounter cmd;
+  HostInfo hostInfo("testhost");
+  TrafficCounterArg arg({"existing_counter", "PACKETS,BYTES"});
+
+  auto result = cmd.queryClient(hostInfo, arg);
+  EXPECT_THAT(result, HasSubstr("Successfully updated"));
+  EXPECT_THAT(result, HasSubstr("'existing_counter.bytes'"));
+  EXPECT_THAT(result, HasSubstr("Warning"));
+}
+
+TEST_F(CmdConfigTrafficCounterG202xTestFixture, packetsOnlyNoWarning) {
+  setupTestableConfigSession(cmdPrefix_, "new_counter PACKETS");
+  CmdConfigTrafficCounter cmd;
+  HostInfo hostInfo("testhost");
+  TrafficCounterArg arg({"new_counter", "PACKETS"});
+
+  auto result = cmd.queryClient(hostInfo, arg);
+  EXPECT_THAT(result, Not(HasSubstr("Warning")));
+}
+
+TEST_F(CmdConfigTrafficCounterTomahawk5TestFixture, bytesSupportedNoWarning) {
+  setupTestableConfigSession(cmdPrefix_, "stat_both PACKETS,BYTES");
+  CmdConfigTrafficCounter cmd;
+  HostInfo hostInfo("testhost");
+  TrafficCounterArg arg({"stat_both", "PACKETS,BYTES"});
+
+  auto result = cmd.queryClient(hostInfo, arg);
+  EXPECT_THAT(result, HasSubstr("Successfully created"));
+  EXPECT_THAT(result, Not(HasSubstr("Warning")));
+}
+
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 } // namespace facebook::fboss

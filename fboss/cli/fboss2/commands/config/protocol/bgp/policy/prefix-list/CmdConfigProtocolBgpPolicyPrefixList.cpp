@@ -25,6 +25,7 @@
 #include <vector>
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/BgpCliAttrHandlers.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/BgpPrefixListCliUtils.h"
+#include "fboss/cli/fboss2/session/BgpConfigDomain.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
@@ -185,7 +186,7 @@ CmdConfigProtocolBgpPolicyPrefixList::queryClient(
     const HostInfo& /* hostInfo */,
     const ObjectArgType& args) {
   auto& session = ConfigSession::getInstance();
-  auto& cfg = session.getBgpConfig();
+  auto& cfg = session.config<BgpConfigDomain>();
   const bool listCreated = !bgpcli::prefixListExists(cfg, args.listName());
   auto& list = bgpcli::findOrCreatePrefixList(cfg, args.listName());
   auto& lists = *cfg.policies().ensure().prefix_lists();
@@ -204,9 +205,15 @@ CmdConfigProtocolBgpPolicyPrefixList::queryClient(
     if (!args.attr().empty()) {
       result.message += fmt::format(" for prefix-list {}", args.listName());
     }
+<<<<<<< HEAD
     session.saveBgpConfig();
     result.message +=
         fmt::format("\nConfig saved to: {}", session.getBgpSessionConfigPath());
+=======
+    session.save<BgpConfigDomain>();
+    result.message += fmt::format(
+        "\nConfig saved to: {}", session.stagedPath(cli::ServiceType::BGP));
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
   } else if (listCreated) {
     // Drop the phantom list so a rejected value is not visible to later
     // lookups in the same process.

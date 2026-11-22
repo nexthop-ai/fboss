@@ -16,6 +16,13 @@
 #include <folly/String.h>
 #include <algorithm>
 #include <iostream>
+<<<<<<< HEAD
+=======
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
+#include "fboss/agent/hw/switch_asics/HwAsic.h"
+#include "fboss/cli/fboss2/commands/config/gen/agent/AgentConfigGenUtils.h"
+#include "fboss/cli/fboss2/session/AgentConfigDomain.h"
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -85,7 +92,7 @@ CmdConfigTrafficCounterTraits::RetType CmdConfigTrafficCounter::queryClient(
     const HostInfo& /* hostInfo */,
     const ObjectArgType& trafficCounter) {
   auto& session = ConfigSession::getInstance();
-  auto& config = session.getAgentConfig();
+  auto& config = session.config<AgentConfigDomain>();
   auto& swConfig = *config.sw();
 
   const auto& name = trafficCounter.getName();

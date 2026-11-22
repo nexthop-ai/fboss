@@ -39,10 +39,16 @@
 #include <utility>
 #include <vector>
 #include "fboss/agent/AgentDirectoryUtil.h"
+<<<<<<< HEAD
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/agent/if/gen-cpp2/ctrl_types.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
+=======
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
+#include "fboss/cli/fboss2/session/ConfigDomain.h"
+#include "fboss/cli/fboss2/session/ConfigDomainRegistry.h"
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 #include "fboss/cli/fboss2/session/ConfigFileManager.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/Git.h"
@@ -50,12 +56,6 @@
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
 #include "fboss/lib/CommonFileUtils.h"
-
-#ifndef IS_OSS
-#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
-#else
-#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
-#endif
 
 namespace fs = std::filesystem;
 
@@ -305,10 +305,6 @@ std::string ConfigSession::getSessionDir() {
   return getHomeDirectory() + "/.fboss2";
 }
 
-std::string ConfigSession::getSessionConfigPathStatic() {
-  return getSessionDir() + "/agent.conf";
-}
-
 std::string ConfigSession::getSessionMetadataPathStatic() {
   return getSessionDir() + "/cli_metadata.json";
 }
@@ -328,6 +324,17 @@ std::vector<std::string> ConfigSession::stagedSessionFilePaths() {
   };
 }
 
+bool ConfigSession::hasStagedConfig() {
+  const auto domains = makeDefaultConfigDomains(getSessionDir(), "");
+  for (const auto& domain : domains.all()) {
+    std::error_code ec;
+    if (fs::exists(domain->info().sessionPath, ec)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string ConfigSession::fileAtRevisionOrEmpty(
     const std::string& revision,
     const std::string& gitRelPath) const {
@@ -340,6 +347,7 @@ std::string ConfigSession::fileAtRevisionOrEmpty(
   }
 }
 
+<<<<<<< HEAD
 std::string ConfigSession::getSessionConfigPath() const {
   return sessionConfigDir_ + "/agent.conf";
 }
@@ -348,6 +356,8 @@ std::string ConfigSession::getSystemConfigPath() const {
   return systemConfigDir_ + "/agent.conf";
 }
 
+=======
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 std::string ConfigSession::getCurrentConfigPath(
     cli::ServiceType service) const {
   auto path = currentConfigPaths_.find(service);
@@ -596,10 +606,6 @@ bool ConfigSession::domainContentEqual(
   return a == b; // unreachable: switch above is exhaustive
 }
 
-bool ConfigSession::sessionExists() const {
-  return fs::exists(getSessionConfigPath());
-}
-
 bool ConfigSession::hasActiveSession() const {
   // An agent config session (agent.conf) OR a protocol session staged outside
   // agent.conf. BGP is the latter: a staged ~/.fboss2/bgp_config.json (written
@@ -609,6 +615,7 @@ bool ConfigSession::hasActiveSession() const {
   return sessionExists() || bgpSessionExists();
 }
 
+<<<<<<< HEAD
 cfg::AgentConfig& ConfigSession::getAgentConfig() {
   if (!agentConfig_) {
     loadConfig(cli::ServiceType::AGENT);
@@ -644,6 +651,13 @@ void ConfigSession::rebuildPortMap() {
     loadConfig(cli::ServiceType::AGENT);
   }
   portMap_ = std::make_unique<utils::PortMap>(*agentConfig_);
+=======
+void ConfigSession::throwConfigNotLoaded(const std::string& domainName) {
+  throw std::runtime_error(
+      fmt::format(
+          "{} config not loaded yet. Call config<D>() (non-const) first.",
+          domainName));
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 }
 
 void ConfigSession::saveConfig(
@@ -700,10 +714,6 @@ void ConfigSession::saveConfig(
   recordServiceAction(service, actionLevel);
 }
 
-void ConfigSession::saveConfig() {
-  saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-}
-
 void ConfigSession::recordServiceAction(
     cli::ServiceType service,
     cli::ConfigActionLevel actionLevel) {
@@ -741,6 +751,7 @@ bool ConfigSession::bgpSessionExists() const {
   return fs::exists(getBgpSessionConfigPath());
 }
 
+<<<<<<< HEAD
 bgp::thrift::BgpConfig& ConfigSession::getBgpConfig() {
   if (!bgpConfig_) {
     loadConfig(cli::ServiceType::BGP);
@@ -766,6 +777,32 @@ void ConfigSession::saveBgpConfig() {
 
 Git& ConfigSession::getGit() {
   return *git_;
+=======
+std::vector<GitCommit> ConfigSession::history(size_t limit) const {
+  std::vector<std::string> paths;
+  for (const auto& domain : domains_.all()) {
+    paths.push_back(domain->info().gitRelPath);
+  }
+  // Every config commit writes the metadata, and rollback walks its log.
+  // Listing it too means every revision rollback can step back to is in the
+  // history, including a commit that changed the metadata but no config.
+  paths.emplace_back(kMetadataGitRelPath);
+  return git_->log(paths, limit);
+}
+
+std::string ConfigSession::head() const {
+  return git_->getHead();
+}
+
+std::string ConfigSession::resolveRevision(const std::string& ref) const {
+  return git_->resolveRef(ref);
+}
+
+std::string ConfigSession::contentAt(
+    const std::string& revision,
+    const std::string& gitRelPath) const {
+  return git_->fileAtRevision(revision, gitRelPath);
+>>>>>>> 36db926676 (NOS-23962: [fboss2] Replace ConfigSession's per-service accessors (6/6) (#3090))
 }
 
 const Git& ConfigSession::getGit() const {
@@ -1606,7 +1643,7 @@ std::string ConfigSession::rollback(
   }
 
   // Reload/restart only the services whose config changed. Each starts at its
-  // domain's default rollback action level and is promoted to the highest
+  // domain's minActionLevel and is promoted to the highest
   // level recorded by any commit being undone: undoing a change needs at least
   // the action applying it did (e.g. a VLAN membership change cannot be
   // applied with a hitless reload in either direction). Computed before any
@@ -1614,7 +1651,7 @@ std::string ConfigSession::rollback(
   auto recordedLevels = rolledBackActionLevels(resolvedSha);
   std::map<cli::ServiceType, cli::ConfigActionLevel> actions;
   for (const auto& dr : doms) {
-    auto level = dr.domain.rollbackActionLevel;
+    auto level = dr.domain.minActionLevel;
     auto it = recordedLevels.find(dr.domain.service);
     if (it != recordedLevels.end() &&
         static_cast<int>(it->second) > static_cast<int>(level)) {
