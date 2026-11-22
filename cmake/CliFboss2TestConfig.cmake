@@ -89,6 +89,7 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteTrafficCounterTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteVlanTest.cpp
   fboss/cli/fboss2/test/config/ConfigSessionSystemdTest.cpp
+  fboss/cli/fboss2/test/config/SystemdSequencerTest.cpp
 )
 
 target_link_libraries(fboss2_cmd_config_test

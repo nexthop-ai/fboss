@@ -40,13 +40,18 @@
 #include <vector>
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
+<<<<<<< HEAD
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/agent/if/gen-cpp2/ctrl_types.h"
+=======
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/ConfigFileManager.h"
-#include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/Git.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/utils/CmdClientUtils.h"
+=======
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
 #include "fboss/lib/CommonFileUtils.h"
@@ -250,25 +255,35 @@ ConfigSession::ConfigSession(SessionInit init) {
 ConfigSession::ConfigSession(
     std::string sessionConfigDir,
     std::string systemConfigDir,
+    ConfigDomainRegistry domains,
     SessionInit init)
     : sessionConfigDir_(std::move(sessionConfigDir)),
       systemConfigDir_(std::move(systemConfigDir)),
       readOnly_(init == SessionInit::ReadOnly),
       username_(getUsername()),
+<<<<<<< HEAD
       git_(std::make_unique<Git>(systemConfigDir_)) {
+=======
+      git_(std::make_unique<Git>(systemConfigDir_)),
+      domains_(std::move(domains)) {
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
   initializeSession(init);
 }
 
 ConfigSession::ConfigSession(
     std::string sessionConfigDir,
     std::string systemConfigDir,
-    std::unique_ptr<FbossServiceUtil> fbossServiceUtil)
-    : fbossServiceUtil_(std::move(fbossServiceUtil)),
-      sessionConfigDir_(std::move(sessionConfigDir)),
+    ConfigDomainRegistry domains)
+    : sessionConfigDir_(std::move(sessionConfigDir)),
       systemConfigDir_(std::move(systemConfigDir)),
       username_(getUsername()),
+<<<<<<< HEAD
       git_(std::make_unique<Git>(systemConfigDir_)) {
   fbossServiceUtilHasAgentState_ = true;
+=======
+      git_(std::make_unique<Git>(systemConfigDir_)),
+      domains_(std::move(domains)) {
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
   // Don't call initializeSession() - this constructor is for testing only
   // and tests don't need git initialization or config file copying
 }
@@ -341,11 +356,15 @@ std::string ConfigSession::fileAtRevisionOrEmpty(
 }
 
 std::string ConfigSession::getSessionConfigPath() const {
+<<<<<<< HEAD
   return sessionConfigDir_ + "/agent.conf";
 }
 
 std::string ConfigSession::getSystemConfigPath() const {
   return systemConfigDir_ + "/agent.conf";
+=======
+  return domains_.get<AgentConfigDomain>().info().sessionPath;
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
 }
 
 std::string ConfigSession::getCurrentConfigPath(
@@ -473,7 +492,11 @@ std::string ConfigSession::getCliConfigDir() const {
 }
 
 std::string ConfigSession::getCliConfigPath() const {
+<<<<<<< HEAD
   return systemConfigDir_ + "/cli/agent.conf";
+=======
+  return domains_.get<AgentConfigDomain>().info().desiredPath;
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
 }
 
 std::vector<ConfigSession::ConfigDomain> ConfigSession::configDomains() const {
@@ -911,6 +934,7 @@ const std::vector<std::string>& ConfigSession::getCommands() const {
   return commands_;
 }
 
+<<<<<<< HEAD
 void ConfigSession::ensureFbossServiceUtil(
     const HostInfo& hostInfo,
     bool needsAgentState) {
@@ -945,6 +969,20 @@ void ConfigSession::ensureFbossServiceUtil(
   fbossServiceUtil_ = std::make_unique<FbossServiceUtil>(
       std::move(switchIndexes), *runState.multiSwitchEnabled());
   fbossServiceUtilHasAgentState_ = true;
+=======
+std::string ConfigSession::actionName(
+    cli::ServiceType service,
+    cli::ConfigActionLevel level) const {
+  return domains_.get(service).actionName(level);
+}
+
+void ConfigSession::prepareServiceActions(
+    const std::map<cli::ServiceType, cli::ConfigActionLevel>& actions,
+    const HostInfo& hostInfo) {
+  for (const auto& [service, level] : actions) {
+    domains_.get(service).prepare(level, hostInfo);
+  }
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
 }
 
 std::map<cli::ServiceType, std::vector<std::string>>
@@ -955,24 +993,9 @@ ConfigSession::applyServiceActions(
     return {};
   }
 
-  ensureFbossServiceUtil(hostInfo, actions.contains(cli::ServiceType::AGENT));
-
   std::map<cli::ServiceType, std::vector<std::string>> serviceNames;
   for (const auto& [service, level] : actions) {
-    switch (level) {
-      case cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART:
-      case cli::ConfigActionLevel::SERVICE_RESTART:
-        serviceNames[service] =
-            fbossServiceUtil_->restartService(service, level);
-        if (service == cli::ServiceType::AGENT) {
-          fbossServiceUtil_->waitForAgentConfigured(hostInfo);
-        }
-        break;
-      case cli::ConfigActionLevel::HITLESS:
-        serviceNames[service] =
-            fbossServiceUtil_->reloadConfig(service, hostInfo);
-        break;
-    }
+    serviceNames[service] = domains_.get(service).apply(level, hostInfo);
   }
   return serviceNames;
 }
@@ -1249,11 +1272,11 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
 
   createDir(getCliConfigDir());
 
-  // Per-domain staged/changed analysis, applied uniformly to agent and BGP.
+  // Per-domain staged/changed analysis, the same for every domain.
   // A domain is "staged" when a session edit exists; it is "pending" (needs
   // a file update + a service action) when either its content or the path used
-  // by the service differs from the desired state. This rule is the same for
-  // both domains, so re-committing an unchanged config is a true no-op.
+  // by the service differs from the desired state. Re-committing an unchanged
+  // config is therefore a true no-op.
   struct Pending {
     ConfigDomain domain;
     std::string staged;
@@ -1298,6 +1321,14 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
   // Path discovery may have added metadata while examining staged domains.
   saveMetadata();
 
+<<<<<<< HEAD
+=======
+  // Decide up front how service actions will be applied (live agent over
+  // thrift, or systemd-only if the agent is down), before any file is touched.
+  // A remote, unreachable agent throws here with nothing to undo.
+  prepareServiceActions(actions, hostInfo);
+
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
   // Write the metadata file alongside the config revision (required for
   // rollback). Use folly::writeFileAtomic rather than fs::copy_file so we only
   // write content without fchmod()ing a differently-owned destination (EPERM).
@@ -1555,8 +1586,27 @@ std::string ConfigSession::rollback(
     const std::string& commitSha) {
   createDir(getCliConfigDir());
 
+<<<<<<< HEAD
   // Resolve the commit SHA (in case it's a short SHA or ref)
   std::string resolvedSha = git_->resolveRef(commitSha);
+=======
+  std::string resolvedSha;
+  if (commitSha.empty()) {
+    // No revision given: roll back to the previous commit, found via the
+    // metadata file's history. The metadata (cli/cli_metadata.json) is
+    // committed by every config commit, whichever service it changes, so
+    // its log is the one that never skips a commit.
+    auto commits = git_->log(getSystemMetadataPath(), 2);
+    if (commits.size() < 2) {
+      throw std::runtime_error(
+          "Cannot rollback: no previous revision available in Git history");
+    }
+    resolvedSha = commits[1].sha1;
+  } else {
+    // Resolve the commit SHA (in case it's a short SHA or ref)
+    resolvedSha = git_->resolveRef(commitSha);
+  }
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
 
   // Read the target metadata; this is present in every commit, so it also
   // validates the revision (a bad ref throws here and propagates).
@@ -1651,6 +1701,14 @@ std::string ConfigSession::rollback(
             ex.what()));
   }
 
+<<<<<<< HEAD
+=======
+  // Decide up front how service actions will be applied (live agent over
+  // thrift, or systemd-only if the agent is down), before any file is touched.
+  // A remote, unreachable agent throws here with nothing to undo.
+  prepareServiceActions(actions, hostInfo);
+
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
   // Apply the rolled-back config. Any metadata, filesystem, service, or Git
   // failure restores the captured pre-rollback state.
   std::string newCommitSha;
@@ -1737,9 +1795,8 @@ std::string ConfigSession::rollback(
     base_ = newCommitSha;
 
     // Only re-seed a session file that already exists, and seed each domain
-    // from its own rolled-back data. Unconditionally writing the agent session
-    // file would materialize a phantom agent session after a BGP-only rollback
-    // (and leave the BGP session file stale); keep the two domains symmetric.
+    // from its own rolled-back data. Writing a session file that was not
+    // there would create a phantom session for a domain the user never edited.
     for (const auto& dr : doms) {
       if (!fs::exists(dr.domain.sessionPath)) {
         continue;

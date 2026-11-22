@@ -15,9 +15,18 @@
 #include <string>
 #include <string_view>
 #include <vector>
+<<<<<<< HEAD
 
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
+=======
+// The agent config is included in full, unlike the BGP config: nearly every
+// includer calls getAgentConfig() and needs the complete type.
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
+#include "fboss/cli/fboss2/session/ConfigDomain.h"
+#include "fboss/cli/fboss2/session/ConfigDomainRegistry.h"
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
 #include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
@@ -38,9 +47,10 @@ class ConfigFileManager;
  * ConfigSession manages configuration editing sessions for the fboss2 CLI.
  *
  * OVERVIEW:
- * ConfigSession provides a session-based workflow for editing FBOSS agent
- * configuration. It maintains a session file that can be edited and then
- * atomically committed to the system configuration with Git version control.
+ * ConfigSession provides a session-based workflow for editing the config of
+ * FBOSS services (agent, BGP). It maintains one session file per service
+ * that can be edited and then atomically committed to the system
+ * configuration with Git version control.
  *
  * SINGLETON PATTERN:
  * ConfigSession is typically accessed via getInstance(), which currently
@@ -178,6 +188,11 @@ class ConfigSession {
   // (agent first). Public so `config session diff` can share the same list.
   std::vector<ConfigDomain> configDomains() const;
 
+  // What applying this level means for the service, e.g. "warmboot" for the
+  // agent or "restart" for bgpd.
+  std::string actionName(cli::ServiceType service, cli::ConfigActionLevel level)
+      const;
+
   // Staged content for a domain, or nullopt if no session edit is staged.
   // Throws if the session file exists but cannot be read. Public so `config
   // session diff` shares the same "is it staged + its content" primitive that
@@ -299,17 +314,19 @@ class ConfigSession {
   const std::vector<std::string>& getCommands() const;
 
  protected:
-  // Constructor for testing with custom paths
+  // Constructor for testing with custom paths and caller-supplied config
+  // domains.
   ConfigSession(
       std::string sessionConfigDir,
       std::string systemConfigDir,
-      SessionInit init = SessionInit::CreateIfAbsent);
+      ConfigDomainRegistry domains,
+      SessionInit init);
 
-  // Constructor for testing with custom paths and mock FbossServiceUtil
+  // As above, but does not initialize the session.
   ConfigSession(
       std::string sessionConfigDir,
       std::string systemConfigDir,
-      std::unique_ptr<FbossServiceUtil> fbossServiceUtil);
+      ConfigDomainRegistry domains);
 
   // Set the singleton instance (for testing only)
   static void setInstance(std::unique_ptr<ConfigSession> instance);
@@ -324,18 +341,20 @@ class ConfigSession {
   virtual std::string queryLocalServiceConfigPath(
       cli::ServiceType service) const;
 
-  // Apply actions (restart or reload) to all services based on their action
-  // levels. For the restart levels, restarts the service. For HITLESS, reloads
-  // the config.
+  // Apply each service's action through its config domain: a restart for the
+  // restart levels, a reload for HITLESS.
   // Returns a map of service type to list of actual systemd service names.
   std::map<cli::ServiceType, std::vector<std::string>> applyServiceActions(
       const std::map<cli::ServiceType, cli::ConfigActionLevel>& actions,
       const HostInfo& hostInfo);
 
+<<<<<<< HEAD
  protected:
   // Service orchestration for systemd operations
   std::unique_ptr<FbossServiceUtil> fbossServiceUtil_;
 
+=======
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
  private:
   std::string sessionConfigDir_; // Typically ~/.fboss2
   std::string systemConfigDir_; // Typically /etc/coop
@@ -450,7 +469,12 @@ class ConfigSession {
   // Initialize the Git repository if needed
   void initializeGit();
 
-  bool fbossServiceUtilHasAgentState_{false};
+  // Lets each domain with an action decide how it will reach its service.
+  // commit()/rollback() call this before touching any file, so an unreachable
+  // remote agent fails with nothing to undo.
+  void prepareServiceActions(
+      const std::map<cli::ServiceType, cli::ConfigActionLevel>& actions,
+      const HostInfo& hostInfo);
 };
 
 } // namespace facebook::fboss

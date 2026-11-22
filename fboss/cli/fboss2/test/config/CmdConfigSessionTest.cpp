@@ -15,9 +15,10 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include "fboss/cli/fboss2/test/TestableConfigSession.h"
-#include "fboss/cli/fboss2/test/config/MockFbossServiceUtil.h"
+#include "fboss/cli/fboss2/test/config/MockServiceControllers.h"
 #include "fboss/cli/fboss2/test/config/MockSystemdInterface.h"
 
 namespace fs = std::filesystem;
@@ -48,11 +49,56 @@ class ConfigSessionTestFixture : public CmdConfigTestBase {
   }
 })") {}
 
+<<<<<<< HEAD
+=======
+  // Commit "First version", then edit the promoted agent.conf behind git's
+  // back -- what a hand edit plus `config reload` leaves behind. Returns the
+  // first commit's sha; the live file now differs from HEAD.
+  std::string commitThenDriftLiveConfig() {
+    fs::path sessionDir = getTestHomeDir() / ".fboss2";
+    fs::path cliConfigPath = getTestEtcDir() / "coop" / "cli" / "agent.conf";
+    std::string sha;
+    {
+      TestableConfigSession session(
+          sessionDir.string(), (getTestEtcDir() / "coop").string());
+      session.setCommandLine(
+          "config interface eth1/1/1 description First version");
+      (*session.getAgentConfig().sw()->ports())[0].description() =
+          "First version";
+      session.saveConfig(
+          cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+      sha = session.commit(localhost()).commitSha;
+    }
+    std::string drifted = readFile(cliConfigPath);
+    auto pos = drifted.find("First version");
+    EXPECT_NE(pos, std::string::npos);
+    drifted.replace(pos, std::string("First version").size(), "Hand edited");
+    EXPECT_TRUE(folly::writeFile(drifted, cliConfigPath.c_str()));
+    return sha;
+  }
+
+  // A session whose one rollback must coldboot the agent (the level a --force
+  // snapshot records); a reload or any other restart fails the test.
+  std::unique_ptr<TestableConfigSession> makeColdbootSession() {
+    auto mock =
+        std::make_unique<::testing::StrictMock<MockAgentServiceController>>();
+    EXPECT_CALL(
+        *mock, restart(cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART))
+        .Times(1);
+    EXPECT_CALL(*mock, isAgentConfigured(::testing::_))
+        .WillOnce(::testing::Return(true));
+    return std::make_unique<TestableConfigSession>(
+        (getTestHomeDir() / ".fboss2").string(),
+        (getTestEtcDir() / "coop").string(),
+        std::move(mock));
+  }
+
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
   std::unique_ptr<TestableConfigSession> makeStrictSession() {
     return std::make_unique<TestableConfigSession>(
         (getTestHomeDir() / ".fboss2").string(),
         (getTestEtcDir() / "coop").string(),
-        std::make_unique<::testing::StrictMock<MockFbossServiceUtil>>());
+        std::make_unique<::testing::StrictMock<MockAgentServiceController>>());
   }
 
   void useClassicBgpSystemd(TestableConfigSession& session) {
@@ -67,10 +113,10 @@ class ConfigSessionTestFixture : public CmdConfigTestBase {
   }
 
   std::string commitDescription(const std::string& description) {
-    auto mock = std::make_unique<::testing::StrictMock<MockFbossServiceUtil>>();
+    auto mock =
+        std::make_unique<::testing::StrictMock<MockAgentServiceController>>();
     auto* mockPtr = mock.get();
-    EXPECT_CALL(*mockPtr, reloadConfig(cli::ServiceType::AGENT, ::testing::_))
-        .Times(1);
+    EXPECT_CALL(*mockPtr, reloadConfig(::testing::_)).Times(1);
     TestableConfigSession session(
         (getTestHomeDir() / ".fboss2").string(),
         (getTestEtcDir() / "coop").string(),
@@ -1754,6 +1800,115 @@ TEST_F(ConfigSessionTestFixture, lazyBgpSessionStartsFromCurrentHead) {
   EXPECT_FALSE(fs::exists(sessionDir2 / "agent.conf"));
 }
 
+<<<<<<< HEAD
+=======
+// A rebase that merges the BGP domain reloads the in-memory BGP config at
+// once: the next read sees the other session's change without a reload.
+TEST_F(ConfigSessionTestFixture, rebaseReloadsMergedBgpConfig) {
+  const std::string coop = (getTestEtcDir() / "coop").string();
+  // A common base for the three-way merge.
+  ASSERT_TRUE(
+      folly::writeFile(
+          std::string(R"({"router_id": "0.0.0.0", "hold_time": 30})"),
+          (getTestEtcDir() / "coop" / "bgpcpp.conf").c_str()));
+  {
+    TestableConfigSession init(
+        (getTestHomeDir() / ".fboss2").string(),
+        coop,
+        ConfigSession::SessionInit::ReadOnly);
+    ASSERT_TRUE(init.initializeHistory().has_value());
+  }
+  TestableConfigSession session1(
+      (getTestHomeDir() / ".fboss2_user1").string(), coop);
+  TestableConfigSession session2(
+      (getTestHomeDir() / ".fboss2_user2").string(), coop);
+  useClassicBgpSystemd(session1);
+  useClassicBgpSystemd(session2);
+
+  // Both sessions load the BGP config from the same base.
+  session1.getBgpConfig();
+  session2.getBgpConfig();
+
+  session1.getBgpConfig().router_id() = "1.1.1.1";
+  session1.setCommandLine("config protocol bgp global router-id 1.1.1.1");
+  session1.saveBgpConfig();
+  ASSERT_FALSE(session1.commit(localhost()).commitSha.empty());
+
+  session2.getBgpConfig().hold_time() = 99;
+  session2.setCommandLine("config protocol bgp global hold-time 99");
+  session2.saveBgpConfig();
+  EXPECT_THROW(session2.commit(localhost()), std::runtime_error);
+
+  session2.rebase();
+  // The const accessor does not load: it throws unless rebase() already did.
+  const auto& merged = std::as_const(session2).getBgpConfig();
+  EXPECT_EQ(*merged.router_id(), "1.1.1.1");
+  EXPECT_EQ(*merged.hold_time(), 99);
+}
+
+// An unreachable remote agent is rejected in prepare(), before commit()
+// writes anything to the system config.
+TEST_F(
+    ConfigSessionTestFixture,
+    commitRejectsUnreachableRemoteAgentBeforeWriting) {
+  const fs::path cliConfigPath = getTestEtcDir() / "coop" / "cli/agent.conf";
+  TestableConfigSession session(
+      (getTestHomeDir() / ".fboss2").string(),
+      (getTestEtcDir() / "coop").string());
+  session.setAgentUnreachable(true);
+  session.setCommandLine("config interface eth1/1/1 description remote");
+  (*session.getAgentConfig().sw()->ports())[0].description() = "remote";
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+
+  const std::string before = readFile(cliConfigPath);
+  const std::string headBefore = session.getGit().getHead();
+  const HostInfo remote("rsw001", "rsw001-oob", folly::IPAddress("10.1.2.3"));
+  EXPECT_THROW(session.commit(remote), std::runtime_error);
+
+  EXPECT_EQ(readFile(cliConfigPath), before);
+  EXPECT_EQ(session.getGit().getHead(), headBefore);
+}
+
+// bgpd cannot reload its config, so a HITLESS level for BGP is rejected in
+// prepare(), before commit() writes anything to the system config or
+// restarts anything.
+TEST_F(ConfigSessionTestFixture, commitRejectsHitlessBgpBeforeWriting) {
+  const fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  const fs::path bgpSys = getTestEtcDir() / "coop" / "bgpcpp" / "bgpcpp.conf";
+  TestableConfigSession session(
+      sessionDir.string(), (getTestEtcDir() / "coop").string());
+  // Any attempt to restart bgpd would go through this mock and fail the test.
+  session.setMockSystemdFactory([] {
+    return std::make_unique<::testing::StrictMock<MockSystemdInterface>>();
+  });
+  session.getBgpConfig().router_id() = "1.1.1.1";
+  session.setCommandLine("config protocol bgp global router-id 1.1.1.1");
+  session.saveConfig(cli::ServiceType::BGP, cli::ConfigActionLevel::HITLESS);
+
+  // Loading the BGP config established its baseline, so compare against the
+  // state after staging.
+  const bool existedBefore = fs::exists(bgpSys);
+  const std::string before = existedBefore ? readFile(bgpSys) : "";
+  const std::string headBefore = session.getGit().getHead();
+
+  try {
+    session.commit(localhost());
+    FAIL() << "commit() accepted a HITLESS level for BGP";
+  } catch (const std::runtime_error& ex) {
+    EXPECT_THAT(
+        ex.what(), ::testing::HasSubstr("does not support config reload"));
+  }
+
+  EXPECT_EQ(fs::exists(bgpSys), existedBefore);
+  if (existedBefore) {
+    EXPECT_EQ(readFile(bgpSys), before);
+  }
+  EXPECT_EQ(session.getGit().getHead(), headBefore);
+  // The staged change is kept so the user can fix the level and retry.
+  EXPECT_TRUE(fs::exists(sessionDir / "bgp_config.json"));
+}
+
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
 // Rolling back to an earlier commit must restore the BGP system config and
 // restart bgpd (not just the agent config).
 TEST_F(ConfigSessionTestFixture, rollbackBgpConfig) {
@@ -1955,8 +2110,9 @@ TEST_F(ConfigSessionTestFixture, noArgRollbackReachesBaseline) {
 TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
   fs::path sessionDir = getTestHomeDir() / ".fboss2";
 
-  auto makeSession = [&](MockFbossServiceUtil*& mockOut) {
-    auto mock = std::make_unique<::testing::StrictMock<MockFbossServiceUtil>>();
+  auto makeSession = [&](MockAgentServiceController*& mockOut) {
+    auto mock =
+        std::make_unique<::testing::StrictMock<MockAgentServiceController>>();
     mockOut = mock.get();
     return std::make_unique<TestableConfigSession>(
         sessionDir.string(),
@@ -1967,10 +2123,9 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
   std::string firstCommitSha;
   // First commit: a HITLESS change (e.g. a description edit).
   {
-    MockFbossServiceUtil* mock = nullptr;
+    MockAgentServiceController* mock = nullptr;
     auto session = makeSession(mock);
-    EXPECT_CALL(*mock, reloadConfig(cli::ServiceType::AGENT, ::testing::_))
-        .Times(1);
+    EXPECT_CALL(*mock, reloadConfig(::testing::_)).Times(1);
     session->setCommandLine(
         "config interface eth1/1/1 description First version");
     (*session->getAgentConfig().sw()->ports())[0].description() =
@@ -1984,12 +2139,9 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
   // Second commit: a change that requires an agent warmboot, like
   // `config interface eth1/1/1 switchport access vlan 3000` does.
   {
-    MockFbossServiceUtil* mock = nullptr;
+    MockAgentServiceController* mock = nullptr;
     auto session = makeSession(mock);
-    EXPECT_CALL(
-        *mock,
-        restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+    EXPECT_CALL(*mock, restart(cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     EXPECT_CALL(*mock, isAgentConfigured(::testing::_))
         .WillOnce(::testing::Return(true));
@@ -2006,12 +2158,9 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
   // must warmboot-restart the agent. reloadConfig() must NOT be called (the
   // StrictMock enforces this).
   {
-    MockFbossServiceUtil* mock = nullptr;
+    MockAgentServiceController* mock = nullptr;
     auto session = makeSession(mock);
-    EXPECT_CALL(
-        *mock,
-        restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+    EXPECT_CALL(*mock, restart(cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     EXPECT_CALL(*mock, isAgentConfigured(::testing::_))
         .WillOnce(::testing::Return(true));
@@ -2025,13 +2174,10 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
   // applied.
   std::string headBeforeSecondRollback;
   {
-    MockFbossServiceUtil* mock = nullptr;
+    MockAgentServiceController* mock = nullptr;
     auto session = makeSession(mock);
     headBeforeSecondRollback = session->getGit().getHead();
-    EXPECT_CALL(
-        *mock,
-        restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+    EXPECT_CALL(*mock, restart(cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     EXPECT_CALL(*mock, isAgentConfigured(::testing::_))
         .WillOnce(::testing::Return(true));

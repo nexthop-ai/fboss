@@ -1398,12 +1398,20 @@ cpp_library(
         "commands/delete/tunnel/srv6/TunnelSrv6DeleteUtils.cpp",
         "commands/delete/tunnel/srv6/decap/CmdDeleteTunnelSrv6Decap.cpp",
         "commands/delete/tunnel/srv6/encap/CmdDeleteTunnelSrv6Encap.cpp",
+<<<<<<< HEAD
         "commands/delete/vlan/CmdDeleteVlan.cpp",
+=======
+        "session/AgentConfigDomain.cpp",
+        "session/AgentServiceController.cpp",
+        "session/BgpConfigDomain.cpp",
+        "session/ConfigDomainRegistry.cpp",
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
         "session/ConfigFileManager.cpp",
         "session/ConfigSession.cpp",
-        "session/FbossServiceUtil.cpp",
         "session/Git.cpp",
+        "session/RestartOnlyServiceController.cpp",
         "session/SystemdInterface.cpp",
+        "session/SystemdSequencer.cpp",
         "utils/InterfaceList.cpp",
     ],
     headers = [
@@ -1581,12 +1589,29 @@ cpp_library(
         "commands/delete/tunnel/srv6/TunnelSrv6DeleteUtils.h",
         "commands/delete/tunnel/srv6/decap/CmdDeleteTunnelSrv6Decap.h",
         "commands/delete/tunnel/srv6/encap/CmdDeleteTunnelSrv6Encap.h",
+<<<<<<< HEAD
         "commands/delete/vlan/CmdDeleteVlan.h",
+=======
+        "session/AgentConfigDomain.h",
+        "session/AgentServiceController.h",
+        "session/BgpConfigDomain.h",
+        "session/BgpServiceController.h",
+        "session/ConfigDomain.h",
+        "session/ConfigDomainRegistry.h",
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
         "session/ConfigFileManager.h",
         "session/ConfigSession.h",
-        "session/FbossServiceUtil.h",
         "session/Git.h",
+        "session/RestartOnlyConfigDomain-defs.h",
+        "session/RestartOnlyConfigDomain.h",
+        "session/RestartOnlyServiceController.h",
         "session/SystemdInterface.h",
+<<<<<<< HEAD
+=======
+        "session/SystemdSequencer.h",
+        "session/TypedConfigDomain-defs.h",
+        "session/TypedConfigDomain.h",
+>>>>>>> 029458680e (NOS-23962: [fboss2] Give each config domain its own service controller (3/6) (#3081))
         "utils/InterfaceList.h",
     ],
     deps = [

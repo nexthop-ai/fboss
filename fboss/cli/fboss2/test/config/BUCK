@@ -93,9 +93,10 @@ cpp_unittest(
         "CmdDeleteVlanTest.cpp",
         "ConfigFileManagerTest.cpp",
         "ConfigSessionSystemdTest.cpp",
+        "SystemdSequencerTest.cpp",
     ],
     headers = [
-        "MockFbossServiceUtil.h",
+        "MockServiceControllers.h",
         "MockSystemdInterface.h",
     ],
     network_access = network_access_utils.all(),
