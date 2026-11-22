@@ -91,6 +91,19 @@ class CmdConfigInterfaceTestFixture : public CmdConfigTestBase {
   }
 })") {}
 
+<<<<<<< HEAD
+=======
+  // Makes eth1/1/1 a routed port. The port then has no L3 interface.
+  void makeRoutedPortWithoutInterface() {
+    CmdConfigInterface().queryClient(
+        localhost(), InterfacesConfig({"eth1/1/1", "type", "routed-port"}));
+  }
+
+  cfg::SwitchConfig& swConfig() {
+    return *ConfigSession::getInstance().getAgentConfig().sw();
+  }
+
+>>>>>>> 6b4d04b1fa (NOS-23962: [fboss2] Move the port map out of ConfigSession (1/6) (#3079))
   void SetUp() override {
     CmdConfigTestBase::SetUp();
     setupProfileSupportMocks();
@@ -1605,6 +1618,162 @@ TEST_F(
 }
 
 // ============================================================================
+<<<<<<< HEAD
+=======
+// Attributes that need an L3 interface (NOS-17479)
+// ============================================================================
+
+// A routed port has no L3 interface. Each command must fail and write nothing.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    L3AttributeOnPortWithoutInterfaceIsRefused) {
+  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 type routed-port");
+  makeRoutedPortWithoutInterface();
+  const auto before = swConfig();
+  for (const std::vector<std::string>& args :
+       std::vector<std::vector<std::string>>{
+           {"eth1/1/1", "ip-address", "10.0.0.1/31"},
+           {"eth1/1/1", "ipv6-address", "cafe::1/127"},
+           {"eth1/1/1", "mtu", "9000"},
+           {"eth1/1/1", "name", "uplink_1"}}) {
+    const std::string& attr = args[1];
+    try {
+      CmdConfigInterface().queryClient(localhost(), InterfacesConfig(args));
+      FAIL() << "Expected std::invalid_argument for " << attr;
+    } catch (const std::invalid_argument& e) {
+      EXPECT_EQ(
+          std::string(e.what()),
+          "No L3 interface is mapped to port(s): eth1/1/1. Set '" + attr +
+              "' on the L3 interface, by its interface ID.");
+    }
+    EXPECT_TRUE(before == swConfig());
+  }
+}
+
+// One port with an interface, one without. The command fails, names the bad
+// port, and does not write the good port.
+TEST_F(CmdConfigInterfaceTestFixture, MixedPortListWritesNothing) {
+  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 type routed-port");
+  makeRoutedPortWithoutInterface();
+  const auto before = swConfig();
+
+  InterfacesConfig config({"eth1/2/1", "eth1/1/1", "mtu", "9000"});
+  try {
+    CmdConfigInterface().queryClient(localhost(), config);
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("eth1/1/1"));
+    EXPECT_THAT(e.what(), Not(HasSubstr("eth1/2/1")));
+  }
+  EXPECT_TRUE(before == swConfig());
+}
+
+// Two ports share VLAN 1, and the VLAN has an interface. The interface is
+// mapped to eth1/2/1 only. The command for eth1/1/1 is refused and writes
+// nothing. The mapped port, and the interface by ID, still write the MTU.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    SharedVlanMemberWithoutInterfaceIsRefused) {
+  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 mtu 9000");
+  (*swConfig().vlanPorts())[1].vlanID() = 1;
+  const auto before = swConfig();
+
+  try {
+    CmdConfigInterface().queryClient(
+        localhost(), InterfacesConfig({"eth1/1/1", "mtu", "9000"}));
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_EQ(
+        std::string(e.what()),
+        "No L3 interface is mapped to port(s): eth1/1/1. "
+        "Set 'mtu' on the L3 interface, by its interface ID.");
+  }
+  EXPECT_TRUE(before == swConfig());
+
+  CmdConfigInterface().queryClient(
+      localhost(), InterfacesConfig({"eth1/2/1", "mtu", "9000"}));
+  EXPECT_EQ(*(*swConfig().interfaces())[0].mtu(), 9000);
+  CmdConfigInterface().queryClient(
+      localhost(), InterfacesConfig({"1", "mtu", "9100"}));
+  EXPECT_EQ(*(*swConfig().interfaces())[0].mtu(), 9100);
+}
+
+// A routed LAG binds its interface through aggregatePortID. Its member has no
+// VLAN and no mapped interface, so the command is refused.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    RoutedLagMemberWithoutInterfaceIsRefused) {
+  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 mtu 9000");
+  auto& vlanPorts = *swConfig().vlanPorts();
+  vlanPorts.erase(vlanPorts.begin());
+  cfg::AggregatePort lag;
+  lag.key() = 100;
+  lag.name() = "Port-Channel100";
+  lag.memberPorts()->emplace_back();
+  lag.memberPorts()->back().memberPortID() = 1;
+  swConfig().aggregatePorts()->push_back(lag);
+  (*swConfig().interfaces())[2].aggregatePortID() = 100;
+  const auto before = swConfig();
+
+  try {
+    CmdConfigInterface().queryClient(
+        localhost(), InterfacesConfig({"eth1/1/1", "mtu", "9000"}));
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_EQ(
+        std::string(e.what()),
+        "No L3 interface is mapped to port(s): eth1/1/1. "
+        "Set 'mtu' on the L3 interface, by its interface ID.");
+  }
+  EXPECT_TRUE(before == swConfig());
+}
+
+// The CLI finds the interface of the port before the type step. The address
+// would go to the old VLAN interface, so the command is refused.
+TEST_F(CmdConfigInterfaceTestFixture, TypeRoutedPortWithIpAddressIsRefused) {
+  setupTestableConfigSession(
+      cmdPrefix_, "eth1/1/1 type routed-port ip-address 10.0.0.1/31");
+  const auto before = swConfig();
+  for (const std::string& type :
+       std::vector<std::string>{"routed-port", "ROUTED-PORT"}) {
+    InterfacesConfig config(
+        {"eth1/1/1", "type", type, "ip-address", "10.0.0.1/31"});
+    try {
+      CmdConfigInterface().queryClient(localhost(), config);
+      FAIL() << "Expected std::invalid_argument for type " << type;
+    } catch (const std::invalid_argument& e) {
+      EXPECT_EQ(
+          std::string(e.what()),
+          "Cannot combine 'type routed-port' with 'ip-address' in one "
+          "command.");
+    }
+    EXPECT_TRUE(before == swConfig());
+  }
+}
+
+// `type` has no effect on a loopback, but the check runs before any target is
+// inspected. The command is refused with a message that is true for it.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    TypeRoutedPortWithMtuOnLoopbackIsRefused) {
+  setupTestableConfigSession(cmdPrefix_, "loopback0 type routed-port mtu 9000");
+  const auto before = swConfig();
+
+  try {
+    CmdConfigInterface().queryClient(
+        localhost(),
+        InterfacesConfig({"loopback0", "type", "routed-port", "mtu", "9000"}));
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_EQ(
+        std::string(e.what()),
+        "Cannot combine 'type routed-port' with 'mtu' in one command.");
+  }
+  EXPECT_TRUE(before == swConfig());
+}
+
+// ============================================================================
+>>>>>>> 6b4d04b1fa (NOS-23962: [fboss2] Move the port map out of ConfigSession (1/6) (#3079))
 // shutdown / no-shutdown Tests (NOS-6133)
 // ============================================================================
 

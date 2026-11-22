@@ -38,7 +38,23 @@ class FbossServiceUtil {
   FbossServiceUtil(
       std::vector<int> switchIndexes,
       bool multiSwitch,
+<<<<<<< HEAD
       std::unique_ptr<SystemdInterface> systemd);
+=======
+      std::unique_ptr<SystemdInterface> systemd,
+      AgentDirectoryUtil dirUtil = AgentDirectoryUtil());
+
+  // Offline constructor for when the agent cannot be reached over thrift
+  // (e.g. it is crash-looping on a bad config): derives the mode and the
+  // hw_agent instances from what systemd knows instead of asking the agent.
+  // Split mode if any fboss_hw_agent@<N> unit exists (or fboss_sw_agent is
+  // enabled), monolithic if wedge_agent is enabled; throws if neither can be
+  // established. The returned object treats the agent as unreachable, so
+  // reloadConfig() applies changes with a restart instead of a thrift call.
+  static std::unique_ptr<FbossServiceUtil> fromSystemd(
+      std::unique_ptr<SystemdInterface> systemd,
+      AgentDirectoryUtil dirUtil = AgentDirectoryUtil());
+>>>>>>> 6b4d04b1fa (NOS-23962: [fboss2] Move the port map out of ConfigSession (1/6) (#3079))
 
   virtual ~FbossServiceUtil() = default;
 
@@ -55,21 +71,21 @@ class FbossServiceUtil {
       int maxWaitSeconds = 300,
       int pollIntervalMs = 1000);
 
-  virtual bool isAgentConfigured(const HostInfo& hostInfo);
-
   // Reload config for a service without restart (for HITLESS changes).
   // Calls sync_reloadConfig() on the primary service (sw_agent in split mode,
+<<<<<<< HEAD
   // wedge_agent in monolithic mode).
   // Returns the list of actual service names that were reloaded.
+=======
+  // wedge_agent in monolithic mode). If the agent was not reachable when this
+  // object was built (see fromSystemd()), a hitless reload is impossible, so
+  // this instead restarts the agent services (SERVICE_RESTART, i.e. a
+  // warmboot) and returns those names. Returns the list of actual service
+  // names that were reloaded.
+>>>>>>> 6b4d04b1fa (NOS-23962: [fboss2] Move the port map out of ConfigSession (1/6) (#3079))
   virtual std::vector<std::string> reloadConfig(
       cli::ServiceType service,
       const HostInfo& hostInfo);
-
-  // Returns true if running in split mode (multi_switch flag was set).
-  virtual bool isSplitMode() const;
-
-  // Returns the systemd service name for a given service type.
-  static std::string getServiceName(cli::ServiceType service);
 
   // Human-readable restart kind for a (service, level) pair, e.g. the agent
   // restarts by "warmboot" or "coldboot", bgpd (no warmboot) by "restart".
@@ -77,7 +93,29 @@ class FbossServiceUtil {
       cli::ServiceType service,
       cli::ConfigActionLevel level);
 
+ protected:
+  // One poll of waitForAgentConfigured(); virtual so tests can stand in for
+  // the agent.
+  virtual bool isAgentConfigured(const HostInfo& hostInfo);
+
+  // Returns true if running in split mode (multi_switch flag was set).
+  virtual bool isSplitMode() const;
+
+<<<<<<< HEAD
+=======
+  // Given services that have just been stopped, returns those that left no
+  // warm boot state behind and will therefore cold boot on the next start.
+  // The usual cause is systemd SIGKILLing a service for exceeding
+  // TimeoutStopSec before its graceful exit finished. Services outside the
+  // agent (e.g. bgpd) never warm boot and are never reported.
+  std::vector<std::string> findServicesMissingWarmBootState(
+      const std::vector<std::string>& services) const;
+
  private:
+>>>>>>> 6b4d04b1fa (NOS-23962: [fboss2] Move the port map out of ConfigSession (1/6) (#3079))
+  // Returns the systemd service name for a given service type.
+  static std::string getServiceName(cli::ServiceType service);
+
   std::unique_ptr<SystemdInterface> systemd_;
   std::vector<int> switchIndexes_;
   bool multiSwitch_;
