@@ -141,12 +141,15 @@ class ConfigSession {
   // Discovery is lazy and falls back to the last committed path for recovery.
   std::string getCurrentConfigPath(cli::ServiceType service) const;
 
+<<<<<<< HEAD
   // Get the path to the CLI config directory (/etc/coop/cli)
   std::string getCliConfigDir() const;
 
   // Get the path to the actual CLI config file (/etc/coop/cli/agent.conf)
   std::string getCliConfigPath() const;
 
+=======
+>>>>>>> 65802d536e (NOS-23962: [fboss2] List every service's commits in config history (5/6) (#3083))
   // Result of a commit operation
   struct CommitResult {
     std::string commitSha; // The git commit SHA of the committed config
@@ -266,12 +269,25 @@ class ConfigSession {
   // saveConfig() for the agent.
   void saveBgpConfig();
 
+<<<<<<< HEAD
   // ~/.fboss2/bgp_config.json (staged BGP edits)
   std::string getBgpSessionConfigPath() const;
   // /etc/coop/bgpcpp/bgpcpp.conf (CLI-owned, Git-versioned desired config)
   std::string getBgpSystemConfigPath() const;
   // Whether a BGP session is staged (~/.fboss2/bgp_config.json exists)
   bool bgpSessionExists() const;
+=======
+  // Commits that changed any service's config or the commit metadata, most
+  // recent first. This covers every revision rollback() walks.
+  std::vector<GitCommit> history(size_t limit = 0) const;
+  std::string head() const;
+  // Resolves a ref or abbreviated SHA to a full SHA. Throws if it is unknown.
+  std::string resolveRevision(const std::string& ref) const;
+  // Throws if the path does not exist at the revision.
+  std::string contentAt(
+      const std::string& revision,
+      const std::string& gitRelPath) const;
+>>>>>>> 65802d536e (NOS-23962: [fboss2] List every service's commits in config history (5/6) (#3083))
 
   // Get the Git instance for this config session
   // Used to access the Git repository for history, rollback, etc.

@@ -45,8 +45,12 @@ CmdConfigHistoryTraits::RetType CmdConfigHistory::queryClient(
       ConfigSession::getInstance(ConfigSession::SessionInit::ReadOnly);
   auto& git = session.getGit();
 
+<<<<<<< HEAD
   // Get the commit history from Git for the CLI config file
   auto commits = git.log(session.getCliConfigPath());
+=======
+  auto commits = session.history();
+>>>>>>> 65802d536e (NOS-23962: [fboss2] List every service's commits in config history (5/6) (#3083))
 
   if (commits.empty()) {
     return "No config revisions found in Git history";
