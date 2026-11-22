@@ -34,8 +34,6 @@ namespace facebook::fboss {
 
 namespace {
 
-using ConfigDomain = ConfigSession::ConfigDomain;
-
 // Read a file, returning empty content (not an error) when it doesn't exist.
 std::string readFileOrEmpty(const std::string& path) {
   std::string content;
@@ -50,7 +48,7 @@ std::string readFileOrEmpty(const std::string& path) {
 // genuinely invalid revision from a domain simply absent there.
 std::pair<std::string, std::string> getRevisionContent(
     const std::string& revision,
-    const ConfigDomain& domain,
+    const ConfigDomainInfo& domain,
     const std::string& validationPath,
     ConfigSession& session,
     Git& git) {
@@ -170,10 +168,15 @@ CmdConfigSessionDiffTraits::RetType CmdConfigSessionDiff::queryClient(
   // difference is how the base content+label is obtained, so share the loop.
   auto diffStagedDomains =
       [&](const std::function<std::pair<std::string, std::string>(
+<<<<<<< HEAD
               const ConfigDomain&)>& getBase) {
+=======
+              const ConfigDomainInfo&)>& getBase,
+          bool baseIsLive) {
+>>>>>>> 3bd4b5e29e (NOS-23962: [fboss2] Put per-service config handling behind ConfigDomain (2/6) (#3080))
         // Read each domain's staged content once via the shared primitive
         // (nullopt == not staged), so we neither re-stat nor re-read files.
-        std::vector<std::pair<ConfigDomain, std::string>> staged;
+        std::vector<std::pair<ConfigDomainInfo, std::string>> staged;
         for (const auto& d : domains) {
           if (auto content = session.readStagedContent(d)) {
             staged.emplace_back(d, std::move(*content));
@@ -197,11 +200,21 @@ CmdConfigSessionDiffTraits::RetType CmdConfigSessionDiff::queryClient(
     if (!session.hasActiveSession()) {
       return "No config session exists. Make a config change first.";
     }
+<<<<<<< HEAD
     return diffStagedDomains([&](const ConfigDomain& d) {
       return std::make_pair(
           readFileOrEmpty(session.getCurrentConfigPath(d.service)),
           std::string("current live config"));
     });
+=======
+    return diffStagedDomains(
+        [&](const ConfigDomainInfo& d) {
+          return std::make_pair(
+              readFileOrEmpty(session.getCurrentConfigPath(d.service)),
+              std::string("current live config"));
+        },
+        true);
+>>>>>>> 3bd4b5e29e (NOS-23962: [fboss2] Put per-service config handling behind ConfigDomain (2/6) (#3080))
   }
 
   // Mode 2: One argument - diff each staged domain's session vs a revision.
@@ -209,9 +222,18 @@ CmdConfigSessionDiffTraits::RetType CmdConfigSessionDiff::queryClient(
     if (!session.hasActiveSession()) {
       return "No config session exists. Make a config change first.";
     }
+<<<<<<< HEAD
     return diffStagedDomains([&](const ConfigDomain& d) {
       return getRevisionContent(revisions[0], d, validationPath, session, git);
     });
+=======
+    return diffStagedDomains(
+        [&](const ConfigDomainInfo& d) {
+          return getRevisionContent(
+              revisions[0], d, validationPath, session, git);
+        },
+        revisions[0] == "current");
+>>>>>>> 3bd4b5e29e (NOS-23962: [fboss2] Put per-service config handling behind ConfigDomain (2/6) (#3080))
   }
 
   // Mode 3: Two arguments - diff between two revisions for each domain that

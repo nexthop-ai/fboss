@@ -1536,16 +1536,30 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/tunnel/srv6/encap/CmdDeleteTunnelSrv6Encap.h
   fboss/cli/fboss2/commands/delete/vlan/CmdDeleteVlan.cpp
   fboss/cli/fboss2/commands/delete/vlan/CmdDeleteVlan.h
+  fboss/cli/fboss2/session/AgentConfigDomain.cpp
+  fboss/cli/fboss2/session/AgentConfigDomain.h
+  fboss/cli/fboss2/session/BgpConfigDomain.cpp
+  fboss/cli/fboss2/session/BgpConfigDomain.h
+  fboss/cli/fboss2/session/ConfigDomain.h
+  fboss/cli/fboss2/session/ConfigDomainRegistry.cpp
+  fboss/cli/fboss2/session/ConfigDomainRegistry.h
   fboss/cli/fboss2/session/ConfigFileManager.cpp
   fboss/cli/fboss2/session/ConfigFileManager.h
-  fboss/cli/fboss2/session/ConfigSession.h
   fboss/cli/fboss2/session/ConfigSession.cpp
-  fboss/cli/fboss2/session/FbossServiceUtil.h
+  fboss/cli/fboss2/session/ConfigSession.h
   fboss/cli/fboss2/session/FbossServiceUtil.cpp
-  fboss/cli/fboss2/session/Git.h
+  fboss/cli/fboss2/session/FbossServiceUtil.h
   fboss/cli/fboss2/session/Git.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/session/SystemdInterface.h
   fboss/cli/fboss2/session/SystemdInterface.cpp
+=======
+  fboss/cli/fboss2/session/Git.h
+  fboss/cli/fboss2/session/SystemdInterface.cpp
+  fboss/cli/fboss2/session/SystemdInterface.h
+  fboss/cli/fboss2/session/TypedConfigDomain-defs.h
+  fboss/cli/fboss2/session/TypedConfigDomain.h
+>>>>>>> 3bd4b5e29e (NOS-23962: [fboss2] Put per-service config handling behind ConfigDomain (2/6) (#3080))
   fboss/cli/fboss2/utils/InterfaceList.cpp
   fboss/cli/fboss2/utils/InterfaceList.h
   fboss/cli/fboss2/CmdListConfig.cpp
