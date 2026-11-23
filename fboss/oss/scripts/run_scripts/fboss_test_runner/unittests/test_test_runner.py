@@ -521,6 +521,43 @@ class TestSimulatorEnv:
         assert "SOC_TARGET_PORT" in runner.env_var
         assert "SOC_TARGET_PORT" not in other.env_var
 
+<<<<<<< HEAD
+=======
+    def test_wait_for_listen(self, runner):
+        with socket.socket() as s:
+            s.bind(("127.0.0.1", 0))
+            port = s.getsockname()[1]
+            assert not runner._wait_for_listen(port, 0)
+            s.listen()
+            assert runner._wait_for_listen(port, 0)
+
+    @pytest.mark.parametrize(
+        "asic, reuse, listening, restarts",
+        [
+            ("th6p", True, True, False),
+            ("th6p", True, False, True),
+            ("th6p", False, True, True),
+            ("j3", True, True, True),
+        ],
+    )
+    def test_restart_bcmsim_reuse(self, runner, asic, reuse, listening, restarts):
+        runner.args = Namespace(reuse_simulator=reuse)
+        with (
+            patch.object(runner, "_wait_for_listen", return_value=listening),
+            patch("subprocess.Popen") as mock_popen,
+            patch("os.remove") as mock_remove,
+            patch("time.sleep"),
+        ):
+            runner._restart_bcmsim(asic)
+        assert mock_popen.called == restarts
+        if restarts:
+            mock_remove.assert_not_called()
+        else:
+            mock_remove.assert_called_once_with(
+                "/dev/shm/fboss/warm_boot/can_warm_boot_0"
+            )
+
+>>>>>>> bacef247d2 (NO-NOS: Add --reuse-simulator to keep a running BCMSIM between tests (#3149))
 
 class TestPrepareConfigForRun:
     """Test that _prepare_config_for_run creates a retained config and

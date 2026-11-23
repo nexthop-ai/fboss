@@ -32,6 +32,7 @@ from fboss_test_runner.constants import (
     OPT_ARG_PROFILE,
     OPT_ARG_QSFP_CONFIG_FILE,
     OPT_ARG_RESULTS_JSON,
+    OPT_ARG_REUSE_SIMULATOR,
     OPT_ARG_SAI_LOGGING,
     OPT_ARG_SAI_REPLAYER_LOGGING,
     OPT_ARG_SAI_REPLAYER_SDK_LOG_LEVEL,
@@ -69,6 +70,13 @@ from fboss_test_runner.runners.utils import (
     load_from_file,
     test_matches_any_regex,
 )
+<<<<<<< HEAD
+=======
+from fboss_test_runner.services.fboss_agent_utils import (
+    agent_can_warm_boot_file_path,
+    FBOSS_AGENT_VOLATILE_STATE_DIR,
+)
+>>>>>>> bacef247d2 (NO-NOS: Add --reuse-simulator to keep a running BCMSIM between tests (#3149))
 from fboss_test_runner.tier_selection import (
     load_test_metadata_rules,
     parse_test_tier,
@@ -335,6 +343,16 @@ class TestRunner(abc.ABC):
             help="Specify ASIC simulator. Options: " + ALL_SIMUALTOR_ASICS_STR,
         )
         sub_parser.add_argument(
+            OPT_ARG_REUSE_SIMULATOR,
+            action="store_true",
+            default=False,
+            help=(
+                "With an XGS --simulator, keep a simulator that is already "
+                "running instead of restarting it before each test. The "
+                "running simulator must model the same ASIC."
+            ),
+        )
+        sub_parser.add_argument(
             "--run-on-reference-board",
             action="store_true",
             help="Modify SAI settings to run on reference board instead of real product",
@@ -586,6 +604,17 @@ class TestRunner(abc.ABC):
         return self._list_tests_to_run(test_filter)
 
     def _restart_bcmsim(self, asic: str) -> None:
+        if (
+            getattr(self.args, "reuse_simulator", False)
+            and asic in XGS_SIMULATOR_ASICS
+            and self._wait_for_listen(int(XGS_SIMULATOR_ENV["SOC_TARGET_PORT"]), 0)
+        ):
+            # The hw agent's cold boot re-initializes the chip, so only the
+            # warm-boot flag has to go.
+            with suppress(FileNotFoundError):
+                os.remove(agent_can_warm_boot_file_path(switch_index=0))
+            print("Reusing the running bcmsim", flush=True)
+            return
         try:
             subprocess.Popen(
                 # avoid warmboot, so as to run test with coldboot init, warmboot shut down
@@ -859,6 +888,10 @@ class TestRunner(abc.ABC):
                 "Warning: --sai_replayer_sdk_log_level is ignored without --sai_replayer_logging"
             )
         simulator = getattr(args, "simulator", None)
+        if getattr(args, "reuse_simulator", False) and (
+            simulator not in XGS_SIMULATOR_ASICS
+        ):
+            print("Warning: --reuse-simulator is ignored without an XGS --simulator")
 
         if sai_replayer_logging:
             if os.path.isdir(sai_replayer_logging) or os.path.isfile(
