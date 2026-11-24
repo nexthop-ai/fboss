@@ -153,6 +153,7 @@
 #include "fboss/cli/fboss2/commands/show/sdk/dump/CmdShowSdkDump.h"
 #include "fboss/cli/fboss2/commands/show/systemport/CmdShowSystemPort.h"
 #include "fboss/cli/fboss2/commands/show/teflow/CmdShowTeFlow.h"
+#include "fboss/cli/fboss2/commands/show/traffic_counter/CmdShowTrafficCounter.h"
 #include "fboss/cli/fboss2/commands/show/transceiver/CmdShowTransceiver.h"
 #include "fboss/cli/fboss2/commands/show/transceiver/loopback/CmdShowTransceiverLoopback.h"
 #include "fboss/cli/fboss2/commands/start/pcap/CmdStartPcap.h"
@@ -807,6 +808,13 @@ const CommandTree& kCommandTree() {
        "Show teflow information",
        commandHandler<CmdShowTeFlow>,
        argTypeHandler<CmdShowTeFlowTraits>},
+
+      {"show",
+       "traffic-counter",
+       "Show named traffic-counter packet/byte totals and rates",
+       commandHandler<CmdShowTrafficCounter>,
+       validFilterHandler<CmdShowTrafficCounter>,
+       argRegistrar<CmdShowTrafficCounterTraits>},
 
       {"show",
        "host",

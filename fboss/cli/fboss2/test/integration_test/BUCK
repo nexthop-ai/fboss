@@ -84,6 +84,11 @@ cpp_binary(
         "ShowConfigRunningAgentTest.cpp",
         "ShowConfigRunningBgpTest.cpp",
         "ShowRouteFilterTest.cpp",
+<<<<<<< HEAD
+=======
+        "ShowTrafficCounterTest.cpp",
+        "ShowVlanTest.cpp",
+>>>>>>> ee5b941d93 (NOS-23492: Add show traffic-counter command (#3075))
         "TunnelIpInIpTest.cpp",
         "//fboss/cli/fboss2:cmd-list-config-impl",
     ],

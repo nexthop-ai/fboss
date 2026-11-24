@@ -227,7 +227,12 @@ cpp_unittest(
         "CmdShowRouteTest.cpp",
         "CmdShowSystemPortTest.cpp",
         "CmdShowTeFlowTest.cpp",
+<<<<<<< HEAD
         "CmdShowTechSupportTest.cpp",
+=======
+        "CmdShowTechSupportTest.cpp",  # bazelify: exclude
+        "CmdShowTrafficCounterTest.cpp",
+>>>>>>> ee5b941d93 (NOS-23492: Add show traffic-counter command (#3075))
         "CmdShowTransceiverLoopbackTest.cpp",
         "CmdShowTransceiverTest.cpp",
         "CmdShowVersionAgentTest.cpp",
@@ -251,6 +256,7 @@ cpp_unittest(
     deps = [
         "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/googletest:gmock",
+        "fbsource//third-party/re2:re2",
         "fbsource//xplat/folly:dynamic",
         "fbsource//xplat/folly:file_util",
         "fbsource//xplat/folly:network_address",
@@ -351,6 +357,7 @@ cpp_unittest(
         "//fboss/cli/fboss2/commands/show/systemport:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/teflow:model-cpp2-serialization",
         "//fboss/cli/fboss2/commands/show/teflow:model-cpp2-types",
+        "//fboss/cli/fboss2/commands/show/traffic_counter:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/transceiver:model-cpp2-serialization",
         "//fboss/cli/fboss2/commands/show/transceiver:model-cpp2-types",
         "//fboss/lib/phy:phy-cpp2-serialization",

@@ -145,8 +145,67 @@ add_executable(fboss2_cmd_test
   fboss/cli/fboss2/test/CmdShowBgpTableSummaryTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpTableTest.cpp
   fboss/cli/fboss2/test/CmdShowConfigTestUtils.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/test/config/CmdConfigTestBase.cpp
   fboss/cli/fboss2/test/config/BgpConfigSessionTest.cpp
+=======
+  fboss/cli/fboss2/test/CmdShowCpuPortTest.cpp
+  fboss/cli/fboss2/test/CmdShowDsfNodesTest.cpp
+  fboss/cli/fboss2/test/CmdShowDsfSubscriptionTest.cpp
+  fboss/cli/fboss2/test/CmdShowEnvironmentFanTest.cpp
+  fboss/cli/fboss2/test/CmdShowExampleTest.cpp
+  fboss/cli/fboss2/test/CmdShowFabricInputBalanceTest.cpp
+  fboss/cli/fboss2/test/CmdShowFabricReachabilityTest.cpp
+  fboss/cli/fboss2/test/CmdShowFabricTest.cpp
+  fboss/cli/fboss2/test/CmdShowFabricTopologyTest.cpp
+  fboss/cli/fboss2/test/CmdShowFlowletTest.cpp
+  fboss/cli/fboss2/test/CmdShowFsdbTest.cpp
+  # fboss/cli/fboss2/test/CmdShowHardwareTest.cpp - excluded (hardware model not built in CMake)
+  fboss/cli/fboss2/test/CmdShowHostTest.cpp
+  fboss/cli/fboss2/test/CmdShowHwAgentStatusTest.cpp
+  fboss/cli/fboss2/test/CmdShowHwObjectTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceCountersFecBerTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceCountersFecHistogramTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceCountersFecUncorrectableTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceCountersQueueTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceCountersTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceErrorsTest.cpp
+  # fboss/cli/fboss2/test/CmdShowInterfaceFlapsTest.cpp - excluded (depends on hardware model not built in CMake)
+  fboss/cli/fboss2/test/CmdShowInterfacePhyTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfacePhymapTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfacePrbsTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceStatusTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceTrafficTest.cpp
+  fboss/cli/fboss2/test/CmdShowInterfaceTransceiverEepromTest.cpp
+  fboss/cli/fboss2/test/CmdShowL2Test.cpp
+  fboss/cli/fboss2/test/CmdShowLldpTest.cpp
+  fboss/cli/fboss2/test/CmdShowMacDetailsTest.cpp
+  fboss/cli/fboss2/test/CmdShowMirrorTest.cpp
+  fboss/cli/fboss2/test/CmdShowMyMacTest.cpp
+  fboss/cli/fboss2/test/CmdShowMySidTest.cpp
+  fboss/cli/fboss2/test/CmdShowNamedNextHopGroupsTest.cpp
+  fboss/cli/fboss2/test/CmdShowNdpTest.cpp
+  fboss/cli/fboss2/test/CmdShowNextHopGroupsTest.cpp
+  fboss/cli/fboss2/test/CmdShowPortTest.cpp
+  fboss/cli/fboss2/test/CmdShowProductDetailsTest.cpp
+  fboss/cli/fboss2/test/CmdShowProductTest.cpp
+  fboss/cli/fboss2/test/CmdShowRebootHistoryTest.cpp
+  fboss/cli/fboss2/test/CmdShowRifTest.cpp
+  fboss/cli/fboss2/test/CmdShowRouteCountersTest.cpp
+  fboss/cli/fboss2/test/CmdShowRouteDetailsTest.cpp
+  fboss/cli/fboss2/test/CmdShowRouteSummaryTest.cpp
+  fboss/cli/fboss2/test/CmdShowRouteTest.cpp
+  fboss/cli/fboss2/test/CmdShowSdkDumpTest.cpp
+  fboss/cli/fboss2/test/CmdShowSystemPortTest.cpp
+  fboss/cli/fboss2/test/CmdShowTeFlowTest.cpp
+  fboss/cli/fboss2/test/CmdShowTrafficCounterTest.cpp
+  fboss/cli/fboss2/test/CmdShowTransceiverLoopbackTest.cpp
+  # fboss/cli/fboss2/test/CmdShowTransceiverTest.cpp - excluded (depends on configerator bgp namespace)
+  # fboss/cli/fboss2/test/CmdShowVersionAgentTest.cpp - excluded (facebook-only command; depends on configerator)
+  fboss/cli/fboss2/test/CmdShowVersionDistroTest.cpp
+  fboss/cli/fboss2/test/CmdShowVlanTest.cpp
+>>>>>>> ee5b941d93 (NOS-23492: Add show traffic-counter command (#3075))
   fboss/cli/fboss2/test/CmdStartPcapTest.cpp
   fboss/cli/fboss2/test/CmdStartPortCableLengthMeasurementTest.cpp
   fboss/cli/fboss2/test/CmdStopPcapTest.cpp

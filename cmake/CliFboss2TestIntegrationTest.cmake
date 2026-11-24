@@ -77,6 +77,12 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ShowConfigRunningAgentTest.cpp
   fboss/cli/fboss2/test/integration_test/ShowConfigRunningBgpTest.cpp
   fboss/cli/fboss2/test/integration_test/ShowRouteFilterTest.cpp
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/test/integration_test/ShowTrafficCounterTest.cpp
+  fboss/cli/fboss2/test/integration_test/ShowVlanTest.cpp
+  fboss/cli/fboss2/test/integration_test/TunnelIpInIpTest.cpp
+>>>>>>> ee5b941d93 (NOS-23492: Add show traffic-counter command (#3075))
 )
 
 target_link_libraries(fboss2_integration_test

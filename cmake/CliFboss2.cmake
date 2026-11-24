@@ -653,6 +653,37 @@ thrift_generate(
 )
 target_include_directories(show_rif PUBLIC ${PROJECT_BINARY_DIR})
 
+<<<<<<< HEAD
+=======
+add_library(show_vlan)
+thrift_generate(
+  show_vlan
+  fboss/cli/fboss2/commands/show/vlan/model.thrift
+  LANGUAGE cpp2
+  OPTIONS
+    json
+  INCLUDE_DIRECTORIES
+    ${PROJECT_SOURCE_DIR}
+    ${THRIFT_INCLUDE_DIR}
+)
+target_include_directories(show_vlan PUBLIC ${PROJECT_BINARY_DIR})
+
+add_library(show_traffic_counter_model)
+thrift_generate(
+  show_traffic_counter_model
+  fboss/cli/fboss2/commands/show/traffic_counter/model.thrift
+  LANGUAGE cpp2
+  OPTIONS
+    json
+  INCLUDE_DIRECTORIES
+    ${PROJECT_SOURCE_DIR}
+    ${THRIFT_INCLUDE_DIR}
+)
+target_include_directories(show_traffic_counter_model
+  PUBLIC ${PROJECT_BINARY_DIR}
+)
+
+>>>>>>> ee5b941d93 (NOS-23492: Add show traffic-counter command (#3075))
 thrift_add_library(
   show_interface_counters_fec_uncorrectable
   fboss/cli/fboss2/commands/show/interface/counters/fec/uncorrectable/model.thrift
@@ -950,6 +981,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/cpuport/CmdShowCpuPort.cpp
   fboss/cli/fboss2/commands/show/teflow/CmdShowTeFlow.h
   fboss/cli/fboss2/commands/show/teflow/CmdShowTeFlow.cpp
+  fboss/cli/fboss2/commands/show/traffic_counter/CmdShowTrafficCounter.h
+  fboss/cli/fboss2/commands/show/traffic_counter/CmdShowTrafficCounter.cpp
   fboss/cli/fboss2/commands/show/transceiver/CmdShowTransceiver.h
   fboss/cli/fboss2/commands/show/transceiver/CmdShowTransceiver.cpp
   fboss/cli/fboss2/commands/show/transceiver/loopback/CmdShowTransceiverLoopback.h
@@ -1154,6 +1187,11 @@ target_link_libraries(fboss2_lib
   show_interface_counters_fec_tail
   show_fabric_topology_model
   show_rif
+<<<<<<< HEAD
+=======
+  show_vlan
+  show_traffic_counter_model
+>>>>>>> ee5b941d93 (NOS-23492: Add show traffic-counter command (#3075))
   show_interface_counters_fec_uncorrectable
   show_interface_transceiver_performancemonitoring
   thrift_service_client
