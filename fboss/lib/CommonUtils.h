@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <algorithm>
+#include <atomic>
 #include <optional>
 
 #include <folly/debugging/exception_tracer/ExceptionTracer.h>
@@ -20,6 +22,14 @@ struct _SoftAssertFail {};
 } // namespace
 
 namespace facebook::fboss {
+// Scales the retry count of WITH_RETRIES_N* for slow targets such as an ASIC
+// simulator, which forwards a few hundred packets per second.
+inline std::atomic<int> gWithRetriesMultiplier{1};
+
+inline int withRetriesMultiplier() {
+  return std::max(1, gWithRetriesMultiplier.load());
+}
+
 /*
  * For tests prefer using WITH_RETRIES and ASSERT_EVENTUALLY_* over this
  * utility to get better logging
@@ -154,14 +164,16 @@ inline int64_t getCumulativeValue(const StatT& stat, bool hasSumSuffix = true) {
 #define WITH_RETRIES_N_TIMED(maxRetries, sleepTime, ...)                \
   {                                                                     \
     int WITH_RETRIES_tries = 0;                                         \
-    while (WITH_RETRIES_tries++ < maxRetries) {                         \
+    const int WITH_RETRIES_max =                                        \
+        (maxRetries) * facebook::fboss::withRetriesMultiplier();        \
+    while (WITH_RETRIES_tries++ < WITH_RETRIES_max) {                   \
       /* Do not sleep on first iteration */                             \
       if (WITH_RETRIES_tries != 1) {                                    \
         std::this_thread::sleep_for(sleepTime);                         \
       }                                                                 \
       /* Only switch to hard test on last retry */                      \
       [[maybe_unused]] bool WITH_RETRIES_softTest =                     \
-          WITH_RETRIES_tries != maxRetries;                             \
+          WITH_RETRIES_tries != WITH_RETRIES_max;                       \
       bool WITH_RETRIES_pass = true;                                    \
       /* _ASSERT_EVENTUALLY and _EXPECT_EVENTUALLY will read            \
        * WITH_RETRIES_softTest to decide how to assert.                 \

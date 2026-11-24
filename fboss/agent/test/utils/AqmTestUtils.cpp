@@ -276,7 +276,9 @@ HwPortStats sendPacketsWithQueueBuildup(
     // Wait for the port to start sending out packets for any leaks from
     // residual credits. Tomahawk3 does not always have residual credits so
     // allow the test to continue after all the retries are exhausted.
-    EXPECT_EVENTUALLY_TRUE(netOutPackets > 0 || retries == kNumRetries);
+    EXPECT_EVENTUALLY_TRUE(
+        netOutPackets > 0 ||
+        retries == kNumRetries * facebook::fboss::withRetriesMultiplier());
     // Check if the number of packets sent out of the switch is less than the
     // number of packets that were sent to it to verify that the queue is built.
     EXPECT_EVENTUALLY_LT(netOutPackets, totalPacketsSent);

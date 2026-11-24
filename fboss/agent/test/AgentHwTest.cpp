@@ -20,6 +20,9 @@
 #include "fboss/agent/test/utils/StatsTestUtils.h"
 #include "fboss/lib/CommonUtils.h"
 
+#include <algorithm>
+#include <cstdlib>
+
 DEFINE_bool(
     list_production_feature,
     false,
@@ -34,6 +37,11 @@ DEFINE_bool(
     enable_sdk_dump_on_fail,
     false,
     "generate sdk debug dump on failure");
+
+DEFINE_int32(
+    sim_retries_multiplier,
+    3,
+    "Multiplier for WITH_RETRIES wait windows when the ASIC is a simulator");
 
 namespace {
 int kArgc;
@@ -83,6 +91,14 @@ void AgentHwTest::SetUp() {
   initInfo.maxRequiredFabricPorts = maxRequiredFabricPorts();
   overrideTestEnsembleInitInfo(initInfo);
 
+  // WITH_RETRIES loops inside ensemble bring-up (port oper-up, hw-switch
+  // connect) must already see the sim multiplier, so set it before the
+  // ensemble is created. BCM sim runs (all platforms, including th3) set
+  // BCM_SIM_PATH; the check after createAgentEnsemble() below can only
+  // raise the multiplier, never lower it.
+  CHECK_GT(FLAGS_sim_retries_multiplier, 0);
+  gWithRetriesMultiplier =
+      std::getenv("BCM_SIM_PATH") ? FLAGS_sim_retries_multiplier : 1;
   agentEnsemble_ = createAgentEnsemble(
       initialConfigFn,
       FLAGS_disable_link_toggler /*disableLinkStateToggler*/,
@@ -93,6 +109,19 @@ void AgentHwTest::SetUp() {
        HwSwitch::FeaturesDesired::LINKSCAN_DESIRED |
        HwSwitch::FeaturesDesired::TAM_EVENT_NOTIFY_DESIRED),
       initInfo);
+  // Keep the env-derived value above unless the ASIC table can raise it
+  // (some ASICs, e.g. Tomahawk3, never override getAsicMode() and report
+  // ASIC_MODE_HW even under BCM_SIM_PATH).
+  const auto asics = agentEnsemble_->getHwAsicTable()->getHwAsics();
+  const bool isSim =
+      std::any_of(asics.begin(), asics.end(), [](const auto& switchAsic) {
+        return switchAsic.second->getAsicMode() ==
+            HwAsic::AsicMode::ASIC_MODE_SIM;
+      });
+  if (isSim) {
+    gWithRetriesMultiplier = FLAGS_sim_retries_multiplier;
+  }
+  XLOG(INFO) << "WITH_RETRIES multiplier: " << withRetriesMultiplier();
   notifyHwAgentsOfTestLifecycleEvent(
       agentEnsemble_.get(), utility::TestLifecycleEvent::AGENT_SETUP_COMPLETE);
 }
@@ -146,6 +175,9 @@ void AgentHwTest::TearDown() {
     agentEnsemble_->getHwDebugDump();
   }
   tearDownAgentEnsemble();
+  // Reset so a later, non-AgentHwTest fixture in the same binary doesn't
+  // inherit this test's multiplier.
+  gWithRetriesMultiplier = 1;
 }
 
 void AgentHwTest::tearDownAgentEnsemble(bool doWarmboot) {
