@@ -39,8 +39,11 @@ void configureAllIpQualifiers(
   bool enableSrcIpQualifier = (asicType != cfg::AsicType::ASIC_TYPE_CHENAB &&
                                asicType != cfg::AsicType::ASIC_TYPE_CHENAB2) &&
       enable;
-  bool enableIpFragQualifier = (asicType != cfg::AsicType::ASIC_TYPE_CHENAB &&
-                                asicType != cfg::AsicType::ASIC_TYPE_CHENAB2) &&
+  bool enableIpFragQualifier =
+      (asicType != cfg::AsicType::ASIC_TYPE_CHENAB &&
+       asicType != cfg::AsicType::ASIC_TYPE_CHENAB2 &&
+       asicType != cfg::AsicType::ASIC_TYPE_QUMRAN4D &&
+       asicType != cfg::AsicType::ASIC_TYPE_JERICHO4) &&
       enable;
   bool enableLookupClass =
       (asicType != cfg::AsicType::ASIC_TYPE_CHENAB &&
@@ -409,6 +412,18 @@ class AgentHwAclQualifierTest : public AgentHwTest {
     return hwAsicForSwitch(switchID)->getAsicVendor();
   }
 
+  // Q4D/J4 place an entry in the IPv6 ACL table only when its ether type is
+  // IPv6, and that table has no DST_MAC.
+  void fitIpv6AclTable(cfg::AclEntry* acl) {
+    auto asicType = getAsicType();
+    if (FLAGS_enable_acl_table_group &&
+        (asicType == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
+         asicType == cfg::AsicType::ASIC_TYPE_JERICHO4)) {
+      acl->etherType() = cfg::EtherType::IPv6;
+      acl->dstMac().reset();
+    }
+  }
+
   // Leaba maps FDB/ROUTE/NEIGHBOR_DST_USER_META onto a single CLASS_ID key
   // field, so an ACL entry can carry only one lookup class.
   void resetLookupClassL2IfExclusive(cfg::AclEntry* acl) {
@@ -468,6 +483,7 @@ TEST_F(AgentHwAclQualifierTest, AclIp6TcpQualifiers) {
         &acl1, true, cfg::IpType::IP6, this->getAsicType());
     resetLookupClassL2IfExclusive(&acl1);
     configureAllTcpQualifiers(&acl1, true, getAsicType());
+    fitIpv6AclTable(&acl1);
     utility::addAcl(&newCfg, acl1, cfg::AclStage::INGRESS);
 
     applyNewConfig(newCfg);
@@ -481,9 +497,9 @@ TEST_F(AgentHwAclQualifierTest, AclIp6TcpQualifiers) {
         utility::getAclEntry(state, "ip6_tcp", FLAGS_enable_acl_table_group)
             ->toThrift();
 
-    EXPECT_EQ(
-        client->sync_getAclTableNumAclEntries(utility::kDefaultAclTable()), 1);
-    EXPECT_TRUE(client->sync_isAclEntrySame(acl, utility::kDefaultAclTable()));
+    auto aclTable = icmpv6AclTable(getAgentEnsemble());
+    EXPECT_EQ(client->sync_getAclTableNumAclEntries(aclTable), 1);
+    EXPECT_TRUE(client->sync_isAclEntrySame(acl, aclTable));
   };
 
   this->verifyAcrossWarmBoots(setup, verify);
@@ -543,6 +559,7 @@ TEST_F(AgentHwAclQualifierTest, AclIcmp6Qualifiers) {
     configureAllHwQualifiers(&acl1, true);
     configureAllL2QualifiersHelper(&acl1);
     configureAllIcmpQualifiers(&acl1, true, cfg::IpType::IP6, getAsicType());
+    fitIpv6AclTable(&acl1);
     utility::addAcl(&newCfg, acl1, cfg::AclStage::INGRESS);
     applyNewConfig(newCfg);
   };
@@ -559,11 +576,9 @@ TEST_F(AgentHwAclQualifierTest, AclIcmp6Qualifiers) {
       EXPECT_TRUE(client->sync_isAclEntrySame(acl, "icmp_acl_table"));
 
     } else {
-      EXPECT_EQ(
-          client->sync_getAclTableNumAclEntries(utility::kDefaultAclTable()),
-          1);
-      EXPECT_TRUE(
-          client->sync_isAclEntrySame(acl, utility::kDefaultAclTable()));
+      auto aclTable = icmpv6AclTable(getAgentEnsemble());
+      EXPECT_EQ(client->sync_getAclTableNumAclEntries(aclTable), 1);
+      EXPECT_TRUE(client->sync_isAclEntrySame(acl, aclTable));
     }
   };
 
@@ -595,7 +610,7 @@ TEST_F(AgentHwAclQualifierTest, AclRemove) {
     utility::addAcl(&newCfg, acl1, cfg::AclStage::INGRESS);
     applyNewConfig(newCfg);
 
-    utility::delAcl(&newCfg, "acl0");
+    utility::delAcl(&newCfg, "acl0", icmpv6AclTable(&ensemble));
     applyNewConfig(newCfg);
   };
 
@@ -605,10 +620,10 @@ TEST_F(AgentHwAclQualifierTest, AclRemove) {
     auto state = getAgentEnsemble()->getProgrammedState();
     auto acl = utility::getAclEntry(state, "acl1", FLAGS_enable_acl_table_group)
                    ->toThrift();
-    EXPECT_EQ(
-        client->sync_getAclTableNumAclEntries(utility::kDefaultAclTable()), 1);
+    auto aclTable = icmpv6AclTable(getAgentEnsemble());
+    EXPECT_EQ(client->sync_getAclTableNumAclEntries(aclTable), 1);
 
-    EXPECT_TRUE(client->sync_isAclEntrySame(acl, utility::kDefaultAclTable()));
+    EXPECT_TRUE(client->sync_isAclEntrySame(acl, aclTable));
   };
 
   this->verifyAcrossWarmBoots(setup, verify);
@@ -626,6 +641,7 @@ TEST_F(AgentHwAclQualifierTest, AclModifyQualifier) {
     this->configureAllL2QualifiersHelper(&acl);
     configureAllIcmpQualifiers(
         &acl, true, cfg::IpType::IP6, this->getAsicType());
+    fitIpv6AclTable(&acl);
     utility::addAcl(&newCfg, acl, cfg::AclStage::INGRESS);
     applyNewConfig(newCfg);
     // ip6 tcp
@@ -634,6 +650,7 @@ TEST_F(AgentHwAclQualifierTest, AclModifyQualifier) {
     configureAllIpQualifiers(&acl, true, cfg::IpType::IP6, this->getAsicType());
     resetLookupClassL2IfExclusive(&acl);
     newCfg = initialConfig(ensemble);
+    fitIpv6AclTable(&acl);
     utility::addAcl(&newCfg, acl, cfg::AclStage::INGRESS);
     applyNewConfig(newCfg);
     // imcp6
@@ -642,6 +659,7 @@ TEST_F(AgentHwAclQualifierTest, AclModifyQualifier) {
     configureAllIcmpQualifiers(
         &acl, true, cfg::IpType::IP6, this->getAsicType());
     newCfg = initialConfig(ensemble);
+    fitIpv6AclTable(&acl);
     utility::addAcl(&newCfg, acl, cfg::AclStage::INGRESS);
     applyNewConfig(newCfg);
   };
@@ -656,11 +674,9 @@ TEST_F(AgentHwAclQualifierTest, AclModifyQualifier) {
       EXPECT_EQ(client->sync_getAclTableNumAclEntries("icmp_acl_table"), 1);
       EXPECT_TRUE(client->sync_isAclEntrySame(acl, "icmp_acl_table"));
     } else {
-      EXPECT_EQ(
-          client->sync_getAclTableNumAclEntries(utility::kDefaultAclTable()),
-          1);
-      EXPECT_TRUE(
-          client->sync_isAclEntrySame(acl, utility::kDefaultAclTable()));
+      auto aclTable = icmpv6AclTable(getAgentEnsemble());
+      EXPECT_EQ(client->sync_getAclTableNumAclEntries(aclTable), 1);
+      EXPECT_TRUE(client->sync_isAclEntrySame(acl, aclTable));
     }
   };
 
@@ -784,6 +800,7 @@ TEST_F(AgentHwAclQualifierTest, AclIp6Qualifiers) {
       acl.etherType() = cfg::EtherType::IPv6;
     }
     configureIp6QualifiersHelper(&acl);
+    fitIpv6AclTable(&acl);
     utility::addAcl(&newCfg, acl, cfg::AclStage::INGRESS);
 
     applyNewConfig(newCfg);
@@ -794,11 +811,11 @@ TEST_F(AgentHwAclQualifierTest, AclIp6Qualifiers) {
         getCurrentSwitchIdForTesting());
     auto state = getAgentEnsemble()->getProgrammedState();
 
-    EXPECT_EQ(
-        client->sync_getAclTableNumAclEntries(utility::kDefaultAclTable()), 1);
+    auto aclTable = icmpv6AclTable(getAgentEnsemble());
+    EXPECT_EQ(client->sync_getAclTableNumAclEntries(aclTable), 1);
     auto acl = utility::getAclEntry(state, "ip6", FLAGS_enable_acl_table_group)
                    ->toThrift();
-    EXPECT_TRUE(client->sync_isAclEntrySame(acl, utility::kDefaultAclTable()));
+    EXPECT_TRUE(client->sync_isAclEntrySame(acl, aclTable));
   };
 
   this->verifyAcrossWarmBoots(setup, verify);
