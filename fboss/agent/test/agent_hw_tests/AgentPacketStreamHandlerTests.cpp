@@ -216,23 +216,24 @@ TEST_F(AgentPacketStreamHandlerTest, VerifySinkToStreamLoopback) {
     }
 
     // Verify Rx path counters (sink -> processReceivedPacket -> HW)
+    // The .sum counters are aggregated asynchronously, so each one is polled.
     WITH_RETRIES_N_TIMED(10, std::chrono::milliseconds(500), {
       auto rxReceivedAfter =
           fb303::fbData->getCounter("fromAifmCtrlAgent.packets_received.sum");
       ASSERT_EVENTUALLY_GE(rxReceivedAfter - rxReceivedBefore, kPacketCount);
+      auto rxSentToHwAfter =
+          fb303::fbData->getCounter("fromAifmCtrlAgent.packets_sent_to_hw.sum");
+      ASSERT_EVENTUALLY_GE(rxSentToHwAfter - rxSentToHwBefore, kPacketCount);
     });
-    auto rxSentToHwAfter =
-        fb303::fbData->getCounter("fromAifmCtrlAgent.packets_sent_to_hw.sum");
-    EXPECT_GE(rxSentToHwAfter - rxSentToHwBefore, kPacketCount);
 
     // Verify Tx path: HW loopback -> handlePacket -> stream -> client
     WITH_RETRIES_N_TIMED(20, std::chrono::milliseconds(500), {
       ASSERT_EVENTUALLY_GE(
           client_->receivedCount() - clientCountBefore, kPacketCount);
+      auto txSentAfter =
+          fb303::fbData->getCounter("toAifmCtrlAgent.packets_sent.sum");
+      ASSERT_EVENTUALLY_GE(txSentAfter - txSentBefore, kPacketCount);
     });
-    auto txSentAfter =
-        fb303::fbData->getCounter("toAifmCtrlAgent.packets_sent.sum");
-    EXPECT_GE(txSentAfter - txSentBefore, kPacketCount);
   };
 
   verifyAcrossWarmBoots([]() {}, verify);
